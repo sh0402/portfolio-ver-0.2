@@ -10,4 +10,4 @@ module.exports = {
 	jsxBracketSameLine: false,
 	arrowParens: 'always',
 	trailingComma: 'all'
-};
+}
