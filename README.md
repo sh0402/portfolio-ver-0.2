@@ -16,7 +16,7 @@ npm install -g firebase-tools => firebase login
 firebase init => 'Auth', 'Firestore', 'Database', 'Storage', 'Hosting', 'Functions', 'Emulator'
 ```
 
-## FramWork setup
+## FrameWork setup
 ```
 yarn add vue-toasted
 ```
