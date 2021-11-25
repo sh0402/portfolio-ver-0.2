@@ -6,7 +6,10 @@
 					class="hidden-md-and-up"
 					@click="drawer = !drawer"
 				></v-app-bar-nav-icon>
-				<v-toolbar-title class="pr-4">Soot's Portfoilo</v-toolbar-title>
+
+				<site-title :title="site.title"></site-title>
+
+				<v-spacer></v-spacer>
 
 				<v-img
 					alt="Vuetify Logo"
@@ -18,7 +21,7 @@
 				/>
 
 				<v-btn
-					v-for="item in items"
+					v-for="item in site.menu"
 					:key="item.a"
 					:to="item.to"
 					text
@@ -82,102 +85,129 @@
 		</v-app-bar>
 
 		<v-navigation-drawer app temporary v-model="drawer" width="100%">
-			<v-toolbar
-				id="toolbar-mo"
-				color="transparent"
-				class="font-weight-bold"
-				justify-end
-				flat
-			>
-				<v-toolbar-title class="pr-4"> Soot's Portfoilo </v-toolbar-title>
-
-				<span class="caption">ver.0.0.1</span>
-
-				<v-spacer></v-spacer>
-
-				<v-btn icon @click="drawer = false">
-					<v-icon>mdi-close</v-icon>
-				</v-btn>
-			</v-toolbar>
-
-			<v-divider />
-
-			<v-list>
-				<v-list-item v-for="item in items" :key="item.a" :to="item.to">
-					<v-list-item-avatar>
-						<v-icon>{{ item.icon }}</v-icon>
-					</v-list-item-avatar>
-
-					<v-list-item-content>
-						<v-list-item-title>
-							{{ (item.title, item.to) }}
-						</v-list-item-title>
-					</v-list-item-content>
-				</v-list-item>
-			</v-list>
+			<site-menu :items="site.menu" v-on:closeDrawer="closeDrawer"></site-menu>
 		</v-navigation-drawer>
 
 		<v-main>
 			<router-view />
 		</v-main>
 
-		<v-footer app dark color="primary" absolute>
-			<v-spacer></v-spacer>
-			<div>&copy; {{ new Date().getFullYear() }}</div>
-		</v-footer>
+		<site-footer :footer="site.footer"></site-footer>
 	</v-app>
 </template>
 
 <script>
+import SiteTitle from '@/views/site/title'
+import SiteFooter from '@/views/site/footer'
+import SiteMenu from '@/views/site/menu'
+
 export default {
 	name: 'App',
+	components: {
+		SiteTitle,
+		SiteFooter,
+		SiteMenu
+	},
 	data() {
 		return {
 			drawer: false,
-			items: [
-				{
-					title: 'Home',
-					icon: 'mdi-home',
-					to: '/'
-				},
-				{
-					title: 'About',
-					icon: 'mdi-information',
-					to: '/about'
-				},
-				{
-					title: 'Projects',
-					icon: 'mdi-view-gallery',
-					to: '/projects'
-				},
-				{
-					title: 'Contact',
-					icon: 'mdi-account-box',
-					to: '/contact'
-				},
-				{
-					title: 'Admin',
-					icon: 'mdi-text-long',
-					to: '/admin/users'
-				},
-				{
-					title: 'Storage',
-					icon: 'mdi-text-long',
-					to: '/lectures/storage'
-				},
-				{
-					title: 'lv2',
-					icon: 'mdi-text-long',
-					to: '/test/lv2'
-				}
-			],
-			methods: {
-				async signOut() {
-					this.$firebase.auth().signOut()
-					this.$router.push('/sign')
-					// this.$Progress.start()
-				}
+			site: {
+				menu: [
+					{
+						title: 'Home',
+						icon: 'mdi-home',
+						to: '/'
+					},
+					{
+						title: 'About',
+						icon: 'mdi-information',
+						to: '/about'
+					},
+					{
+						title: 'Projects',
+						icon: 'mdi-view-gallery',
+						to: '/projects'
+					},
+					{
+						title: 'Contact',
+						icon: 'mdi-account-box',
+						to: '/contact'
+					},
+					{
+						title: 'Admin',
+						icon: 'mdi-text-long',
+						to: '/admin/users'
+					},
+					{
+						title: 'Storage',
+						icon: 'mdi-text-long',
+						to: '/lectures/storage'
+					},
+					{
+						title: 'lv2',
+						icon: 'mdi-text-long',
+						to: '/test/lv2'
+					}
+				],
+				title: `Soot's Portfolio`,
+				footer: 'this Footer'
 			}
+		}
+	},
+	created() {
+		this.subscribe()
+	},
+	methods: {
+		closeDrawer() {
+			this.drawer = false
+		},
+		subscribe() {
+			this.$firebase
+				.database()
+				.ref()
+				.child('site')
+				.on(
+					'value',
+					sn => {
+						const v = sn.val()
+						if (!v) {
+							this.$firebase.database().ref().child('site').set(this.site)
+							return
+						}
+						this.site = v
+					},
+					e => {
+						console.log(e.message)
+					}
+				)
+		},
+		save() {
+			this.$firebase.database().ref().child('abcd').set({
+				title: 'abcd',
+				text: 'xxxx'
+			})
+			console.log('Save Success')
+		},
+		read() {
+			this.$firebase
+				.database()
+				.ref()
+				.child('abcd')
+				.on('value', sn => {
+					console.log(sn)
+					console.log(sn.val())
+				})
+			console.log('Read Success')
+		},
+		async readOne() {
+			const sn = await this.$firebase
+				.database()
+				.ref()
+				.child('abcd')
+				.once('value')
+
+			console.log(sn.val())
+			console.log('ReadOne Success')
 		}
 	}
 }

@@ -1,6 +1,5 @@
 <template>
-	<v-container style="max-width: 1200px" fluid
-		>>
+	<v-container style="max-width: 1200px" fluid>
 		<v-card height="650">
 			<v-layout row wrap align-center justify-center>
 				<v-flex xs12 sm5 class="hidden-xs-only" text-center>
