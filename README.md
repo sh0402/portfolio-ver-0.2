@@ -5,6 +5,22 @@
 yarn install
 ```
 
+## Firebase setup
+```
+npm install firebase
+```
+```
+npm install -g firebase-tools => firebase login
+```
+```
+firebase init => 'Auth', 'Firestore', 'Database', 'Storage', 'Hosting', 'Functions', 'Emulator'
+```
+
+## FramWork setup
+```
+yarn add vue-toasted
+```
+
 ### Compiles and hot-reloads for development
 ```
 yarn serve
