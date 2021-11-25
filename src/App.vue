@@ -85,7 +85,12 @@
 		</v-app-bar>
 
 		<v-navigation-drawer app temporary v-model="drawer" width="100%">
-			<site-menu :items="site.menu" v-on:closeDrawer="closeDrawer"></site-menu>
+			<site-menu
+				:items="site.menu"
+				:title="site.title"
+				v-on:closeDrawer="closeDrawer"
+				v-on:update:dateSetting="setData"
+			></site-menu>
 		</v-navigation-drawer>
 
 		<v-main>
@@ -209,7 +214,8 @@ export default {
 			console.log(sn.val())
 			console.log('ReadOne Success')
 		}
-	}
+	},
+	mounted() {}
 }
 </script>
 

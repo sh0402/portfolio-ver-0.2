@@ -1,46 +1,39 @@
 <template>
 	<div>
-		<v-toolbar
-			id="toolbar-mo"
-			color="transparent"
-			class="font-weight-bold"
-			justify-end
-			flat
-		>
-			<v-toolbar-title class="pr-4"> Soot's Portfoilo </v-toolbar-title>
-
-			<span class="caption">ver.0.0.1</span>
-
-			<v-spacer></v-spacer>
-
+		<v-list-item>
+			<v-list-item-content>
+				<v-list-item-title class="title" v-text="title"></v-list-item-title>
+				<v-list-item-subtitle>version 0.0.1</v-list-item-subtitle>
+			</v-list-item-content>
 			<v-btn icon @click="close">
 				<v-icon>mdi-close</v-icon>
 			</v-btn>
-		</v-toolbar>
+		</v-list-item>
 
 		<v-divider />
 
 		<v-list>
-			<v-list-item
-				v-model="item.active"
-				v-for="item in items"
-				:key="item.a"
-				:to="item.to"
-			>
-				<!-- <v-list-item-avatar>
-						<v-icon>{{ menu.icon }}</v-icon>
-					</v-list-item-avatar> -->
+			<v-list-item v-for="item in items" :key="item.title" :to="item.to">
 				<v-list-item-content>
-					<v-list-item-title>
-						{{ item.title }}
-					</v-list-item-title>
+					<v-list-item-title v-text="item.title"></v-list-item-title>
 				</v-list-item-content>
+				<v-list-item-action>
+					<v-btn icon @click="openDialogItem(i)">
+						<v-icon>mdi-square-edit-outline</v-icon>
+					</v-btn>
+				</v-list-item-action>
 			</v-list-item>
+
 			<v-list-item @click="openDialogItem(-1)">
+				<v-list-item-content>
+					<v-list-item-title class="text-button">Add</v-list-item-title>
+				</v-list-item-content>
+
+				<v-spacer></v-spacer>
+
 				<v-list-item-icon>
-					<v-icon> mdi-plus </v-icon>
+					<v-icon> mdi-plus-box </v-icon>
 				</v-list-item-icon>
-				<v-list-item-content> menu add </v-list-item-content>
 			</v-list-item>
 		</v-list>
 
@@ -50,9 +43,7 @@
 					수정하기
 					<v-spacer></v-spacer>
 
-					<v-btn icon @click="saveItem">
-						<v-icon>mdi-check</v-icon>
-					</v-btn>
+					<v-btn color="success" @click="saveItem" text> Create </v-btn>
 				</v-card-title>
 
 				<v-card-text>
@@ -65,27 +56,40 @@
 
 <script>
 export default {
-	props: ['items'],
+	props: ['title', 'items'],
 	data() {
 		return {
 			dialogItem: false,
 			formItem: {
 				icon: '',
 				title: ''
-			}
+			},
+			selectedItemIndex: -1
 		}
 	},
 	methods: {
 		close() {
 			this.$emit('closeDrawer')
 		},
-		// eslint-disable-next-line no-unused-vars
 		openDialogItem(index) {
+			this.selectedItemIndex = index
 			this.dialogItem = true
-		},
-		saveItem() {}
+			if (index < 0) {
+				this.formItem.title = ''
+			} else {
+				this.formItem.title = this.items[index].title
+			}
+		}
+		// saveItem() {
+		// 	if (this.selectedItemIndex < 0) {
+		// 		// eslint-disable-next-line vue/no-mutating-props
+		// 		this.items.push(this.formItem)
+		// 	} else {
+		// 		// eslint-disable-next-line vue/no-mutating-props
+		// 		this.items[this.selectedItemIndex] = this.formItem
+		// 	}
+		// 	this.dialogItem = false
+		// }
 	}
 }
 </script>
-
-<style></style>
