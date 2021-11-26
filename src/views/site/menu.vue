@@ -13,16 +13,36 @@
 		<v-divider />
 
 		<v-list>
-			<v-list-item v-for="item in items" :key="item.title" :to="item.to">
-				<v-list-item-content>
-					<v-list-item-title v-text="item.title"></v-list-item-title>
-				</v-list-item-content>
-				<v-list-item-action>
-					<v-btn icon @click="openDialogItem(i)">
-						<v-icon>mdi-square-edit-outline</v-icon>
-					</v-btn>
-				</v-list-item-action>
-			</v-list-item>
+			<v-list-group
+				v-for="(item, i) in newItems.items"
+				:key="i"
+				v-model="item.active"
+				:prepend-icon="item.icon"
+				no-action
+				mandatory
+			>
+				<template v-slot:activator>
+					<v-list-item-content>
+						<v-list-item-title v-text="item.title"></v-list-item-title>
+					</v-list-item-content>
+
+					<v-list-item-action>
+						<v-btn icon @click="openDialogItem(i)">
+							<v-icon>mdi-square-edit-outline</v-icon>
+						</v-btn>
+					</v-list-item-action>
+				</template>
+
+				<v-list-item
+					v-for="(subItem, j) in item.subItems"
+					:key="j"
+					:to="subItem.to"
+				>
+					<v-list-item-content>
+						<v-list-item-title v-text="subItem.title"></v-list-item-title>
+					</v-list-item-content>
+				</v-list-item>
+			</v-list-group>
 
 			<v-list-item @click="openDialogItem(-1)">
 				<v-list-item-content>
@@ -37,6 +57,7 @@
 			</v-list-item>
 		</v-list>
 
+		<!-- MENU ADD -->
 		<v-dialog v-model="dialogItem" max-width="600" width="100%">
 			<v-card>
 				<v-card-title>
@@ -60,12 +81,17 @@ export default {
 	data() {
 		return {
 			dialogItem: false,
+			dialogSubItem: false,
 			formItem: {
 				icon: '',
 				title: ''
 			},
-			selectedItemIndex: -1
+			selectedItemIndex: -1,
+			newItems: {}
 		}
+	},
+	created() {
+		this.newItems.items = this.items
 	},
 	methods: {
 		close() {
@@ -79,17 +105,27 @@ export default {
 			} else {
 				this.formItem.title = this.items[index].title
 			}
+		},
+		saveItem() {
+			if (this.selectedItemIndex < 0) {
+				this.newItems.items.push(this.formItem)
+			} else {
+				this.newItems.items[this.selectedItemIndex] = this.formItem
+			}
+			this.save()
+			this.dialogItem = false
+		},
+		async save() {
+			try {
+				await this.$firebase
+					.database()
+					.ref()
+					.child('site')
+					.update({ menu: this.items })
+			} finally {
+				this.dialogItem = false
+			}
 		}
-		// saveItem() {
-		// 	if (this.selectedItemIndex < 0) {
-		// 		// eslint-disable-next-line vue/no-mutating-props
-		// 		this.items.push(this.formItem)
-		// 	} else {
-		// 		// eslint-disable-next-line vue/no-mutating-props
-		// 		this.items[this.selectedItemIndex] = this.formItem
-		// 	}
-		// 	this.dialogItem = false
-		// }
 	}
 }
 </script>

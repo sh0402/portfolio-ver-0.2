@@ -32,6 +32,8 @@
 				</v-btn>
 				<v-spacer></v-spacer>
 
+				<v-btn text @click="save"> read </v-btn>
+
 				<v-btn icon v-if="$store.state.user">
 					<v-menu offset-y>
 						<template v-slot:activator="{ on }">
@@ -84,15 +86,16 @@
 			</v-toolbar>
 		</v-app-bar>
 
+		<!-- SIDE MENU -->
 		<v-navigation-drawer app temporary v-model="drawer" width="100%">
 			<site-menu
 				:items="site.menu"
 				:title="site.title"
 				v-on:closeDrawer="closeDrawer"
-				v-on:update:dateSetting="setData"
 			></site-menu>
 		</v-navigation-drawer>
 
+		<!-- ROUTER -->
 		<v-main>
 			<router-view />
 		</v-main>
@@ -120,38 +123,78 @@ export default {
 				menu: [
 					{
 						title: 'Home',
-						icon: 'mdi-home',
-						to: '/'
+						icon: 'mdi-home-circle',
+						to: '/',
+						active: true,
+						subItems: [
+							{
+								title: 'Home Menu 01',
+								to: '/'
+							},
+							{
+								title: 'Home Menu 02',
+								to: '/'
+							}
+						]
 					},
 					{
 						title: 'About',
-						icon: 'mdi-information',
-						to: '/about'
+						icon: 'mdi-dots-horizontal-circle',
+						to: '/about',
+						subItems: [
+							{
+								title: 'About Menu 01',
+								to: '/'
+							},
+							{
+								title: 'About Menu 02',
+								to: '/'
+							}
+						]
 					},
 					{
 						title: 'Projects',
-						icon: 'mdi-view-gallery',
-						to: '/projects'
+						icon: 'mdi-alpha-p-circle',
+						to: '/projects',
+						subItems: [
+							{
+								title: 'Projects Menu 01',
+								to: '/'
+							}
+						]
 					},
 					{
 						title: 'Contact',
-						icon: 'mdi-account-box',
-						to: '/contact'
+						icon: 'mdi-send-circle',
+						to: '/contact',
+						subItems: [
+							{
+								title: 'Contact Menu 01',
+								to: '/'
+							}
+						]
 					},
 					{
 						title: 'Admin',
-						icon: 'mdi-text-long',
-						to: '/admin/users'
+						icon: 'mdi-account-circle',
+						to: '/admin/users',
+						subItems: [
+							{
+								title: 'Admin Menu 01',
+								to: '/'
+							}
+						]
 					},
 					{
 						title: 'Storage',
-						icon: 'mdi-text-long',
-						to: '/lectures/storage'
-					},
-					{
-						title: 'lv2',
-						icon: 'mdi-text-long',
-						to: '/test/lv2'
+						icon: 'mdi-database',
+						to: '/lectures/storage',
+						subItems: [
+							{
+								title: 'Storage Menu 01',
+								to: '/'
+							}
+						]
 					}
 				],
 				title: `Soot's Portfolio`,
