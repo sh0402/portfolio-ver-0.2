@@ -5,20 +5,18 @@
 				<v-app-bar-nav-icon
 					class="hidden-md-and-up"
 					@click="drawer = !drawer"
-				></v-app-bar-nav-icon>
+				/>
 
-				<site-title :title="site.title"></site-title>
+				<site-title :title="site.title" />
 
-				<v-spacer></v-spacer>
-
-				<v-img
+				<!-- <v-img
 					alt="Vuetify Logo"
 					class="shrink mr-2 hidden-sm-and-down"
 					contain
 					src="./assets/logo.png"
 					transition="scale-transition"
 					width="32"
-				/>
+				/> -->
 
 				<v-btn
 					v-for="item in site.menu"
@@ -30,77 +28,31 @@
 				>
 					{{ item.title }}
 				</v-btn>
-				<v-spacer></v-spacer>
 
-				<v-btn text @click="save"> read </v-btn>
+				<v-spacer />
 
-				<v-btn icon v-if="$store.state.user">
-					<v-menu offset-y>
-						<template v-slot:activator="{ on }">
-							<v-btn icon v-on="on">
-								<v-avatar size="32" color="grey lighten-4">
-									<img :src="$store.state.user.photoURL" alt="avatar" />
-								</v-avatar>
-							</v-btn>
-						</template>
+				<!-- <v-btn text @click="save">save</v-btn>
+				<v-btn text @click="read">read</v-btn>
+				<v-btn text @click="readOne">readone</v-btn> -->
 
-						<v-card width="320">
-							<v-container>
-								<v-row dense>
-									<v-col cols="12">
-										<v-card elevation="0" disabled>
-											<v-img
-												:src="$store.state.user.photoURL"
-												alt="avatar"
-												aspect-ratio="2"
-												max-height="150"
-											/>
-										</v-card>
-									</v-col>
-
-									<v-col cols="12" class="my-4">
-										<span class="font-weight-bold">
-											{{ $store.state.user.displayName }}
-										</span>
-
-										<br />
-
-										<span>
-											{{ $store.state.user.email }}
-										</span>
-									</v-col>
-
-									<v-col cols="12">
-										<v-divider class="mb-4"></v-divider>
-										<v-btn block color="warning" @click="signOut">
-											Log-out
-										</v-btn>
-									</v-col>
-								</v-row>
-							</v-container>
-						</v-card>
-					</v-menu>
-				</v-btn>
-
-				<v-btn text v-else to="/sign"> Sign-in </v-btn>
+				<v-btn text to="/sign"> Sign-in </v-btn>
+				<site-sign></site-sign>
 			</v-toolbar>
 		</v-app-bar>
 
-		<!-- SIDE MENU -->
-		<v-navigation-drawer app temporary v-model="drawer" width="100%">
+		<v-navigation-drawer app v-model="drawer" width="100%">
 			<site-menu
 				:items="site.menu"
 				:title="site.title"
-				v-on:closeDrawer="closeDrawer"
+				v-on:drawer="closeMenu"
 			></site-menu>
 		</v-navigation-drawer>
 
-		<!-- ROUTER -->
 		<v-main>
 			<router-view />
 		</v-main>
 
-		<site-footer :footer="site.footer"></site-footer>
+		<site-footer :footer="site.footer" />
 	</v-app>
 </template>
 
@@ -108,14 +60,11 @@
 import SiteTitle from '@/views/site/title'
 import SiteFooter from '@/views/site/footer'
 import SiteMenu from '@/views/site/menu'
+import SiteSign from '@/views/site/sign'
 
 export default {
+	components: { SiteTitle, SiteFooter, SiteMenu, SiteSign },
 	name: 'App',
-	components: {
-		SiteTitle,
-		SiteFooter,
-		SiteMenu
-	},
 	data() {
 		return {
 			drawer: false,
@@ -124,80 +73,37 @@ export default {
 					{
 						title: 'Home',
 						icon: 'mdi-home-circle',
-						to: '/',
-						active: true,
-						subItems: [
-							{
-								title: 'Home Menu 01',
-								to: '/'
-							},
-							{
-								title: 'Home Menu 02',
-								to: '/'
-							}
-						]
+						// subItems: [
+						// 	{
+						// 		title: 'home',
+						// 		to: '/'
+						// 	},
+						// 	{
+						// 		title: 'about',
+						// 		to: '/about'
+						// 	}
+						// ],
+						actve: true,
+						to: '/'
 					},
 					{
 						title: 'About',
-						icon: 'mdi-dots-horizontal-circle',
-						to: '/about',
-						subItems: [
-							{
-								title: 'About Menu 01',
-								to: '/'
-							},
-							{
-								title: 'About Menu 02',
-								to: '/'
-							}
-						]
+						icon: 'mdi-information',
+						// subItems: [
+						// 	{
+						// 		title: 'xxx',
+						// 		to: '/xxx'
+						// 	}
+						// ]
+						to: '/about'
 					},
 					{
-						title: 'Projects',
-						icon: 'mdi-alpha-p-circle',
-						to: '/projects',
-						subItems: [
-							{
-								title: 'Projects Menu 01',
-								to: '/'
-							}
-						]
-					},
-					{
-						title: 'Contact',
-						icon: 'mdi-send-circle',
-						to: '/contact',
-						subItems: [
-							{
-								title: 'Contact Menu 01',
-								to: '/'
-							}
-						]
-					},
-					{
-						title: 'Admin',
-						icon: 'mdi-account-circle',
-						to: '/admin/users',
-						subItems: [
-							{
-								title: 'Admin Menu 01',
-								to: '/'
-							}
-						]
-					},
-					{
-						title: 'Storage',
-						icon: 'mdi-database',
-						to: '/lectures/storage',
-						subItems: [
-							{
-								title: 'Storage Menu 01',
-								to: '/'
-							}
-						]
+						title: 'XXX',
+						icon: 'mdi-help-circle',
+						to: '/xxx'
 					}
 				],
-				title: `Soot's Portfolio`,
+				title: 'Soot Portfolio',
 				footer: 'this Footer'
 			}
 		}
@@ -206,7 +112,7 @@ export default {
 		this.subscribe()
 	},
 	methods: {
-		closeDrawer() {
+		closeMenu() {
 			this.drawer = false
 		},
 		subscribe() {
@@ -234,31 +140,26 @@ export default {
 				title: 'abcd',
 				text: 'xxxx'
 			})
-			console.log('Save Success')
 		},
 		read() {
 			this.$firebase
 				.database()
 				.ref()
-				.child('abcd')
+				.child('site')
 				.on('value', sn => {
 					console.log(sn)
 					console.log(sn.val())
 				})
-			console.log('Read Success')
 		},
 		async readOne() {
 			const sn = await this.$firebase
 				.database()
 				.ref()
-				.child('abcd')
+				.child('site')
 				.once('value')
-
 			console.log(sn.val())
-			console.log('ReadOne Success')
 		}
-	},
-	mounted() {}
+	}
 }
 </script>
 

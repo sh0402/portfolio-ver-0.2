@@ -15,6 +15,13 @@ npm install -g firebase-tools => firebase login
 ```
 firebase init => 'Auth', 'Firestore', 'Database', 'Storage', 'Hosting', 'Functions', 'Emulator'
 ```
+## Firebase-Functions
+
+## Functions-setting
+```
+Terminal input
+firebase functions:config:set admin.email=xx@xxx.com admin.db_url=https://xxx.firebaseio.com
+```
 
 ## FrameWork setup
 ```
