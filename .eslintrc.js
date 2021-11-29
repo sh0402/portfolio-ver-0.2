@@ -39,6 +39,12 @@ module.exports = {
 			'error',
 			require('os').EOL === '\r\n' ? 'windows' : 'unix'
 		],
-		'vue/multi-word-component-names': 'off'
+		'vue/multi-word-component-names': 'off',
+		'vue/valid-v-slot': [
+			'error',
+			{
+				allowModifiers: true
+			}
+		]
 	}
 }

@@ -25,58 +25,6 @@
 
 		<v-divider></v-divider>
 
-		<!-- <v-list>
-			<v-list-group
-				v-for="(item, i) in items"
-				:key="i"
-				v-model="item.active"
-				:prepend-icon="item.icon"
-				no-action
-			>
-				<template v-slot:activator>
-					<v-list-item-content>
-						<v-list-item-title v-text="item.title"></v-list-item-title>
-					</v-list-item-content>
-
-					<v-list-item-action>
-						<v-btn @click="openDialogItem(i)" icon>
-							<v-icon>mdi-square-edit-outline</v-icon>
-						</v-btn>
-					</v-list-item-action>
-				</template>
-
-				<v-list-item
-					v-for="(subItem, j) in item.subItems"
-					:key="j"
-					:to="subItem.to"
-				>
-					<v-list-item-content>
-						<v-list-item-title v-text="subItem.title"></v-list-item-title>
-					</v-list-item-content>
-				</v-list-item>
-
-				<v-list-item>
-					<v-list-item-icon>
-						<v-icon>mdi-plus</v-icon>
-					</v-list-item-icon>
-
-					<v-list-item-content>
-						<v-list-item-title>서브메뉴 추가하기</v-list-item-title>
-					</v-list-item-content>
-				</v-list-item>
-			</v-list-group>
-
-			<v-list-item @click="openDialogItem(-1)">
-				<v-list-item-icon>
-					<v-icon>mdi-plus</v-icon>
-				</v-list-item-icon>
-
-				<v-list-item-content>
-					<v-list-item-title>메뉴 추가하기</v-list-item-title>
-				</v-list-item-content>
-			</v-list-item>
-		</v-list> -->
-
 		<v-list flat>
 			<v-list-item-group color="primary">
 				<v-list-item
