@@ -27,7 +27,7 @@ exports.deleteUser = functions.auth.user().onDelete(async user => {
 	db.ref('users').child(uid).remove()
 })
 
-exports.increamentBoardCount = functions.firestore
+exports.incrementBoardCount = functions.firestore
 	.document('boards/{bid}')
 	// eslint-disable-next-line no-unused-vars
 	.onCreate(async (snap, context) => {
@@ -40,7 +40,8 @@ exports.increamentBoardCount = functions.firestore
 			await fdb.collection('meta').doc('boards').set({ count: 1 })
 		}
 	})
-exports.decreamentBoardCount = functions.firestore
+
+exports.decrementBoardCount = functions.firestore
 	.document('boards/{bid}')
 	// eslint-disable-next-line no-unused-vars
 	.onDelete(async (snap, context) => {
