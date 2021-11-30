@@ -4,9 +4,15 @@
 	></board-index>
 
 	<board-content
-		v-else-if="collection === 'board'"
+		v-else-if="collection === 'board' && !action"
 		:document="document"
 	></board-content>
+
+	<board-form
+		v-else-if="collection === 'board'"
+		:document="document"
+		:action="action"
+	></board-form>
 
 	<page-index
 		v-else-if="collection === 'page' && document === 'list'"
@@ -27,6 +33,7 @@
 <script>
 import BoardIndex from './board/index'
 import BoardContent from './board/content'
+import BoardForm from './board/form'
 import PageIndex from './page/index'
 import PageContent from './page/content'
 import ErrorPage from './error'
@@ -35,6 +42,7 @@ export default {
 	components: {
 		BoardIndex,
 		BoardContent,
+		BoardForm,
 		PageIndex,
 		PageContent,
 		ErrorPage
@@ -45,6 +53,9 @@ export default {
 		},
 		document() {
 			return this.$route.params.document
+		},
+		action() {
+			return this.$route.params.action
 		}
 	}
 }
