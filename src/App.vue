@@ -43,6 +43,7 @@
 		<v-navigation-drawer app v-model="drawer" width="100%">
 			<site-menu
 				:items="site.menu"
+				:dropItems="site.dropMenu"
 				:title="site.title"
 				v-on:drawer="closeMenu"
 			></site-menu>
@@ -73,32 +74,31 @@ export default {
 					{
 						title: 'Home',
 						icon: 'mdi-home-circle',
-						// subItems: [
-						// 	{
-						// 		title: 'home',
-						// 		to: '/'
-						// 	},
-						// 	{
-						// 		title: 'about',
-						// 		to: '/about'
-						// 	}
-						// ],
-						actve: true,
 						to: '/'
 					},
 					{
 						title: 'About',
-						icon: 'mdi-information',
-						// subItems: [
-						// 	{
-						// 		title: 'xxx',
-						// 		to: '/xxx'
-						// 	}
-						// ]
-						to: '/about'
+						icon: 'mdi-information'
 					},
 					{
 						title: 'XXX',
+						icon: 'mdi-help-circle',
+						to: '/xxx'
+					}
+				],
+				dropMenu: [
+					{
+						title: '01',
+						icon: 'mdi-help-circle',
+						to: '/xxx'
+					},
+					{
+						title: '02',
+						icon: 'mdi-help-circle',
+						to: '/xxx'
+					},
+					{
+						title: '03',
 						icon: 'mdi-help-circle',
 						to: '/xxx'
 					}
