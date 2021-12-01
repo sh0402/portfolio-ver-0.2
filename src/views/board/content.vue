@@ -4,8 +4,15 @@
 		<v-card>
 			<v-toolbar color="accent" dense flat dark>
 				<v-toolbar-title v-text="info.title"></v-toolbar-title>
+
 				<v-spacer />
-				<v-btn @click="write">write</v-btn>
+
+				<template v-if="user">
+					<v-btn text @click="write" :disabled="user.level > 0">write</v-btn>
+					<v-btn icon @click="articleWrite" :disabled="user.level > 4">
+						<v-icon>mdi-plus</v-icon>
+					</v-btn>
+				</template>
 			</v-toolbar>
 
 			<v-card-text v-if="info.createdAt">
@@ -20,13 +27,16 @@
 				</v-alert>
 			</v-card-text>
 
-			<v-card-text> article </v-card-text>
+			<board-article :info="info" :document="document"></board-article>
 		</v-card>
 	</v-container>
 </template>
 
 <script>
+import BoardArticle from './article/index.vue'
+
 export default {
+	components: { BoardArticle },
 	props: ['document'],
 	data() {
 		return {
@@ -42,6 +52,11 @@ export default {
 	watch: {
 		document() {
 			this.subscribe()
+		}
+	},
+	computed: {
+		user() {
+			return this.$store.state.user
 		}
 	},
 	created() {
@@ -63,7 +78,13 @@ export default {
 			})
 		},
 		async write() {
-			this.$router.push(this.$route.path + '/write')
+			this.$router.push(this.$route.path + '/board-write')
+		},
+		async articleWrite() {
+			this.$router.push({
+				path: this.$route.path + '/article-write',
+				query: { articleId: '' }
+			})
 		}
 	}
 }

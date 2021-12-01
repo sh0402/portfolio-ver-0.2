@@ -9,10 +9,16 @@
 	></board-content>
 
 	<board-form
-		v-else-if="collection === 'board'"
+		v-else-if="collection === 'board' && action === 'board-write'"
 		:document="document"
 		:action="action"
 	></board-form>
+
+	<board-article-form
+		v-else-if="collection === 'board' && action === 'article-write'"
+		:document="document"
+		:action="action"
+	></board-article-form>
 
 	<page-index
 		v-else-if="collection === 'page' && document === 'list'"
@@ -34,6 +40,7 @@
 import BoardIndex from './board/index'
 import BoardContent from './board/content'
 import BoardForm from './board/form'
+import BoardArticleForm from './board/article/form'
 import PageIndex from './page/index'
 import PageContent from './page/content'
 import ErrorPage from './error'
@@ -43,6 +50,7 @@ export default {
 		BoardIndex,
 		BoardContent,
 		BoardForm,
+		BoardArticleForm,
 		PageIndex,
 		PageContent,
 		ErrorPage

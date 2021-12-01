@@ -88,6 +88,7 @@ export default {
 			try {
 				if (!this.exists) {
 					form.createdAt = new Date()
+					form.count = 0
 					await this.ref.set(form)
 				} else {
 					this.ref.update(form)
