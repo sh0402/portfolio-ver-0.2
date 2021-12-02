@@ -23,8 +23,9 @@
 			</template>
 		</v-data-table>
 
-		<v-dialog v-if="selectedItem" v-model="dialog">
+		<v-dialog v-if="selectedItem" v-model="dialog" fullscreen>
 			<display-content
+				:document="document"
 				:item="selectedItem"
 				@close="dialog = false"
 			></display-content>

@@ -17,7 +17,29 @@
 						label="제목"
 						outlined
 					></v-text-field>
-					<editor :initialValue="form.content" ref="editor"></editor>
+
+					<editor
+						v-if="!articleId"
+						:initialValue="form.content"
+						ref="editor"
+						initialEditType="wysiwyg"
+						:options="{ hideModeSwitch: true }"
+					></editor>
+
+					<template v-else>
+						<editor
+							v-if="form.content"
+							:initialValue="form.content"
+							ref="editor"
+							initialEditType="wysiwyg"
+							:options="{ hideModeSwitch: true }"
+						></editor>
+						<v-container v-else>
+							<v-row justify="center" align="center">
+								<v-progress-circular indeterminate></v-progress-circular>
+							</v-row>
+						</v-container>
+					</template>
 					<!-- <v-textarea
 						v-model="form.description"
 						label="설명"
@@ -30,11 +52,12 @@
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
 	props: ['document', 'action'],
 	data() {
 		return {
-			unsubscribe: null,
 			form: {
 				title: '',
 				content: ''
@@ -54,35 +77,31 @@ export default {
 	},
 	watch: {
 		document() {
-			this.subscribe()
+			this.fetch()
 		}
 	},
 	created() {
-		this.subscribe()
+		this.fetch()
 	},
-	destroyed() {
-		if (this.unsubscribe) this.unsubscribe()
-	},
+	destroyed() {},
 	methods: {
-		subscribe() {
+		async fetch() {
 			this.ref = this.$firebase
 				.firestore()
 				.collection('boards')
 				.doc(this.document)
-			console.log(this.articleId)
 			if (!this.articleId) return
-			if (this.unsubscribe) this.unsubscribe()
 
-			this.unsubscribe = this.ref
+			const doc = await this.ref
 				.collection('articles')
 				.doc(this.articleId)
-				.onSnapshot(doc => {
-					this.exists = doc.exists
-					if (this.exists) {
-						const item = doc.data()
-						this.form.title = item.title
-					}
-				})
+				.get()
+			this.exists = doc.exists
+			if (!this.exists) return
+			const item = doc.data()
+			this.form.title = item.title
+			const { data } = await axios.get(item.url)
+			this.form.content = data
 		},
 		async save() {
 			this.loading = true
@@ -108,7 +127,7 @@ export default {
 
 				if (!this.articleId) {
 					doc.createdAt = createdAt
-					doc.commantCount = 0
+					doc.commentCount = 0
 					doc.readCount = 0
 					doc.uid = this.$store.state.fireUser.uid
 					doc.user = {
