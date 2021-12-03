@@ -5,9 +5,15 @@
 				{{ item.title }}
 			</v-toolbar-title>
 			<v-spacer />
+
 			<v-btn icon @click="articleWrite">
 				<v-icon>mdi-square-edit-outline</v-icon>
 			</v-btn>
+
+			<v-btn icon @click="remove">
+				<v-icon>mdi-delete</v-icon>
+			</v-btn>
+
 			<v-btn icon @click="$emit('close')">
 				<v-icon>mdi-close</v-icon>
 			</v-btn>
@@ -35,19 +41,27 @@
 				수정일: <display-time :time="item.updatedAt"></display-time>
 			</span>
 		</v-card-actions>
+		<v-divider />
+
+		<display-comment
+			:article="item"
+			:docRef="this.ref.collection('articles').doc(this.item.id)"
+		></display-comment>
 	</v-card>
 </template>
 
 <script>
 import axios from 'axios'
 import DisplayTime from '@/components/display-time'
+import DisplayComment from '@/components/display-comment'
 
 export default {
-	components: { DisplayTime },
+	components: { DisplayTime, DisplayComment },
 	props: ['document', 'item'],
 	data() {
 		return {
-			content: ''
+			content: '',
+			ref: this.$firebase.firestore().collection('boards').doc(this.document)
 		}
 	},
 	mounted() {
@@ -58,10 +72,7 @@ export default {
 		async fetch() {
 			const r = await axios.get(this.item.url)
 			this.content = r.data
-			await this.$firebase
-				.firestore()
-				.collection('boards')
-				.doc(this.document)
+			await this.ref
 				.collection('articles')
 				.doc(this.item.id)
 				.update({
@@ -73,6 +84,28 @@ export default {
 				path: this.$route.path + '/article-write',
 				query: { articleId: this.item.id }
 			})
+		},
+		async remove() {
+			const batch = this.$firebase.firestore().batch()
+			batch.update(this.ref, {
+				count: this.$firebase.firestore.FieldValue.increment(1)
+			})
+			batch.delete(this.ref.collection('articles').doc(this.item.id))
+
+			await batch.commit()
+			// await this.ref.update({
+			// 	count: this.$firebase.firestore.FieldValue.increment(-1)
+			// })
+			// await this.ref.collection('articles').doc(this.item.id).delete()
+			await this.$firebase
+				.storage()
+				.ref()
+				.child('boards')
+				.child(this.document)
+				.child(this.item.id + '.md')
+				.delete()
+
+			this.$emit('close')
 		}
 	}
 }
