@@ -36,7 +36,7 @@
 			</v-btn>
 		</template>
 
-		<v-card>
+		<v-card width="300">
 			<v-card-title>Infomation</v-card-title>
 			<v-card-actions>
 				<v-btn block @click="signOut"> Log out </v-btn>

@@ -17,6 +17,7 @@
 					transition="scale-transition"
 					width="32"
 				/> -->
+				<v-btn text plain to="/" class="hidden-sm-and-down"> Home </v-btn>
 
 				<v-btn
 					v-for="item in site.menu"
@@ -35,7 +36,7 @@
 				<v-btn text @click="read">read</v-btn>
 				<v-btn text @click="readOne">readone</v-btn> -->
 
-				<v-btn text to="/sign"> Sign-in </v-btn>
+				<!-- <v-btn text to="/sign"> Sign-in </v-btn> -->
 				<site-sign></site-sign>
 			</v-toolbar>
 		</v-app-bar>
@@ -158,6 +159,16 @@ export default {
 				.child('site')
 				.once('value')
 			console.log(sn.val())
+		},
+		async test() {
+			const sn = await this.$firebase
+				.storage()
+				.ref()
+				.child('boards')
+				.child('tt')
+				.child('1234567890123456')
+				.putString('hi!')
+			console.log(sn)
 		}
 	}
 }

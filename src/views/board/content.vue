@@ -85,7 +85,6 @@ export default {
 				path: this.$route.path + '/article-write',
 				query: { articleId: '' }
 			})
-			console.log({ path: this.$route.path + '/article-write' })
 		}
 	}
 }

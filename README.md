@@ -20,7 +20,7 @@ firebase init => 'Auth', 'Firestore', 'Database', 'Storage', 'Hosting', 'Functio
 ## Functions-setting
 ```
 Terminal input
-firebase functions:config:set admin.email=xx@xxx.com admin.db_url=https://xxx.firebaseio.com
+firebase functions:config:set admin.email=xx@xxx.com admin.db_url=https://xxx.firebaseio.com admin.bucket_url=portfolio-27205.appspot.com admin.region=asia-northeast3
 ```
 
 ## FrameWork setup
