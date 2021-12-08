@@ -7,7 +7,7 @@
 
 					<v-spacer />
 
-					<v-btn text @click="$router.push('/board/' + document)">back</v-btn>
+					<v-btn text @click="$router.push('/board/' + boardId)">back</v-btn>
 					<v-btn text @click="save" :disabled="!user">save</v-btn>
 				</v-toolbar>
 
@@ -19,7 +19,7 @@
 					></v-text-field>
 
 					<editor
-						v-if="!articleId"
+						v-if="articleId === 'new'"
 						:initialValue="form.content"
 						ref="editor"
 						initialEditType="wysiwyg"
@@ -55,7 +55,7 @@
 import axios from 'axios'
 
 export default {
-	props: ['document', 'action'],
+	props: ['boardId', 'articleId', 'action'],
 	data() {
 		return {
 			form: {
@@ -64,22 +64,20 @@ export default {
 			},
 			exists: false,
 			loading: false,
-			ref: null
+			ref: null,
+			article: null
 		}
 	},
 	computed: {
-		articleId() {
-			return this.$route.query.articleId
-		},
 		user() {
 			return this.$store.state.user
 		},
 		fireUser() {
-			return this.$store.state.user
+			return this.$store.state.fireUser
 		}
 	},
 	watch: {
-		document() {
+		boardId() {
 			this.fetch()
 		}
 	},
@@ -92,9 +90,8 @@ export default {
 			this.ref = this.$firebase
 				.firestore()
 				.collection('boards')
-				.doc(this.document)
-			if (!this.articleId) return
-
+				.doc(this.boardId)
+			if (this.articleId === 'new') return
 			const doc = await this.ref
 				.collection('articles')
 				.doc(this.articleId)
@@ -102,34 +99,33 @@ export default {
 			this.exists = doc.exists
 			if (!this.exists) return
 			const item = doc.data()
+			this.article = item
 			this.form.title = item.title
 			const { data } = await axios.get(item.url)
 			this.form.content = data
 		},
 		async save() {
 			if (!this.fireUser) throw Error('로그인이 필요합니다')
+			if (!this.form.title) throw Error('제목은 필수 항목입니다')
+			const md = this.$refs.editor.invoke('getMarkdown')
+			if (!md) throw Error('내용은 필수 항목입니다')
 			this.loading = true
 			try {
 				const createdAt = new Date()
-				const id = createdAt.getTime().toString()
-				const md = this.$refs.editor.invoke('getMarkdown')
-				const sn = await this.$firebase
-					.storage()
-					.ref()
-					.child('boards')
-					.child(this.document)
-					.child(id + '.md')
-					.putString(md)
-				const url = await sn.ref.getDownloadURL()
 				const doc = {
 					title: this.form.title,
-					updatedAt: createdAt,
-					url: url
+					updatedAt: createdAt
 				}
-
-				// const batch = await this.$firebase.firestore().batch()
-
-				if (!this.articleId) {
+				if (this.articleId === 'new') {
+					const id = createdAt.getTime().toString()
+					const sn = await this.$firebase
+						.storage()
+						.ref()
+						.child('boards')
+						.child(this.boardId)
+						.child(id + '.md')
+						.putString(md)
+					doc.url = await sn.ref.getDownloadURL()
 					doc.createdAt = createdAt
 					doc.commentCount = 0
 					doc.readCount = 0
@@ -139,19 +135,22 @@ export default {
 						photoURL: this.user.photoURL,
 						displayName: this.user.displayName
 					}
-					// batch.set(this.ref.collection('articles').doc(id), doc)
-					// batch.update(this.ref, {
-					// 	count: this.$firebase.firestore.FieldValue.increment(1)
-					// })
-					this.ref.collection('articles').doc(id).set(doc)
+					doc.likeCount = 0
+					doc.likeUids = []
+					await this.ref.collection('articles').doc(id).set(doc)
 				} else {
-					// batch.update(this.ref.collection('articles').doc(this.articleId), doc)
-					this.ref.collection('articles').doc(this.articleId).update(doc)
+					await this.$firebase
+						.storage()
+						.ref()
+						.child('boards')
+						.child(this.boardId)
+						.child(this.articleId + '.md')
+						.putString(md)
+					await this.ref.collection('articles').doc(this.articleId).update(doc)
 				}
-				// await batch.commit()
 			} finally {
 				this.loading = false
-				this.$router.push('/board/' + this.document)
+				this.$router.push('/board/' + this.boardId)
 			}
 		}
 	}

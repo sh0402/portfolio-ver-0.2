@@ -13,43 +13,50 @@ const routes = [
 	},
 	{
 		path: '/sign',
-		component: () => import('../components/auth/sign')
+		component: () => import('@/components/auth/sign')
 	},
 	{
 		path: '/about',
 		name: 'About',
-		component: () => import('../views/About.vue')
+		component: () => import('@/views/About.vue')
 	},
 	{
 		path: '/board',
-		name: 'Board',
-		component: () => import('../views/board')
+		component: () => import('@/views/board')
 	},
 	{
-		path: '/storage',
-		name: 'Storage',
-		component: () => import('../views/storage')
+		path: '/board/:info',
+		component: () => import('@/views/board/info')
 	},
 	{
-		path: '/editor',
-		name: 'Editor',
-		component: () => import('../views/editor')
-	},
-	{
-		path: '/:collection/:document',
-		name: 'collection-document',
-		component: () => import('../views/renderer')
-	},
-	{
-		path: '/:collection/:document/:action',
-		name: 'collection-document-action',
-		component: () => import('../views/renderer')
+		path: '/board/:info/:article',
+		component: () => import('@/views/board/article')
 	},
 	{
 		path: '*',
 		name: 'error',
 		component: () => import('../views/error')
 	}
+	// {
+	// 	path: '/storage',
+	// 	name: 'Storage',
+	// 	component: () => import('@/views/storage')
+	// },
+	// {
+	// 	path: '/editor',
+	// 	name: 'Editor',
+	// 	component: () => import('@/views/editor')
+	// },
+	// {
+	// 	path: '/:collection/:document',
+	// 	name: 'collection-document',
+	// 	component: () => import('@/views/renderer')
+	// },
+	// {
+	// 	path: '/:collection/:document/:action',
+	// 	name: 'collection-document-action',
+	// 	component: () => import('@/views/renderer')
+	// },
 ]
 
 const router = new VueRouter({

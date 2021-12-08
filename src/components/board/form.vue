@@ -7,7 +7,7 @@
 
 					<v-spacer />
 
-					<v-btn text @click="$router.push('/board/' + document)">back</v-btn>
+					<v-btn text @click="$router.push('/board/' + boardId)">back</v-btn>
 					<v-btn text @click="save">save</v-btn>
 				</v-toolbar>
 
@@ -35,10 +35,10 @@
 
 <script>
 export default {
-	props: ['document', 'action'],
+	props: ['boardId', 'action'],
 	data() {
 		return {
-			unsubscribe: null,
+			// unsubscribe: null,
 			form: {
 				category: '',
 				title: '',
@@ -50,35 +50,51 @@ export default {
 		}
 	},
 	watch: {
-		document() {
-			this.subscribe()
+		boardId() {
+			this.fetch()
 		}
 	},
 	created() {
-		this.subscribe()
+		this.fetch()
 	},
-	destroyed() {
-		if (this.unsubscribe) this.unsubscribe()
-	},
+	// destroyed() {
+	// if (this.unsubscribe) this.unsubscribe()
+	// 	this.fetch()
+	// },
 	methods: {
-		subscribe() {
-			if (this.unsubscribe) this.unsubscribe()
+		// subscribe() {
+		// 	if (this.unsubscribe) this.unsubscribe()
+		// 	this.ref = this.$firebase
+		// 		.firestore()
+		// 		.collection('boards')
+		// 		.doc(this.document)
+		// 	this.unsubscribe = this.ref.onSnapshot(doc => {
+		// 		this.exists = doc.exists
+		// 		if (this.exists) {
+		// 			const item = doc.data()
+		// 			this.form.category = item.category
+		// 			this.form.title = item.title
+		// 			this.form.description = item.description
+		// 		}
+		// 	})
+		async fetch() {
 			this.ref = this.$firebase
 				.firestore()
 				.collection('boards')
-				.doc(this.document)
-			this.unsubscribe = this.ref.onSnapshot(doc => {
-				this.exists = doc.exists
-				if (this.exists) {
-					const item = doc.data()
-					this.form.category = item.category
-					this.form.title = item.title
-					this.form.description = item.description
-				}
-			})
+				.doc(this.boardId)
+			const doc = await this.ref.get()
+			this.exists = doc.exists
+			if (this.exists) {
+				const item = doc.data()
+				this.form.category = item.category
+				this.form.title = item.title
+				this.form.description = item.description
+			}
 		},
 		async save() {
 			if (!this.$store.state.fireUser) throw Error('로그인이 필요합니다.')
+			if (!this.form.category || !this.form.title)
+				throw Error('종류 제목은 필수 항목입니다')
 			const form = {
 				category: this.form.category,
 				title: this.form.title,
@@ -95,7 +111,7 @@ export default {
 				} else {
 					await this.ref.update(form)
 				}
-				this.$router.push('/board/' + this.document)
+				this.$router.push('/board/' + this.boardId)
 			} finally {
 				this.loading = false
 			}

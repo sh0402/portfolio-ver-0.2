@@ -27,6 +27,13 @@
 						<display-time :time="item.createdAt"></display-time>
 					</v-list-item-subtitle>
 				</v-list-item-content>
+
+				<v-list-item-action>
+					<v-btn icon @click="like(item)">
+						<v-icon :color="liked(item) ? 'success' : ''">mdi-thumb-up</v-icon>
+						<span>{{ item.likeCount }}</span>
+					</v-btn>
+				</v-list-item-action>
 			</v-list-item>
 
 			<v-divider :key="i" />
@@ -66,6 +73,9 @@ export default {
 	computed: {
 		user() {
 			return this.$store.state.user
+		},
+		fireUser() {
+			return this.$store.state.fireUser
 		}
 	},
 	created() {
@@ -153,7 +163,9 @@ export default {
 					email: this.user.email,
 					photoURL: this.user.photoURL,
 					displayName: this.user.displayName
-				}
+				},
+				likeCount: 0,
+				likeUids: []
 			}
 			const id = doc.createdAt.getTime().toString()
 			// const batch = this.$firebase.firestore().batch()
@@ -164,6 +176,38 @@ export default {
 			// await batch.commit()
 			this.docRef.collection('comments').doc(id).set(doc)
 			this.comment = ''
+		},
+		liked(item) {
+			if (!this.fireUser) return false
+			return item.likeUids.includes(this.fireUser.uid)
+		},
+		async like(comment) {
+			if (!this.fireUser) throw Error('로그인이 필요합니다')
+			if (this.liked(comment)) {
+				await this.docRef
+					.collection('comments')
+					.doc(comment.id)
+					.update({
+						likeCount: this.$firebase.firestore.FieldValue.increment(-1),
+						likeUids: this.$firebase.firestore.FieldValue.arrayRemove(
+							this.fireUser.uid
+						)
+					})
+			} else {
+				await this.docRef
+					.collection('comments')
+					.doc(comment.id)
+					.update({
+						likeCount: this.$firebase.firestore.FieldValue.increment(1),
+						likeUids: this.$firebase.firestore.FieldValue.arrayUnion(
+							this.fireUser.uid
+						)
+					})
+			}
+			const doc = await this.docRef.collection('comments').doc(comment.id).get()
+			const item = doc.data()
+			comment.likeCount = item.likeCount
+			comment.likeUids = item.likeUids
 		}
 	}
 }
