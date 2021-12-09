@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import BoardArticle from './article/index.vue'
+import BoardArticle from './article/index'
 
 export default {
 	components: { BoardArticle },

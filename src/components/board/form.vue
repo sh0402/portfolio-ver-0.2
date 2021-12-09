@@ -8,7 +8,7 @@
 					<v-spacer />
 
 					<v-btn text @click="$router.push('/board/' + boardId)">back</v-btn>
-					<v-btn text @click="save">save</v-btn>
+					<v-btn text @click="save" :disabled="!user">save</v-btn>
 				</v-toolbar>
 
 				<v-card-text>
@@ -57,26 +57,7 @@ export default {
 	created() {
 		this.fetch()
 	},
-	// destroyed() {
-	// if (this.unsubscribe) this.unsubscribe()
-	// 	this.fetch()
-	// },
 	methods: {
-		// subscribe() {
-		// 	if (this.unsubscribe) this.unsubscribe()
-		// 	this.ref = this.$firebase
-		// 		.firestore()
-		// 		.collection('boards')
-		// 		.doc(this.document)
-		// 	this.unsubscribe = this.ref.onSnapshot(doc => {
-		// 		this.exists = doc.exists
-		// 		if (this.exists) {
-		// 			const item = doc.data()
-		// 			this.form.category = item.category
-		// 			this.form.title = item.title
-		// 			this.form.description = item.description
-		// 		}
-		// 	})
 		async fetch() {
 			this.ref = this.$firebase
 				.firestore()
@@ -92,7 +73,7 @@ export default {
 			}
 		},
 		async save() {
-			if (!this.$store.state.fireUser) throw Error('로그인이 필요합니다.')
+			if (!this.$store.state.fireUser) throw Error('로그인이 필요합니다')
 			if (!this.form.category || !this.form.title)
 				throw Error('종류 제목은 필수 항목입니다')
 			const form = {
@@ -107,6 +88,13 @@ export default {
 					form.createdAt = new Date()
 					form.count = 0
 					form.uid = this.$store.state.fireUser.uid
+					form.user = {
+						email: this.$store.state.user.email,
+						photoURL: this.$store.state.user.photoURL,
+						displayName: this.$store.state.user.displayName
+					}
+					form.categories = ['일반']
+					form.tags = ['vue', 'firebase']
 					await this.ref.set(form)
 				} else {
 					await this.ref.update(form)
