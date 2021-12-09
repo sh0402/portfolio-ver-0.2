@@ -1,15 +1,24 @@
 <template>
-	<v-card>
+	<v-card flat>
 		<v-card-title>
+			<v-avatar size="40" class="mr-4">
+				<v-img :src="article.user.photoURL"></v-img>
+			</v-avatar>
 			<v-textarea
 				v-model="comment"
 				rows="1"
+				height="30"
 				outlined
-				label="댓글 작성"
+				label="댓글 달기..."
+				placeholder="Ctrl+Enter로 작성 가능"
 				hide-details
+				auto-grow
+				clearable
+				@keypress.ctrl.enter="save"
+				dense
 			>
 			</v-textarea>
-			<v-btn text @click="save" class="ml-4">send</v-btn>
+			<v-btn text @click="save" class="ml-2 pa-0">send</v-btn>
 		</v-card-title>
 
 		<template v-for="(item, i) in items">
@@ -29,24 +38,26 @@
 				</v-list-item-content>
 
 				<v-list-item-action>
-					<v-btn icon @click="like(item)">
-						<v-icon :color="liked(item) ? 'success' : ''">mdi-thumb-up</v-icon>
+					<v-btn text @click="like(item)">
+						<v-icon left :color="liked(item) ? 'success' : ''"
+							>mdi-thumb-up</v-icon
+						>
 						<span>{{ item.likeCount }}</span>
+					</v-btn>
+				</v-list-item-action>
+
+				<v-list-item-action>
+					<v-btn icon @click="remove(item)">
+						<v-icon>mdi-close</v-icon>
 					</v-btn>
 				</v-list-item-action>
 			</v-list-item>
 
-			<v-divider :key="i" />
+			<v-divider :key="i" v-if="i < items.length - 1" />
 		</template>
-		<v-list-item>
-			<v-btn
-				v-if="lastDoc && items.length < article.commentCount"
-				v-intersect="onIntersect"
-				text
-				color="primary"
-				block
-				@click="more"
-			>
+
+		<v-list-item v-if="lastDoc && items.length < article.commentCount">
+			<v-btn v-intersect="onIntersect" text color="primary" block @click="more">
 				more
 			</v-btn>
 		</v-list-item>
@@ -78,6 +89,11 @@ export default {
 			return this.$store.state.fireUser
 		}
 	},
+	watch: {
+		docRef() {
+			this.subscribe()
+		}
+	},
 	created() {
 		this.subscribe()
 	},
@@ -105,7 +121,7 @@ export default {
 		},
 		subscribe() {
 			if (this.unsubscribe) this.unsubscribe()
-
+			this.items = []
 			this.unsubscribe = this.docRef
 				.collection('comments')
 				.orderBy('createdAt', 'desc')
@@ -208,6 +224,11 @@ export default {
 			const item = doc.data()
 			comment.likeCount = item.likeCount
 			comment.likeUids = item.likeUids
+		},
+		async remove(comment) {
+			await this.docRef.collection('comments').doc(comment.id).delete()
+			const i = this.items.findIndex(el => el.id === comment.id)
+			this.items.splice(i, 1)
 		}
 	}
 }

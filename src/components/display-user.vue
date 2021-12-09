@@ -2,7 +2,7 @@
 	<v-tooltip bottom>
 		<template v-slot:activator="{ on }">
 			<!-- <span v-on="on">{{ user.displayName }}</span> -->
-			<v-chip v-on="on" color="accent">
+			<v-chip v-on="on" color="">
 				<v-avatar left>
 					<v-img :src="user.photoURL"></v-img>
 				</v-avatar>
