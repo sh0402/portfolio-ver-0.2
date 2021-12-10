@@ -91,11 +91,14 @@ export default {
 				title: '',
 				content: ''
 			},
+
 			exists: false,
 			loading: false,
 			ref: null,
 			article: null,
-			board: null
+			board: {
+				tags: [1, 2]
+			}
 		}
 	},
 	computed: {
@@ -135,6 +138,8 @@ export default {
 			this.form.title = item.title
 			this.form.category = item.category
 			this.form.tags = item.tags
+			console.log(item.category)
+			console.log(item.tags)
 			const { data } = await axios.get(item.url)
 			this.form.content = data
 		},

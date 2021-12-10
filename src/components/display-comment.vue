@@ -101,7 +101,7 @@ export default {
 		if (this.unsubscribe) this.unsubscribe()
 	},
 	methods: {
-		snapShotToItems(sn) {
+		snapshotToItems(sn) {
 			this.lastDoc = last(sn.docs)
 			sn.docs.forEach(doc => {
 				const exists = this.items.some(item => doc.id === item.id)
@@ -131,29 +131,7 @@ export default {
 						this.items = []
 						return
 					}
-					this.lastDoc = last(sn.docs)
-					// this.items = sn.docs.map(doc => {
-					// 	const item = doc.data()
-					// 	item.id = doc.id
-					// 	item.createdAt = item.createdAt.toDate()
-					// 	item.updatedAt = item.updatedAt.toDate()
-					// 	return item
-					// })
-					sn.docs.forEach(doc => {
-						const exists = this.items.some(item => doc.id === item.id)
-						if (!exists) {
-							const item = doc.data()
-							item.id = doc.id
-							item.createdAt = item.createdAt.toDate()
-							item.updatedAt = item.updatedAt.toDate()
-							this.items.push(item)
-						}
-					})
-					this.items.sort((before, after) => {
-						const beforeId = Number(before.id)
-						const afterId = Number(after.id)
-						return afterId - beforeId
-					})
+					this.snapshotToItems(sn)
 				})
 		},
 		async more() {
@@ -164,12 +142,14 @@ export default {
 				.startAfter(this.lastDoc)
 				.limit(LIMIT)
 				.get()
-			this.snapShotToItems(sn)
+			this.snapshotToItems(sn)
 		},
 		onIntersect(entries, observer, isIntersecting) {
 			if (isIntersecting) this.more()
 		},
 		async save() {
+			if (!this.fireUser) throw Error('로그인이 필요합니다')
+			if (this.comment.length > 10) throw Error('문자 허용치를 넘었습니다')
 			const doc = {
 				createdAt: new Date(),
 				updatedAt: new Date(),
@@ -184,12 +164,6 @@ export default {
 				likeUids: []
 			}
 			const id = doc.createdAt.getTime().toString()
-			// const batch = this.$firebase.firestore().batch()
-			// batch.update(this.docRef, {
-			// 	commentCount: this.$firebase.firestore.FieldValue.increment(1)
-			// })
-			// batch.set(this.docRef.collection('comments').doc(id), doc)
-			// await batch.commit()
 			this.docRef.collection('comments').doc(id).set(doc)
 			this.comment = ''
 		},

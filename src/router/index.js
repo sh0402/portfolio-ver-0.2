@@ -37,26 +37,6 @@ const routes = [
 		name: 'error',
 		component: () => import('../views/error')
 	}
-	// {
-	// 	path: '/storage',
-	// 	name: 'Storage',
-	// 	component: () => import('@/views/storage')
-	// },
-	// {
-	// 	path: '/editor',
-	// 	name: 'Editor',
-	// 	component: () => import('@/views/editor')
-	// },
-	// {
-	// 	path: '/:collection/:document',
-	// 	name: 'collection-document',
-	// 	component: () => import('@/views/renderer')
-	// },
-	// {
-	// 	path: '/:collection/:document/:action',
-	// 	name: 'collection-document-action',
-	// 	component: () => import('@/views/renderer')
-	// },
 ]
 
 const router = new VueRouter({

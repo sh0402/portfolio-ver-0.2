@@ -38,7 +38,6 @@ export default {
 	props: ['boardId', 'action'],
 	data() {
 		return {
-			// unsubscribe: null,
 			form: {
 				category: '',
 				title: '',
