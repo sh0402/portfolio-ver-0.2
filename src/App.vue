@@ -32,11 +32,6 @@
 
 				<v-spacer />
 
-				<!-- <v-btn text @click="save">save</v-btn>
-				<v-btn text @click="read">read</v-btn>
-				<v-btn text @click="readOne">readone</v-btn> -->
-
-				<!-- <v-btn text to="/sign"> Sign-in </v-btn> -->
 				<site-sign></site-sign>
 			</v-toolbar>
 		</v-app-bar>
@@ -135,40 +130,6 @@ export default {
 						console.log(e.message)
 					}
 				)
-		},
-		save() {
-			this.$firebase.database().ref().child('abcd').set({
-				title: 'abcd',
-				text: 'xxxx'
-			})
-		},
-		read() {
-			this.$firebase
-				.database()
-				.ref()
-				.child('site')
-				.on('value', sn => {
-					console.log(sn)
-					console.log(sn.val())
-				})
-		},
-		async readOne() {
-			const sn = await this.$firebase
-				.database()
-				.ref()
-				.child('site')
-				.once('value')
-			console.log(sn.val())
-		},
-		async test() {
-			const sn = await this.$firebase
-				.storage()
-				.ref()
-				.child('boards')
-				.child('tt')
-				.child('1234567890123456')
-				.putString('hi!')
-			console.log(sn)
 		}
 	}
 }

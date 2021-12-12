@@ -30,10 +30,6 @@
 	></page-content>
 
 	<error-page v-else></error-page>
-	<!-- <v-card>
-		{{ collection }} -
-		{{ document }}
-	</v-card> -->
 </template>
 
 <script>

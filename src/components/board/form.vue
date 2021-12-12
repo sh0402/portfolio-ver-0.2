@@ -1,38 +1,36 @@
 <template>
-	<v-container style="max-width: 1200px" fluid>
+	<v-container fluid>
 		<v-form>
 			<v-card :loading="loading">
 				<v-toolbar color="accent" dense flat dark>
 					<v-toolbar-title>게시판 정보 작성</v-toolbar-title>
-
 					<v-spacer />
-
-					<v-btn text @click="$router.push('/board/' + boardId)">back</v-btn>
-					<v-btn text @click="save" :disabled="!user">save</v-btn>
+					<v-btn icon @click="$router.push('/board/' + boardId)"
+						><v-icon>mdi-arrow-left</v-icon></v-btn
+					>
+					<v-btn icon @click="save"><v-icon>mdi-content-save</v-icon></v-btn>
 				</v-toolbar>
-
 				<v-card-text>
 					<v-text-field
 						v-model="form.category"
-						label="종류"
 						outlined
+						label="종류"
 					></v-text-field>
 					<v-text-field
 						v-model="form.title"
-						label="제목"
 						outlined
+						label="제목"
 					></v-text-field>
 					<v-textarea
 						v-model="form.description"
-						label="설명"
 						outlined
+						label="설명"
 					></v-textarea>
 				</v-card-text>
 			</v-card>
 		</v-form>
 	</v-container>
 </template>
-
 <script>
 export default {
 	props: ['boardId', 'action'],

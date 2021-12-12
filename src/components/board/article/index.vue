@@ -22,23 +22,12 @@
 				<display-user :user="item.user"></display-user>
 			</template>
 		</v-data-table>
-
-		<!-- <v-dialog v-if="selectedItem" v-model="dialog" fullscreen>
-			<display-content
-				:document="document"
-				:item="selectedItem"
-				@close="dialog = false"
-			></display-content>
-		</v-dialog> -->
 	</div>
 </template>
-
 <script>
 import { head, last } from 'lodash'
 import DisplayTime from '@/components/display-time'
 import DisplayUser from '@/components/display-user'
-// import DisplayContent from '@/components/display-content'
-
 export default {
 	components: { DisplayTime, DisplayUser },
 	props: ['board', 'boardId'],

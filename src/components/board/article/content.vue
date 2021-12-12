@@ -1,14 +1,27 @@
 <template>
-	<v-container fluid :class="$vuetify.breakpoint.xs ? 'pa-0' : ''">
-		<v-card v-if="article" outlined>
-			<v-list-item color="transparent" dense flat two-line>
-				<!-- <v-toolbar-title>
-					<span></span>
-					<span>{{ article.title }}</span>
-				</v-toolbar-title> -->
+	<v-container fluid>
+		<v-card v-if="article">
+			<v-list>
+				<v-list-item>
+					<v-list-item-icon class="mr-4">
+						<v-icon @click="back"> mdi-chevron-left </v-icon>
+					</v-list-item-icon>
 
-				<!-- <v-chip color="info" label class="mr-4">뉴스</v-chip> -->
-				<v-list-item-avatar>
+					<v-list-item-content>
+						<v-list-item-title>
+							{{ article.category }}
+						</v-list-item-title>
+					</v-list-item-content>
+				</v-list-item>
+			</v-list>
+
+			<v-divider />
+
+			<v-list-item color="transparent" dense flat two-line>
+				<v-chip color="info" small label class="mr-4">
+					{{ article.category }}
+				</v-chip>
+				<v-list-item-avatar class="mr-4">
 					<v-img :src="article.user.photoURL"></v-img>
 				</v-list-item-avatar>
 
@@ -29,14 +42,25 @@
 						(user && user.level === 0)
 					"
 				>
-					<v-btn @click="articleWrite" icon><v-icon>mdi-pencil</v-icon></v-btn>
-					<v-btn @click="remove" icon><v-icon>mdi-delete</v-icon></v-btn>
+					<!-- <v-btn @click="articleWrite" icon><v-icon>mdi-pencil</v-icon></v-btn>
+					<v-btn @click="remove" icon><v-icon>mdi-delete</v-icon></v-btn> -->
 				</template>
 
-				<v-btn @click="back" icon><v-icon>mdi-close</v-icon></v-btn>
+				<!-- <v-btn @click="back" icon><v-icon>mdi-close</v-icon></v-btn> -->
+				<v-btn @click="dialog = true" icon>
+					<v-icon>mdi-dots-horizontal</v-icon>
+				</v-btn>
 			</v-list-item>
 
-			<v-divider></v-divider>
+			<v-dialog v-model="dialog" width="300">
+				<v-card>
+					<v-btn @click="remove" block text tile color="red"> Delete </v-btn>
+					<v-btn @click="articleWrite" block text tile> Edit </v-btn>
+					<v-btn @click="back" block text tile> Cancle </v-btn>
+				</v-card>
+			</v-dialog>
+
+			<v-divider />
 
 			<v-card-text>
 				<viewer v-if="content" :initialValue="content"></viewer>
@@ -47,7 +71,7 @@
 				</v-container>
 			</v-card-text>
 
-			<v-card-actions>
+			<!-- <v-card-actions>
 				<v-spacer />
 				<span class="font-italic caption">
 					작성일: <display-time :time="article.createdAt"></display-time>
@@ -59,15 +83,7 @@
 				<span class="font-italic caption">
 					수정일: <display-time :time="article.updatedAt"></display-time>
 				</span>
-			</v-card-actions>
-
-			<v-card-actions>
-				<v-spacer />
-				<span class="font-italic caption">
-					작성자: {{ article.user.displayName }}
-				</span>
-				<!-- <display-user :user="article.user"></display-user> -->
-			</v-card-actions>
+			</v-card-actions> -->
 
 			<v-card-actions>
 				<v-btn text @click="like">
@@ -77,14 +93,19 @@
 				</v-btn>
 				<!-- :color="liked ? 'success' : ''" -->
 
-				<v-sheet class="mr-4">
-					<span class="body-2">조회수 : {{ article.readCount }}</span>
+				<v-sheet color="grey--text grey-lighten-1" class="mr-4">
+					<span class="body-2">조회수 : {{ article.readCount }}회</span>
+				</v-sheet>
+				<v-sheet color="grey--text grey-lighten-1" class="mr-4">
+					<span class="body-2">
+						작성일: <display-time :time="article.createdAt"></display-time>
+					</span>
 				</v-sheet>
 
-				<v-sheet class="mr-">
+				<!-- <v-sheet class="mr-">
 					<v-icon left>mdi-comment</v-icon>
 					<span class="body-2">{{ article.commentCount }}</span>
-				</v-sheet>
+				</v-sheet> -->
 			</v-card-actions>
 
 			<v-divider />
@@ -92,24 +113,23 @@
 			<v-card-actions class="py-0">
 				<v-row no-gutters>
 					<v-col cols="4">
-						<v-btn text block color="primary" @click="go(-1)">
-							<v-icon left>mdi-menu-left</v-icon>
-							이전
-						</v-btn>
+						<v-btn block text color="primary" @click="go(-1)"
+							><v-icon left>mdi-menu-left</v-icon> 이전</v-btn
+						>
+					</v-col>
+
+					<v-col cols="4" class="d-flex">
+						<v-divider vertical></v-divider>
+						<v-btn block text color="primary" @click="back"
+							><v-icon left>mdi-format-list-bulleted-square</v-icon> 목록</v-btn
+						>
+						<v-divider vertical></v-divider>
 					</v-col>
 
 					<v-col cols="4">
-						<v-btn text block color="primary" @click="back">
-							<v-icon>mdi-format-list-bulleted</v-icon>
-							목록
-						</v-btn>
-					</v-col>
-
-					<v-col cols="4">
-						<v-btn text block color="primary" @click="go(1)">
-							<v-icon left>mdi-menu-right</v-icon>
-							다음
-						</v-btn>
+						<v-btn block text color="primary" @click="go(1)"
+							><v-icon left>mdi-menu-right</v-icon> 다음</v-btn
+						>
 					</v-col>
 				</v-row>
 			</v-card-actions>
@@ -143,7 +163,8 @@ export default {
 			ref: null,
 			unsubscribe: null,
 			article: null,
-			doc: null
+			doc: null,
+			dialog: false
 		}
 	},
 	computed: {
@@ -163,7 +184,7 @@ export default {
 			this.subscribe()
 		}
 	},
-	created() {
+	async created() {
 		this.subscribe()
 	},
 	destroyed() {
@@ -171,6 +192,7 @@ export default {
 	},
 	methods: {
 		subscribe() {
+			window.scrollTo(0, 0)
 			if (this.unsubscribe) this.unsubscribe()
 			this.ref = this.$firebase
 				.firestore()
@@ -194,27 +216,22 @@ export default {
 				this.article = item
 			}, console.error)
 		},
-
 		async fetch(url) {
 			this.content = ''
 			const r = await axios.get(url)
 			this.content = typeof r.data === 'string' ? r.data : r.data.toString()
 		},
-
 		async articleWrite() {
 			this.$router.push({ path: this.$route.path, query: { action: 'write' } })
 		},
-
 		async remove() {
 			await this.ref.delete()
 		},
-
 		back() {
 			const us = this.$route.path.split('/')
 			us.pop()
 			this.$router.push({ path: us.join('/') })
 		},
-
 		async like() {
 			if (!this.fireUser) throw Error('로그인이 필요합니다')
 			if (this.liked) {
@@ -233,9 +250,8 @@ export default {
 				})
 			}
 		},
-
 		async go(arrow) {
-			if (!this.doc) throw Error('읽지 못했음')
+			if (!this.doc) return
 			const ref = this.$firebase
 				.firestore()
 				.collection('boards')
@@ -245,9 +261,8 @@ export default {
 			let sn
 			if (arrow < 0) sn = await ref.endBefore(this.doc).limitToLast(1).get()
 			else sn = await ref.startAfter(this.doc).limit(1).get()
-			if (sn.empty) throw Error('더이상 페이지가 없습니다')
+			if (sn.empty) return this.$toast.info('더이상 페이지가 없습니다')
 			const doc = sn.docs[0]
-
 			const us = this.$route.path.split('/')
 			us.pop()
 			us.push(doc.id)

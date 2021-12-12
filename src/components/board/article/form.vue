@@ -1,13 +1,16 @@
 <template>
-	<v-container style="max-width: 1200px" fluid>
+	<v-container fluid>
 		<v-form>
-			<v-card :loading="loading" outlined :tile="$vuetify.breakpoint.xs">
+			<v-card :loading="loading">
 				<v-toolbar color="transparent" dense flat>
 					<v-toolbar-title>게시물 작성</v-toolbar-title>
 
 					<v-spacer />
 
-					<v-btn text @click="save" :disabled="!user">save</v-btn>
+					<v-btn icon @click="save" :disabled="!user">
+						<v-icon>mdi-content-save</v-icon>
+					</v-btn>
+
 					<v-btn icon @click="$router.push('/board/' + boardId)">
 						<v-icon>mdi-close</v-icon>
 					</v-btn>
@@ -26,6 +29,7 @@
 								hide-details
 							/>
 						</v-col>
+
 						<v-col cols="12" sm="8" v-if="board">
 							<v-combobox
 								v-model="form.tags"
@@ -37,6 +41,7 @@
 								hide-details
 							/>
 						</v-col>
+
 						<v-col cols="12">
 							<v-text-field
 								v-model="form.title"
@@ -45,6 +50,7 @@
 								hide-details
 							></v-text-field>
 						</v-col>
+
 						<v-col cols="12">
 							<editor
 								v-if="articleId === 'new'"
@@ -54,6 +60,7 @@
 								height="400px"
 								:options="{}"
 							></editor>
+
 							<template v-else>
 								<editor
 									v-if="form.content"
@@ -63,6 +70,7 @@
 									height="400px"
 									:options="{}"
 								></editor>
+
 								<v-container v-else>
 									<v-row justify="center" align="center">
 										<v-progress-circular indeterminate></v-progress-circular>
@@ -91,14 +99,11 @@ export default {
 				title: '',
 				content: ''
 			},
-
 			exists: false,
 			loading: false,
 			ref: null,
 			article: null,
-			board: {
-				tags: [1, 2]
-			}
+			board: null
 		}
 	},
 	computed: {
@@ -138,8 +143,6 @@ export default {
 			this.form.title = item.title
 			this.form.category = item.category
 			this.form.tags = item.tags
-			console.log(item.category)
-			console.log(item.tags)
 			const { data } = await axios.get(item.url)
 			this.form.content = data
 		},

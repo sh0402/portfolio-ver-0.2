@@ -3,11 +3,9 @@
 		<template v-slot:activator="{ on }">
 			<span v-on="on">{{ displayTime }}</span>
 		</template>
-
 		<span>{{ time.toLocaleString() }}</span>
 	</v-tooltip>
 </template>
-
 <script>
 export default {
 	props: ['time'],

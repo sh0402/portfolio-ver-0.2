@@ -4,6 +4,7 @@
 			<v-avatar size="40" class="mr-4">
 				<v-img :src="article.user.photoURL"></v-img>
 			</v-avatar>
+
 			<v-textarea
 				v-model="comment"
 				rows="1"
@@ -18,6 +19,7 @@
 				dense
 			>
 			</v-textarea>
+
 			<v-btn text @click="save" class="ml-2 pa-0">send</v-btn>
 		</v-card-title>
 
@@ -63,13 +65,11 @@
 		</v-list-item>
 	</v-card>
 </template>
-
 <script>
 import { last } from 'lodash'
 import DisplayTime from '@/components/display-time'
 import DisplayUser from '@/components/display-user'
 const LIMIT = 5
-
 export default {
 	components: { DisplayTime, DisplayUser },
 	props: ['article', 'docRef'],
@@ -207,7 +207,6 @@ export default {
 	}
 }
 </script>
-
 <style scoped>
 .comment {
 	white-space: pre-wrap;
