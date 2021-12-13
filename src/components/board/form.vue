@@ -3,12 +3,17 @@
 		<v-form>
 			<v-card :loading="loading">
 				<v-toolbar color="accent" dense flat dark>
-					<v-toolbar-title>게시판 정보 작성</v-toolbar-title>
+					<v-btn icon @click="$router.push('/board/' + boardId)" class="pr-2">
+						<v-icon>mdi-chevron-left</v-icon>
+					</v-btn>
+
 					<v-spacer />
-					<v-btn icon @click="$router.push('/board/' + boardId)"
-						><v-icon>mdi-arrow-left</v-icon></v-btn
-					>
-					<v-btn icon @click="save"><v-icon>mdi-content-save</v-icon></v-btn>
+
+					<v-toolbar-title class="pa-0">게시판 정보 작성</v-toolbar-title>
+
+					<v-spacer />
+
+					<v-btn text @click="save">Create</v-btn>
 				</v-toolbar>
 				<v-card-text>
 					<v-text-field

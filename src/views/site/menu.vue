@@ -72,7 +72,7 @@
 								<v-btn icon @click="openDialogSubItem(i, j)">
 									<v-icon>mdi-square-edit-outline</v-icon>
 								</v-btn>
-								<v-btn icon @click="removeItem(item.subItems, i)">
+								<v-btn icon @click="removeItem(item.subItems, j)">
 									<v-icon>mdi-delete-circle</v-icon>
 								</v-btn>
 							</span>

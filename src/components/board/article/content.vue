@@ -89,6 +89,7 @@
 				<v-sheet color="grey--text grey-lighten-1" class="mr-4">
 					<span class="body-2">조회수 : {{ article.readCount }}회</span>
 				</v-sheet>
+
 				<v-sheet color="grey--text grey-lighten-1" class="mr-4">
 					<span class="body-2">
 						작성일: <display-time :time="article.createdAt"></display-time>
@@ -99,6 +100,19 @@
 					<v-icon left>mdi-comment</v-icon>
 					<span class="body-2">{{ article.commentCount }}</span>
 				</v-sheet> -->
+			</v-card-actions>
+
+			<v-card-actions>
+				<v-chip
+					small
+					outlined
+					label
+					v-for="tag in article.tags"
+					:key="tag"
+					v-text="tag"
+					color="info"
+					class="mr-2"
+				></v-chip>
 			</v-card-actions>
 
 			<v-divider />
