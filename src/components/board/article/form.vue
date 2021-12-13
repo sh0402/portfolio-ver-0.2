@@ -7,8 +7,8 @@
 
 					<v-spacer />
 
-					<v-btn icon @click="save" :disabled="!user">
-						<v-icon>mdi-content-save</v-icon>
+					<v-btn text color="success" @click="save" :disabled="!user">
+						Save
 					</v-btn>
 
 					<v-btn icon @click="$router.push('/board/' + boardId)">

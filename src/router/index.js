@@ -11,6 +11,10 @@ const routes = [
 		component: Home
 	},
 	{
+		path: '/sign',
+		component: () => import('@/components/auth/sign')
+	},
+	{
 		path: '/board',
 		component: () => import('@/views/board')
 	},

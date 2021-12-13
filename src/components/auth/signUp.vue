@@ -2,10 +2,10 @@
 	<v-card flat color="transparent">
 		<v-form v-model="valid" ref="form" lazy-validation>
 			<v-card-title class="justify-space-between">
-				<span class="title">Sing-Up</span>
+				<span class="title">Sign Up</span>
 				<span class="caption">
 					or
-					<a @click="$emit('changeType')">Log-in?</a>
+					<a @click="$emit('changeType')">Sign In?</a>
 				</span>
 			</v-card-title>
 

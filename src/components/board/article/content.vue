@@ -1,19 +1,12 @@
 <template>
 	<v-container fluid>
 		<v-card v-if="article">
-			<v-list>
-				<v-list-item>
-					<v-list-item-icon class="mr-4">
-						<v-icon @click="back"> mdi-chevron-left </v-icon>
-					</v-list-item-icon>
-
-					<v-list-item-content>
-						<v-list-item-title>
-							{{ article.category }}
-						</v-list-item-title>
-					</v-list-item-content>
-				</v-list-item>
-			</v-list>
+			<v-toolbar flat>
+				<v-btn icon small>
+					<v-icon @click="back"> mdi-chevron-left </v-icon>
+				</v-btn>
+				<v-toolbar-title>{{ article.category }}</v-toolbar-title>
+			</v-toolbar>
 
 			<v-divider />
 
@@ -56,7 +49,7 @@
 				<v-card>
 					<v-btn @click="remove" block text tile color="red"> Delete </v-btn>
 					<v-btn @click="articleWrite" block text tile> Edit </v-btn>
-					<v-btn @click="back" block text tile> Cancle </v-btn>
+					<v-btn @click="dialog = false" block text tile> Cancle </v-btn>
 				</v-card>
 			</v-dialog>
 

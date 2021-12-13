@@ -2,21 +2,25 @@
 	<v-app id="App">
 		<v-app-bar app color="white">
 			<v-toolbar max-width="1200" class="mx-auto" flat>
-				<v-app-bar-nav-icon
+				<!-- <v-app-bar-nav-icon
 					class="hidden-md-and-up"
 					@click="drawer = !drawer"
-				/>
+				/> -->
+				<v-btn icon small class="hidden-md-and-up" @click="drawer = !drawer">
+					<v-icon>mdi-menu</v-icon>
+				</v-btn>
 
-				<site-title :title="site.title" />
+				<site-title :title="site.title" class="hidden-md-and-up" />
 
-				<!-- <v-img
+				<v-img
 					alt="Vuetify Logo"
 					class="shrink mr-2 hidden-sm-and-down"
 					contain
 					src="./assets/logo.png"
 					transition="scale-transition"
 					width="32"
-				/> -->
+				/>
+
 				<v-btn text plain to="/" class="hidden-sm-and-down"> Home </v-btn>
 
 				<v-btn

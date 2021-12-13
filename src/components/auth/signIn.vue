@@ -2,10 +2,10 @@
 	<v-card flat color="transparent">
 		<v-form v-model="valid" ref="form" lazy-validation>
 			<v-card-title class="justify-space-between">
-				<span class="title">Sing-In</span>
+				<span class="title">Sign In</span>
 				<span class="caption">
 					or
-					<a @click="$emit('changeType')">Sign-Up?</a>
+					<a @click="$emit('changeType')">Sign Up?</a>
 				</span>
 			</v-card-title>
 
@@ -19,7 +19,7 @@
 				>
 					<v-icon size="16">mdi-google</v-icon>
 					<v-divider vertical></v-divider>
-					Google Log-in
+					Google Sign In
 				</v-btn>
 			</v-card-actions>
 

@@ -1,14 +1,22 @@
 <template>
 	<v-progress-circular indeterminate v-if="loading"></v-progress-circular>
-	<v-menu offset-y v-else-if="!$store.state.fireUser">
+	<v-menu offset-y left v-else-if="!$store.state.fireUser">
 		<template v-slot:activator="{ on }">
-			<v-btn icon v-on="on">
+			<!-- <v-btn
+				text
+				v-on="on"
+				class="body-2 pa-0 grey--text darken-1 text-capitalize"
+				to="/sign"
+			>
+				Sign in
+			</v-btn> -->
+			<v-btn icon small v-on="on">
 				<v-icon>mdi-account</v-icon>
 			</v-btn>
 		</template>
 
 		<v-card>
-			<v-card-title>Log-in</v-card-title>
+			<v-card-title> Log-in </v-card-title>
 
 			<v-divider />
 
