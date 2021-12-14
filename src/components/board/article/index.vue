@@ -1,56 +1,76 @@
 <template>
 	<v-container fluid v-if="items.length">
-		<template v-for="(item, i) in items">
-			<v-card
-				:key="item.id"
-				:class="i < items.length - 1 ? 'mb-4' : ''"
-				:to="`${boardId}/${item.id}`"
-			>
-				<v-subheader>
-					<v-chip color="info" label small class="mr-4">{{
-						item.category
-					}}</v-chip>
-					<display-time :time="item.createdAt"></display-time>
-					<v-spacer />
-					<v-btn
-						icon
-						v-if="fireUser && fireUser.uid === item.uid"
-						:to="`${boardId}/${item.id}?action=write`"
-						><v-icon>mdi-pencil</v-icon></v-btn
-					>
-				</v-subheader>
-				<v-card-title>
-					{{ item.title }}
-				</v-card-title>
-				<v-card-text class="text-content">
-					{{ item.summary }}
-				</v-card-text>
-				<v-card-actions>
-					<display-user :user="item.user"></display-user>
-					<v-spacer />
-					<v-sheet class="mr-4">
-						<v-icon left :color="item.readCount ? 'info' : ''">mdi-eye</v-icon>
-						<span class="body-2">{{ item.readCount }}</span>
-					</v-sheet>
-					<v-sheet class="mr-4">
-						<v-icon left :color="item.commentCount ? 'info' : ''"
-							>mdi-comment</v-icon
+		<v-row>
+			<v-col cols="12" sm="6" v-for="(item, i) in items" :key="item.id">
+				<v-card
+					:class="i < items.length - 1 ? 'mb-0' : ''"
+					:to="`${boardId}/${item.id}`"
+				>
+					<v-subheader>
+						<v-chip color="info" label small class="mr-4">
+							{{ item.category }}
+						</v-chip>
+
+						<display-time :time="item.createdAt"></display-time>
+
+						<v-spacer />
+
+						<v-btn
+							icon
+							small
+							v-if="fireUser && fireUser.uid === item.uid"
+							:to="`${boardId}/${item.id}?action=write`"
 						>
-						<span class="body-2">{{ item.commentCount }}</span>
-					</v-sheet>
-					<v-sheet class="mr-0">
-						<v-icon left :color="item.likeCount ? 'success' : ''"
-							>mdi-thumb-up</v-icon
-						>
+							<v-icon>mdi-dots-vertical</v-icon>
+						</v-btn>
+					</v-subheader>
+
+					<v-card-title>
+						{{ item.title }}
+					</v-card-title>
+
+					<!-- <v-card-text>
+						<viewer :initialValue="item.summary"></viewer>
+					</v-card-text> -->
+
+					<v-card-text>
+						<viewer v-if="item.summary" :initialValue="item.summary"></viewer>
+						<v-container v-else>
+							<v-row justify="center" align="center">
+								<v-progress-circular indeterminate></v-progress-circular>
+							</v-row>
+						</v-container>
+					</v-card-text>
+				</v-card>
+
+				<v-card-actions dense>
+					<v-avatar size="20" class="mr-2">
+						<v-img :src="item.user.photoURL"></v-img>
+					</v-avatar>
+
+					<span class="body-2">
+						{{ item.user.displayName }}
+					</span>
+
+					<v-spacer />
+
+					<v-btn icon small class="mr-2">
+						<v-icon left small color="grey" class="mr-0"> mdi-heart </v-icon>
 						<span class="body-2">{{ item.likeCount }}</span>
-					</v-sheet>
+					</v-btn>
+
+					<v-btn icon small>
+						<v-icon small color="grey" class="mr-0">mdi-eye</v-icon>
+						<span class="body-2">{{ item.readCount }}</span>
+					</v-btn>
 				</v-card-actions>
-			</v-card>
-		</template>
+			</v-col>
+		</v-row>
+
 		<v-list-item v-if="lastDoc && items.length < board.count">
-			<v-btn @click="more" v-intersect="onIntersect" text color="primary" block
-				>더보기</v-btn
-			>
+			<v-btn @click="more" v-intersect="onIntersect" text color="primary" block>
+				더보기
+			</v-btn>
 		</v-list-item>
 	</v-container>
 	<v-container fluid v-else>
@@ -59,14 +79,14 @@
 		</v-alert>
 	</v-container>
 </template>
+
 <script>
 import { last } from 'lodash'
 import DisplayTime from '@/components/display-time'
-import DisplayUser from '@/components/display-user'
+// import DisplayUser from '@/components/display-user'
 const LIMIT = 5
-
 export default {
-	components: { DisplayTime, DisplayUser },
+	components: { DisplayTime },
 	props: ['board', 'boardId'],
 	data() {
 		return {
@@ -89,10 +109,6 @@ export default {
 		}
 	},
 	created() {
-		const obj = {}
-		// obj.a = 3
-		// obj.b = 3
-		console.log(Object.keys(obj).length)
 		this.subscribe()
 	},
 	destroyed() {
@@ -110,8 +126,13 @@ export default {
 					item.updatedAt = item.updatedAt.toDate()
 					this.items.push(item)
 				} else {
+					if (findItem.summary !== item.summary) {
+						findItem.summary = ''
+						setTimeout(() => {
+							findItem.summary = item.summary
+						}, 1000)
+					}
 					findItem.title = item.title
-					findItem.summary = item.summary
 					findItem.readCount = item.readCount
 					findItem.commentCount = item.commentCount
 					findItem.likeCount = item.likeCount
@@ -135,7 +156,6 @@ export default {
 				.collection('articles')
 				.orderBy(this.order, this.sort)
 				.limit(LIMIT)
-
 			this.unsubscribe = this.ref.onSnapshot(sn => {
 				if (sn.empty) {
 					this.items = []

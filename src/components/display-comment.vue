@@ -1,6 +1,63 @@
 <template>
 	<v-card flat>
 		<v-card-title>
+			<v-textarea
+				v-model="comment"
+				outlined
+				label="댓글 작성"
+				placeholder="Ctrl + Enter로 작성 가능"
+				append-icon="mdi-comment-plus"
+				@click:append="save"
+				@keypress.ctrl.enter="save"
+				hide-details
+				auto-grow
+				rows="1"
+				clearable
+			/>
+		</v-card-title>
+		<template v-for="(item, i) in items">
+			<v-list-item :key="item.id">
+				<v-list-item-action>
+					<display-user :user="item.user"></display-user>
+				</v-list-item-action>
+				<v-list-item-content>
+					<v-list-item-subtitle
+						class="black--text comment"
+						v-text="item.comment"
+					></v-list-item-subtitle>
+					<v-list-item-subtitle class="font-italic">
+						<display-time :time="item.createdAt"></display-time>
+					</v-list-item-subtitle>
+				</v-list-item-content>
+				<v-list-item-action>
+					<v-btn @click="like(item)" text>
+						<v-icon left :color="liked(item) ? 'success' : ''"
+							>mdi-thumb-up</v-icon
+						>
+						<span>{{ item.likeCount }}</span>
+					</v-btn>
+				</v-list-item-action>
+				<v-list-item-action
+					v-if="
+						(fireUser && fireUser.uid === item.uid) ||
+						(user && user.level === 0)
+					"
+				>
+					<v-btn icon @click="remove(item)">
+						<v-icon>mdi-delete</v-icon>
+					</v-btn>
+				</v-list-item-action>
+			</v-list-item>
+			<v-divider :key="i" v-if="i < items.length - 1"></v-divider>
+		</template>
+		<v-list-item v-if="lastDoc && items.length < article.commentCount">
+			<v-btn @click="more" v-intersect="onIntersect" text color="primary" block
+				>더보기</v-btn
+			>
+		</v-list-item>
+	</v-card>
+	<!-- <v-card flat>
+		<v-card-title>
 			<v-avatar size="40" class="mr-4">
 				<v-img :src="article.user.photoURL"></v-img>
 			</v-avatar>
@@ -63,8 +120,9 @@
 				more
 			</v-btn>
 		</v-list-item>
-	</v-card>
+	</v-card> -->
 </template>
+
 <script>
 import { last } from 'lodash'
 import DisplayTime from '@/components/display-time'
@@ -104,19 +162,22 @@ export default {
 		snapshotToItems(sn) {
 			this.lastDoc = last(sn.docs)
 			sn.docs.forEach(doc => {
-				const exists = this.items.some(item => doc.id === item.id)
-				if (!exists) {
-					const item = doc.data()
+				const findItem = this.items.find(item => doc.id === item.id)
+				const item = doc.data()
+				if (!findItem) {
 					item.id = doc.id
 					item.createdAt = item.createdAt.toDate()
 					item.updatedAt = item.updatedAt.toDate()
 					this.items.push(item)
+				} else {
+					findItem.comment = item.comment
+					findItem.likeCount = item.likeCount
+					findItem.likeUids = item.likeUids
+					findItem.updatedAt = item.updatedAt.toDate()
 				}
 			})
 			this.items.sort((before, after) => {
-				const beforeId = Number(before.id)
-				const afterId = Number(after.id)
-				return afterId - beforeId
+				return Number(after.id) - Number(before.id)
 			})
 		},
 		subscribe() {
@@ -149,6 +210,7 @@ export default {
 		},
 		async save() {
 			if (!this.fireUser) throw Error('로그인이 필요합니다')
+			if (!this.comment) throw Error('내용을 작성해야 합니다')
 			if (this.comment.length > 10) throw Error('문자 허용치를 넘었습니다')
 			const doc = {
 				createdAt: new Date(),
@@ -194,8 +256,10 @@ export default {
 						)
 					})
 			}
+			if (this.items.findIndex(el => el.id === comment.id) < LIMIT) return
 			const doc = await this.docRef.collection('comments').doc(comment.id).get()
 			const item = doc.data()
+			comment.comment = item.comment
 			comment.likeCount = item.likeCount
 			comment.likeUids = item.likeUids
 		},

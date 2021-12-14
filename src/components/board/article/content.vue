@@ -10,22 +10,25 @@
 
 			<v-divider />
 
-			<v-list-item color="transparent" dense flat two-line>
+			<v-toolbar color="transparent" flat two-line>
 				<v-chip color="info" small label class="mr-4">
 					{{ article.category }}
 				</v-chip>
-				<v-list-item-avatar class="mr-4">
+
+				<v-list-item-avatar size="30">
 					<v-img :src="article.user.photoURL"></v-img>
 				</v-list-item-avatar>
 
-				<v-list-item-content>
-					<v-list-item-title>
-						{{ article.title }}
-					</v-list-item-title>
-					<v-list-item-subtitle>
-						{{ article.user.displayName }}
-					</v-list-item-subtitle>
-				</v-list-item-content>
+				<v-list-item two-line>
+					<v-list-item-content>
+						<v-list-item-title>
+							{{ article.title }}
+						</v-list-item-title>
+						<v-list-item-subtitle>
+							{{ article.user.displayName }}
+						</v-list-item-subtitle>
+					</v-list-item-content>
+				</v-list-item>
 
 				<v-spacer />
 
@@ -35,15 +38,11 @@
 						(user && user.level === 0)
 					"
 				>
-					<!-- <v-btn @click="articleWrite" icon><v-icon>mdi-pencil</v-icon></v-btn>
-					<v-btn @click="remove" icon><v-icon>mdi-delete</v-icon></v-btn> -->
+					<v-btn @click="dialog = true" icon>
+						<v-icon>mdi-dots-horizontal</v-icon>
+					</v-btn>
 				</template>
-
-				<!-- <v-btn @click="back" icon><v-icon>mdi-close</v-icon></v-btn> -->
-				<v-btn @click="dialog = true" icon>
-					<v-icon>mdi-dots-horizontal</v-icon>
-				</v-btn>
-			</v-list-item>
+			</v-toolbar>
 
 			<v-dialog v-model="dialog" width="300">
 				<v-card>
@@ -64,27 +63,12 @@
 				</v-container>
 			</v-card-text>
 
-			<!-- <v-card-actions>
-				<v-spacer />
-				<span class="font-italic caption">
-					작성일: <display-time :time="article.createdAt"></display-time>
-				</span>
-			</v-card-actions>
-
-			<v-card-actions>
-				<v-spacer />
-				<span class="font-italic caption">
-					수정일: <display-time :time="article.updatedAt"></display-time>
-				</span>
-			</v-card-actions> -->
-
 			<v-card-actions>
 				<v-btn text @click="like">
 					<v-icon left v-if="!liked">mdi-heart-outline</v-icon>
 					<v-icon left color="red" v-else>mdi-heart</v-icon>
 					<span>{{ article.likeCount }}</span>
 				</v-btn>
-				<!-- :color="liked ? 'success' : ''" -->
 
 				<v-sheet color="grey--text grey-lighten-1" class="mr-4">
 					<span class="body-2">조회수 : {{ article.readCount }}회</span>
@@ -95,11 +79,6 @@
 						작성일: <display-time :time="article.createdAt"></display-time>
 					</span>
 				</v-sheet>
-
-				<!-- <v-sheet class="mr-">
-					<v-icon left>mdi-comment</v-icon>
-					<span class="body-2">{{ article.commentCount }}</span>
-				</v-sheet> -->
 			</v-card-actions>
 
 			<v-card-actions>
@@ -159,7 +138,6 @@
 import axios from 'axios'
 import DisplayTime from '@/components/display-time'
 import DisplayComment from '@/components/display-comment'
-// import DisplayUser from '@/components/display-user'
 
 export default {
 	components: { DisplayTime, DisplayComment },
