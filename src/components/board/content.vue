@@ -22,17 +22,67 @@
 
 			<board-article :boardId="boardId" :board="board"></board-article>
 
-			<v-dialog v-model="dialog" width="300">
+			<v-dialog v-model="dialog" width="320">
 				<v-card>
 					<v-toolbar color="transparent" dense flat>
 						<v-toolbar-title>게시판 정보</v-toolbar-title>
+
 						<v-spacer />
-						<v-btn icon @click="write" :disabled="user && user.level > 0"
-							><v-icon>mdi-pencil</v-icon></v-btn
-						>
-						<v-btn icon @click="dialog = false"
-							><v-icon>mdi-close</v-icon></v-btn
-						>
+
+						<!-- <v-menu offset-y left bottom min-width="150">
+							<template v-slot:activator="{ on, attrs }">
+								<v-btn icon v-bind="attrs" v-on="on">
+									<v-icon>mdi-dots-vertical</v-icon>
+								</v-btn>
+							</template>
+
+							<v-list>
+								<v-list-item class="px-1">
+									<v-btn
+										text
+										block
+										@click="write"
+										:disabled="user && user.level > 0"
+									>
+										Edit
+									</v-btn>
+								</v-list-item>
+								<v-list-item class="px-1">
+									<v-btn text block @click="dialog = false"> Close </v-btn>
+								</v-list-item>
+							</v-list>
+						</v-menu> -->
+						<template>
+							<v-btn icon small @click="dialogBoardInfo = true">
+								<v-icon>mdi-dots-vertical</v-icon>
+							</v-btn>
+						</template>
+
+						<v-dialog v-model="dialogBoardInfo" width="200">
+							<v-list>
+								<v-list-item class="px-1">
+									<v-btn
+										text
+										block
+										@click="write"
+										:disabled="user && user.level > 0"
+										color="info"
+									>
+										Edit
+									</v-btn>
+								</v-list-item>
+								<v-list-item class="px-1">
+									<v-btn
+										text
+										block
+										@click="dialogBoardInfo = false"
+										color="grey"
+									>
+										Cancle
+									</v-btn>
+								</v-list-item>
+							</v-list>
+						</v-dialog>
 					</v-toolbar>
 
 					<v-divider />
@@ -123,7 +173,8 @@
 					<v-card-actions>
 						<v-spacer />
 						<v-btn text @click="dialog = false">
-							<v-icon left>mdi-close</v-icon>닫기
+							<v-icon left>mdi-close</v-icon>
+							Close
 						</v-btn>
 					</v-card-actions>
 				</v-card>
@@ -146,7 +197,8 @@ export default {
 			unsubscribe: null,
 			board: null,
 			loading: false,
-			dialog: false
+			dialog: false,
+			dialogBoardInfo: false
 		}
 	},
 	watch: {
