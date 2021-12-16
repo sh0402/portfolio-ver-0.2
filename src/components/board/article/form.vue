@@ -1,5 +1,5 @@
 <template>
-	<v-container fluid>
+	<v-container style="max-width: 1200px" fluid>
 		<v-form>
 			<v-card :loading="loading">
 				<v-toolbar color="transparent" dense flat>

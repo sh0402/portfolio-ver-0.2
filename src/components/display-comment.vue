@@ -6,14 +6,17 @@
 				outlined
 				label="댓글 작성"
 				placeholder="Ctrl + Enter로 작성 가능"
-				append-icon="mdi-comment-plus"
 				@click:append="save"
 				@keypress.ctrl.enter="save"
 				hide-details
 				auto-grow
 				rows="1"
 				clearable
+				dense
 			/>
+			<v-btn text small class="pa-0 ml-4" color="success" @click="save">
+				send
+			</v-btn>
 		</v-card-title>
 		<template v-for="(item, i) in items">
 			<v-list-item :key="item.id">
@@ -30,9 +33,9 @@
 					</v-list-item-subtitle>
 				</v-list-item-content>
 				<v-list-item-action>
-					<v-btn @click="like(item)" text>
-						<v-icon left :color="liked(item) ? 'success' : ''"
-							>mdi-thumb-up</v-icon
+					<v-btn icon @click="like(item)" text>
+						<v-icon small left :color="liked(item) ? 'red' : ''"
+							>mdi-heart</v-icon
 						>
 						<span>{{ item.likeCount }}</span>
 					</v-btn>
@@ -211,7 +214,7 @@ export default {
 		async save() {
 			if (!this.fireUser) throw Error('로그인이 필요합니다')
 			if (!this.comment) throw Error('내용을 작성해야 합니다')
-			if (this.comment.length > 10) throw Error('문자 허용치를 넘었습니다')
+			if (this.comment.length > 300) throw Error('문자 허용치를 넘었습니다')
 			const doc = {
 				createdAt: new Date(),
 				updatedAt: new Date(),

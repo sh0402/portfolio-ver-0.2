@@ -2,7 +2,10 @@
 	<div>
 		<v-list-item class="py-2">
 			<v-list-item-content>
-				<v-list-item-title class="title" v-text="title"></v-list-item-title>
+				<v-list-item-title
+					class="title primary--text"
+					v-text="title"
+				></v-list-item-title>
 				<v-list-item-subtitle> subtext </v-list-item-subtitle>
 			</v-list-item-content>
 
@@ -25,7 +28,7 @@
 		<v-divider></v-divider>
 
 		<v-list flat>
-			<v-list-item to="/">
+			<v-list-item to="/" active="true">
 				<v-list-item-icon>
 					<v-icon>mdi-home</v-icon>
 				</v-list-item-icon>
@@ -146,7 +149,7 @@
 					서브 아이템 수정
 					<v-spacer />
 					<v-btn text color="success" @click="saveSubItem">save</v-btn>
-					<v-btn @click="dialogItem = false" icon>
+					<v-btn @click="dialogSubItem = false" icon>
 						<v-icon>mdi-close</v-icon>
 					</v-btn>
 				</v-card-title>

@@ -74,11 +74,13 @@ export default {
 					{
 						title: 'Home',
 						icon: 'mdi-home-circle',
-						to: '/'
+						to: '/',
+						active: true
 					},
 					{
 						title: 'About',
-						icon: 'mdi-information'
+						icon: 'mdi-information',
+						to: '/about'
 					},
 					{
 						title: 'XXX',

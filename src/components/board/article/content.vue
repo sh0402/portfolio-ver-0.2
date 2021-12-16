@@ -1,25 +1,24 @@
 <template>
-	<v-container fluid>
+	<v-container style="max-width: 1200px" fluid>
 		<v-card v-if="article">
 			<v-toolbar flat>
 				<v-btn icon small>
 					<v-icon @click="back"> mdi-chevron-left </v-icon>
 				</v-btn>
+				<v-chip color="info" small label class="mr-4">
+					{{ article.category }}
+				</v-chip>
 				<v-toolbar-title>{{ article.category }}</v-toolbar-title>
 			</v-toolbar>
 
 			<v-divider />
 
 			<v-toolbar color="transparent" flat two-line>
-				<v-chip color="info" small label class="mr-4">
-					{{ article.category }}
-				</v-chip>
-
 				<v-list-item-avatar size="30">
 					<v-img :src="article.user.photoURL"></v-img>
 				</v-list-item-avatar>
 
-				<v-list-item two-line>
+				<v-list-item two-line class="pa-0">
 					<v-list-item-content>
 						<v-list-item-title>
 							{{ article.title }}
@@ -63,25 +62,7 @@
 				</v-container>
 			</v-card-text>
 
-			<v-card-actions>
-				<v-btn text @click="like">
-					<v-icon left v-if="!liked">mdi-heart-outline</v-icon>
-					<v-icon left color="red" v-else>mdi-heart</v-icon>
-					<span>{{ article.likeCount }}</span>
-				</v-btn>
-
-				<v-sheet color="grey--text grey-lighten-1" class="mr-4">
-					<span class="body-2">조회수 : {{ article.readCount }}회</span>
-				</v-sheet>
-
-				<v-sheet color="grey--text grey-lighten-1" class="mr-4">
-					<span class="body-2">
-						작성일: <display-time :time="article.createdAt"></display-time>
-					</span>
-				</v-sheet>
-			</v-card-actions>
-
-			<v-card-actions>
+			<v-card-actions class="pa-4">
 				<v-chip
 					small
 					outlined
@@ -94,26 +75,46 @@
 				></v-chip>
 			</v-card-actions>
 
+			<v-card-actions>
+				<v-sheet class="mr-4">
+					<v-btn icon @click="like">
+						<v-icon small v-if="!liked">mdi-heart-outline</v-icon>
+						<v-icon small color="red" v-else>mdi-heart</v-icon>
+					</v-btn>
+					<span>{{ article.likeCount }}</span>
+				</v-sheet>
+
+				<v-sheet color="grey--text grey-lighten-1" class="mr-4">
+					<span class="body-2">조회수 : {{ article.readCount }}회</span>
+				</v-sheet>
+
+				<v-sheet color="grey--text grey-lighten-1" class="mr-4">
+					<span class="body-2">
+						작성일: <display-time :time="article.createdAt"></display-time>
+					</span>
+				</v-sheet>
+			</v-card-actions>
+
 			<v-divider />
 
 			<v-card-actions class="py-0">
 				<v-row no-gutters>
 					<v-col cols="4">
-						<v-btn block text color="primary" @click="go(-1)"
+						<v-btn block text color="secondary" @click="go(-1)"
 							><v-icon left>mdi-menu-left</v-icon> 이전</v-btn
 						>
 					</v-col>
 
 					<v-col cols="4" class="d-flex">
 						<v-divider vertical></v-divider>
-						<v-btn block text color="primary" @click="back"
+						<v-btn block text color="secondary" @click="back"
 							><v-icon left>mdi-format-list-bulleted-square</v-icon> 목록</v-btn
 						>
 						<v-divider vertical></v-divider>
 					</v-col>
 
 					<v-col cols="4">
-						<v-btn block text color="primary" @click="go(1)"
+						<v-btn block text color="secondary" @click="go(1)"
 							><v-icon left>mdi-menu-right</v-icon> 다음</v-btn
 						>
 					</v-col>
@@ -165,6 +166,9 @@ export default {
 		}
 	},
 	watch: {
+		boardId() {
+			this.subscribe()
+		},
 		articleId() {
 			this.subscribe()
 		}

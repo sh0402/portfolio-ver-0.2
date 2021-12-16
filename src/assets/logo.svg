@@ -1,1 +1,20 @@
-<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 87.5 100"><defs><style>.cls-1{fill:#1697f6;}.cls-2{fill:#7bc6ff;}.cls-3{fill:#1867c0;}.cls-4{fill:#aeddff;}</style></defs><title>Artboard 46</title><polyline class="cls-1" points="43.75 0 23.31 0 43.75 48.32"/><polygon class="cls-2" points="43.75 62.5 43.75 100 0 14.58 22.92 14.58 43.75 62.5"/><polyline class="cls-3" points="43.75 0 64.19 0 43.75 48.32"/><polygon class="cls-4" points="64.58 14.58 87.5 14.58 43.75 100 43.75 62.5 64.58 14.58"/></svg>
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 26.0.2, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 76 76" style="enable-background:new 0 0 76 76;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#0074D9;}
+</style>
+<g>
+	<path class="st0" d="M55,76H21C9.4,76,0,66.6,0,55V21h8c0,7.2,5.8,13,13,13h21v21c0,7.2,5.8,13,13,13V76z M8,37.5V55
+		c0,7.2,5.8,13,13,13h17.5c-2.8-3.6-4.5-8.1-4.5-13V42H21C16.1,42,11.6,40.3,8,37.5z"/>
+	<path class="st0" d="M76,55h-8c0-7.2-5.8-13-13-13H34V21c0-7.2-5.8-13-13-13V0h34c11.6,0,21,9.4,21,21V55z M42,34h13
+		c4.9,0,9.4,1.7,13,4.5V21c0-7.2-5.8-13-13-13H37.5c2.8,3.6,4.5,8.1,4.5,13V34z"/>
+	<path class="st0" d="M55,76c-11.6,0-21-9.4-21-21V34h21c11.6,0,21,9.4,21,21S66.6,76,55,76z M42,42v13c0,7.2,5.8,13,13,13
+		s13-5.8,13-13s-5.8-13-13-13H42z"/>
+	<path class="st0" d="M42,42H21C9.4,42,0,32.6,0,21C0,9.4,9.4,0,21,0s21,9.4,21,21V42z M21,8C13.8,8,8,13.8,8,21c0,7.2,5.8,13,13,13
+		h13V21C34,13.8,28.2,8,21,8z"/>
+	<path class="st0" d="M21,59c-2.2,0-4-1.8-4-4V21c0-2.2,1.8-4,4-4s4,1.8,4,4v34C25,57.2,23.2,59,21,59z"/>
+	<path class="st0" d="M55,59c-2.2,0-4-1.8-4-4V21c0-2.2,1.8-4,4-4s4,1.8,4,4v34C59,57.2,57.2,59,55,59z"/>
+</g>
+</svg>

@@ -45,8 +45,13 @@
 		</template>
 
 		<v-card width="300">
-			<v-card-title>Infomation</v-card-title>
-			<v-card-actions>
+			<v-img :src="$store.state.fireUser.photoURL"></v-img>
+			<v-card-title>{{ $store.state.fireUser.displayName }}</v-card-title>
+			<v-card-subtitle>{{ $store.state.fireUser.email }}</v-card-subtitle>
+
+			<v-divider />
+
+			<v-card-actions class="pa-4">
 				<v-btn block @click="signOut"> Log out </v-btn>
 			</v-card-actions>
 		</v-card>

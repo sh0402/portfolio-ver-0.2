@@ -1,5 +1,5 @@
 <template>
-	<v-container fluid>
+	<v-container style="max-width: 1200px" fluid>
 		<v-card v-if="board">
 			<v-toolbar color="transparent" dense flat>
 				<!-- <v-chip color="primary" label class="mr-4">{{board.category}}</v-chip> -->
@@ -12,7 +12,7 @@
 				</v-btn>
 
 				<template v-if="user">
-					<v-btn icon @click="articleWrite" :disabled="user.level > 4">
+					<v-btn icon @click="articleWrite" :disabled="!user">
 						<v-icon>mdi-plus</v-icon>
 					</v-btn>
 				</template>

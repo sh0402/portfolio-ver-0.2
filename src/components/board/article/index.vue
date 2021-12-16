@@ -54,15 +54,19 @@
 
 					<v-spacer />
 
-					<v-btn icon small class="mr-2">
-						<v-icon left small color="grey" class="mr-0"> mdi-heart </v-icon>
-						<span class="body-2">{{ item.likeCount }}</span>
-					</v-btn>
+					<v-sheet class="mr-2">
+						<v-btn icon small>
+							<v-icon small color="grey"> mdi-heart </v-icon>
+						</v-btn>
+						<span class="body-2 ma-0">{{ item.likeCount }}</span>
+					</v-sheet>
 
-					<v-btn icon small>
-						<v-icon small color="grey" class="mr-0">mdi-eye</v-icon>
-						<span class="body-2">{{ item.readCount }}</span>
-					</v-btn>
+					<v-sheet class="mr-2">
+						<v-btn icon small>
+							<v-icon small color="grey">mdi-eye</v-icon>
+						</v-btn>
+						<span class="body-2 ma-0">{{ item.readCount }}</span>
+					</v-sheet>
 				</v-card-actions>
 			</v-col>
 		</v-row>
@@ -73,6 +77,7 @@
 			</v-btn>
 		</v-list-item>
 	</v-container>
+
 	<v-container fluid v-else>
 		<v-alert type="warning" border="left" class="mb-0">
 			게시물이 없습니다
@@ -85,6 +90,7 @@ import { last } from 'lodash'
 import DisplayTime from '@/components/display-time'
 // import DisplayUser from '@/components/display-user'
 const LIMIT = 5
+
 export default {
 	components: { DisplayTime },
 	props: ['board', 'boardId'],
@@ -95,7 +101,8 @@ export default {
 			ref: null,
 			lastDoc: null,
 			order: 'createdAt',
-			sort: 'desc'
+			sort: 'desc',
+			dialog: false
 		}
 	},
 	computed: {
@@ -149,6 +156,7 @@ export default {
 		// eslint-disable-next-line no-unused-vars
 		subscribe(arrow) {
 			if (this.unsubscribe) this.unsubscribe()
+			this.items = []
 			this.ref = this.$firebase
 				.firestore()
 				.collection('boards')
