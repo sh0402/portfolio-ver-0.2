@@ -6,8 +6,8 @@
 			<v-btn @click="toggle = !toggle">toggle</v-btn>
 			<v-btn @click="read">read</v-btn>
 		</v-subheader>
-		<editor :options="options" :initialValue="text" ref="editor"></editor>
-		<viewer v-if="toggle" :initialValue="text"></viewer>
+		<editor :options="options" initialValue="text" ref="editor"></editor>
+		<viewer v-if="toggle" initialValue="text"></viewer>
 	</v-sheet>
 </template>
 

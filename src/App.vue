@@ -6,7 +6,15 @@
 					class="hidden-md-and-up"
 					@click="drawer = !drawer"
 				/> -->
-				<v-btn icon small class="hidden-md-and-up" @click="drawer = !drawer">
+				<v-btn
+					icon
+					small
+					plain
+					@click="drawer = !drawer"
+					:class="
+						$vuetify.breakpoint.smAndDown ? 'display: none' : 'display: block'
+					"
+				>
 					<v-icon>mdi-menu</v-icon>
 				</v-btn>
 

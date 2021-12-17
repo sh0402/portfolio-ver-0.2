@@ -2,13 +2,22 @@
 	<v-container style="max-width: 1200px" fluid>
 		<v-card v-if="article">
 			<v-toolbar flat>
-				<v-btn icon small>
+				<v-btn icon>
 					<v-icon @click="back"> mdi-chevron-left </v-icon>
 				</v-btn>
-				<v-chip color="info" small label class="mr-4">
+
+				<!-- <v-chip color="info" small label class="mr-4">
 					{{ article.category }}
-				</v-chip>
-				<v-toolbar-title>{{ article.category }}</v-toolbar-title>
+				</v-chip> -->
+
+				<v-btn color="info" small depressed class="mr-4" @click="back">
+					{{ article.category }}
+					<v-icon small right v-if="!category">mdi-chevron-right </v-icon>
+				</v-btn>
+
+				<v-toolbar-title>
+					{{ article.category }}
+				</v-toolbar-title>
 			</v-toolbar>
 
 			<v-divider />
@@ -100,21 +109,21 @@
 			<v-card-actions class="py-0">
 				<v-row no-gutters>
 					<v-col cols="4">
-						<v-btn block text color="secondary" @click="go(-1)"
+						<v-btn block text color="grey" @click="go(-1)"
 							><v-icon left>mdi-menu-left</v-icon> 이전</v-btn
 						>
 					</v-col>
 
 					<v-col cols="4" class="d-flex">
 						<v-divider vertical></v-divider>
-						<v-btn block text color="secondary" @click="back"
+						<v-btn block text color="grey" @click="back"
 							><v-icon left>mdi-format-list-bulleted-square</v-icon> 목록</v-btn
 						>
 						<v-divider vertical></v-divider>
 					</v-col>
 
 					<v-col cols="4">
-						<v-btn block text color="secondary" @click="go(1)"
+						<v-btn block text color="grey" @click="go(1)"
 							><v-icon left>mdi-menu-right</v-icon> 다음</v-btn
 						>
 					</v-col>
@@ -142,7 +151,7 @@ import DisplayComment from '@/components/display-comment'
 
 export default {
 	components: { DisplayTime, DisplayComment },
-	props: ['boardId', 'articleId'],
+	props: ['boardId', 'articleId', 'category', 'tag'],
 	data() {
 		return {
 			content: '',
@@ -219,7 +228,12 @@ export default {
 		back() {
 			const us = this.$route.path.split('/')
 			us.pop()
-			this.$router.push({ path: us.join('/') })
+			if (this.category)
+				this.$router.push({
+					path: us.join('/'),
+					query: { category: this.category }
+				})
+			else this.$router.push({ path: us.join('/') })
 		},
 		async like() {
 			if (!this.fireUser) throw Error('로그인이 필요합니다')
@@ -241,21 +255,39 @@ export default {
 		},
 		async go(arrow) {
 			if (!this.doc) return
-			const ref = this.$firebase
-				.firestore()
-				.collection('boards')
-				.doc(this.boardId)
-				.collection('articles')
-				.orderBy('createdAt', 'desc')
+			let ref
+			if (!this.category) {
+				ref = this.$firebase
+					.firestore()
+					.collection('boards')
+					.doc(this.boardId)
+					.collection('articles')
+					.orderBy('createdAt', 'desc')
+			} else {
+				ref = this.$firebase
+					.firestore()
+					.collection('boards')
+					.doc(this.boardId)
+					.collection('articles')
+					.where('category', '==', this.category)
+					.orderBy('createdAt', 'desc')
+			}
 			let sn
 			if (arrow < 0) sn = await ref.endBefore(this.doc).limitToLast(1).get()
 			else sn = await ref.startAfter(this.doc).limit(1).get()
+
 			if (sn.empty) return this.$toast.info('더이상 페이지가 없습니다')
 			const doc = sn.docs[0]
+
 			const us = this.$route.path.split('/')
 			us.pop()
 			us.push(doc.id)
-			this.$router.push({ path: us.join('/') })
+			if (this.category)
+				this.$router.push({
+					path: us.join('/'),
+					query: { category: this.category }
+				})
+			else this.$router.push({ path: us.join('/') })
 		}
 	}
 }

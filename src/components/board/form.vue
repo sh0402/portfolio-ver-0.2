@@ -3,7 +3,7 @@
 		<v-form>
 			<v-card :loading="loading">
 				<v-toolbar color="transparent" dense flat>
-					<v-btn icon @click="$router.push('/board/' + boardId)" class="pr-2">
+					<v-btn icon @click="$router.push('/board/' + boardId)">
 						<v-icon>mdi-chevron-left</v-icon>
 					</v-btn>
 
@@ -11,9 +11,15 @@
 
 					<v-spacer />
 
-					<v-btn text @click="save" :disabled="user && user.level !== 0"
-						>Create</v-btn
+					<v-btn
+						text
+						@click="save"
+						:disabled="user && user.level !== 0"
+						color="success"
+						class="pa-0"
 					>
+						Create
+					</v-btn>
 				</v-toolbar>
 
 				<v-card-text>

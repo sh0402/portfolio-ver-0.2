@@ -3,11 +3,21 @@
 		<v-form>
 			<v-card :loading="loading">
 				<v-toolbar color="transparent" dense flat>
-					<v-toolbar-title>게시물 작성</v-toolbar-title>
+					<v-btn icon @click="$router.push('/board/' + boardId)">
+						<v-icon>mdi-chevron-left</v-icon>
+					</v-btn>
+
+					<v-toolbar-title class="pa-0">게시물 작성</v-toolbar-title>
 
 					<v-spacer />
 
-					<v-btn text color="success" @click="save" :disabled="!user">
+					<v-btn
+						text
+						color="success"
+						@click="save"
+						:disabled="!user"
+						class="pa-0"
+					>
 						Save
 					</v-btn>
 

@@ -2,6 +2,20 @@
 	<v-container style="max-width: 1200px" fluid>
 		<v-card v-if="board">
 			<v-toolbar color="transparent" dense flat>
+				<v-sheet width="120" class="mr-2">
+					<v-select
+						:value="getCategory"
+						:items="board.categories"
+						@change="changeCategory"
+						background-color="info"
+						dense
+						single-line
+						solo
+						hide-details
+						flat
+						dark
+					/>
+				</v-sheet>
 				<!-- <v-chip color="primary" label class="mr-4">{{board.category}}</v-chip> -->
 				<v-toolbar-title v-text="board.title"></v-toolbar-title>
 
@@ -9,6 +23,16 @@
 
 				<v-btn icon @click="dialog = true">
 					<v-icon>mdi-information-outline</v-icon>
+				</v-btn>
+
+				<v-btn icon @click="$store.commit('toggleBoardType')">
+					<v-icon
+						v-text="
+							$store.state.boardTypeList
+								? 'mdi-format-list-bulleted'
+								: 'mdi-text-box-outline'
+						"
+					></v-icon>
 				</v-btn>
 
 				<template v-if="user">
@@ -20,7 +44,11 @@
 
 			<v-divider />
 
-			<board-article :boardId="boardId" :board="board"></board-article>
+			<board-article
+				:boardId="boardId"
+				:board="board"
+				:category="category"
+			></board-article>
 
 			<v-dialog v-model="dialog" width="320">
 				<v-card>
@@ -99,7 +127,7 @@
 					<v-list-item>
 						<v-list-item-content>
 							<v-list-item-title> 작성일 </v-list-item-title>
-							<v-list-item-subtitle class="font-italic">
+							<v-list-item-subtitle class="body-2">
 								<display-time :time="board.createdAt"></display-time>
 							</v-list-item-subtitle>
 						</v-list-item-content>
@@ -108,7 +136,7 @@
 					<v-list-item>
 						<v-list-item-content>
 							<v-list-item-title> 수정일 </v-list-item-title>
-							<v-list-item-subtitle class="font-italic">
+							<v-list-item-subtitle class="body-2">
 								<display-time :time="board.updatedAt"></display-time>
 							</v-list-item-subtitle>
 						</v-list-item-content>
@@ -117,7 +145,7 @@
 					<v-list-item>
 						<v-list-item-content>
 							<v-list-item-title> 게시물수 </v-list-item-title>
-							<v-list-item-subtitle class="font-italic">
+							<v-list-item-subtitle class="body-2">
 								{{ board.count }}
 							</v-list-item-subtitle>
 						</v-list-item-content>
@@ -172,8 +200,8 @@
 
 					<v-card-actions>
 						<v-spacer />
-						<v-btn text @click="dialog = false">
-							<v-icon left>mdi-close</v-icon>
+						<v-btn text small @click="dialog = false">
+							<v-icon small>mdi-close</v-icon>
 							Close
 						</v-btn>
 					</v-card-actions>
@@ -191,7 +219,7 @@ import DisplayUser from '@/components/display-user'
 
 export default {
 	components: { BoardArticle, DisplayTime, DisplayUser },
-	props: ['boardId'],
+	props: ['boardId', 'category', 'tag'],
 	data() {
 		return {
 			unsubscribe: null,
@@ -209,6 +237,10 @@ export default {
 	computed: {
 		user() {
 			return this.$store.state.user
+		},
+		getCategory() {
+			if (!this.category) return '전체'
+			return this.category
 		}
 	},
 	created() {
@@ -229,6 +261,7 @@ export default {
 				const item = doc.data()
 				item.createdAt = item.createdAt.toDate()
 				item.updatedAt = item.updatedAt.toDate()
+				item.categories.unshift('전체')
 				this.board = item
 			}, console.error)
 		},
@@ -240,6 +273,11 @@ export default {
 				path: this.$route.path + '/new',
 				query: { action: 'write' }
 			})
+		},
+		changeCategory(item) {
+			if (item === '전체') this.$router.push(this.$route.path)
+			else
+				this.$router.push({ path: this.$route.path, query: { category: item } })
 		}
 	}
 }

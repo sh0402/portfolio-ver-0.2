@@ -1,37 +1,184 @@
 <template>
 	<v-container fluid v-if="items.length">
-		<v-row>
-			<v-col cols="12" sm="6" v-for="(item, i) in items" :key="item.id">
-				<v-card
-					:class="i < items.length - 1 ? 'mb-0' : ''"
-					:to="`${boardId}/${item.id}`"
+		<template v-for="(item, i) in items">
+			<!-- <template v-if="$store.state.boardTypeList">
+				<v-list-item
+					three-line
+					:key="item.id"
+					:to="
+						category
+							? `${boardId}/${item.id}?category`
+							: `${boardId}/${item.id}`
+					"
 				>
-					<v-subheader>
-						<v-chip color="info" label small class="mr-4">
-							{{ item.category }}
-						</v-chip>
+					<v-list-item-content>
+						<v-list-item-title>
+							<v-btn
+								v-if="category != item.category"
+								color="info"
+								depressed
+								small
+								class="mr-4"
+								:to="`${$route.path}?category=${item.category}`"
+							>
+								{{ item.category }}
+							</v-btn>
+						</v-list-item-title>
 
-						<display-time :time="item.createdAt"></display-time>
+						<v-list-item-subtitle>
+							{{ getSummary(item.summary, 100, '!') }}
+						</v-list-item-subtitle>
 
-						<v-spacer />
-
-						<v-btn
-							icon
-							small
-							v-if="fireUser && fireUser.uid === item.uid"
-							:to="`${boardId}/${item.id}?action=write`"
+						<v-list-item-subtitle
+							class="d-flex justify-space-between align-center"
 						>
-							<v-icon>mdi-dots-vertical</v-icon>
-						</v-btn>
-					</v-subheader>
+							<display-time :time="item.createdAt"></display-time>
+							<display-user :user="item.user" :size="'small'"></display-user>
+						</v-list-item-subtitle>
 
+						<v-card-actions>
+							<v-avatar size="20" class="mr-2">
+								<v-img :src="item.user.photoURL"></v-img>
+							</v-avatar>
+
+							<span class="body-2">
+								{{ item.user.displayName }}
+							</span>
+
+							<v-spacer />
+
+							<v-sheet class="mr-2">
+								<v-btn icon small>
+									<v-icon small color="grey"> mdi-heart </v-icon>
+								</v-btn>
+								<span class="body-2 ma-0">{{ item.likeCount }}</span>
+							</v-sheet>
+
+							<v-sheet class="mr-2">
+								<v-btn icon small>
+									<v-icon small color="grey">mdi-eye</v-icon>
+								</v-btn>
+								<span class="body-2 ma-0">{{ item.readCount }}</span>
+							</v-sheet>
+						</v-card-actions>
+					</v-list-item-content>
+				</v-list-item>
+
+				<v-divider v-if="i < items.length - 1" :key="i" />
+			</template> -->
+
+			<v-card :key="item.id" :class="i < items.length - 1 ? 'mb-4' : ''">
+				<v-subheader>
+					<v-btn
+						v-if="category != item.category"
+						color="info"
+						depressed
+						small
+						class="mr-4"
+						:to="`${$route.path}?category=${item.category}`"
+					>
+						{{ item.category }}
+					</v-btn>
+
+					<display-time :time="item.createdAt"></display-time>
+
+					<v-spacer />
+
+					<v-btn
+						icon
+						small
+						v-if="fireUser && fireUser.uid === item.uid"
+						:to="`/${item.id}?action=write`"
+					>
+						<v-icon>mdi-dots-vertical</v-icon>
+					</v-btn>
+				</v-subheader>
+
+				<v-card
+					color="transparent"
+					flat
+					:to="category ? `/${item.id}?category=` : `/${item.id}`"
+				>
 					<v-card-title>
 						{{ item.title }}
 					</v-card-title>
+					<v-card-text>
+						<viewer v-if="item.summary" :initialValue="item.summary"></viewer>
+						<v-container v-else>
+							<v-row justify="center" align="center">
+								<v-progress-circular indeterminate></v-progress-circular>
+							</v-row>
+						</v-container>
+					</v-card-text>
+				</v-card>
 
-					<!-- <v-card-text>
-						<viewer :initialValue="item.summary"></viewer>
-					</v-card-text> -->
+				<v-card-actions>
+					<v-avatar size="20" class="mr-2">
+						<v-img :src="item.user.photoURL"></v-img>
+					</v-avatar>
+
+					<span class="body-2">
+						{{ item.user.displayName }}
+					</span>
+
+					<v-spacer />
+
+					<v-sheet class="mr-2">
+						<v-btn icon small>
+							<v-icon small color="grey"> mdi-heart </v-icon>
+						</v-btn>
+						<span class="body-2 ma-0">{{ item.likeCount }}</span>
+					</v-sheet>
+
+					<v-sheet class="mr-2">
+						<v-btn icon small>
+							<v-icon small color="grey">mdi-eye</v-icon>
+						</v-btn>
+						<span class="body-2 ma-0">{{ item.readCount }}</span>
+					</v-sheet>
+				</v-card-actions>
+			</v-card>
+		</template>
+
+		<!-- <template v-for="(item, i) in items">
+			<v-card :key="item.id" :class="i < items.length - 1 ? 'mb-4' : ''">
+				<v-subheader>
+					<v-btn
+						v-if="category != item.category"
+						color="info"
+						depressed
+						small
+						class="mr-4"
+						:to="`${$route.path}?category=${item.category}`"
+					>
+						{{ item.category }}
+					</v-btn>
+
+					<display-time :time="item.createdAt"></display-time>
+
+					<v-spacer />
+
+					<v-btn
+						icon
+						small
+						v-if="fireUser && fireUser.uid === item.uid"
+						:to="`${boardId}/${item.id}?action=write`"
+					>
+						<v-icon>mdi-dots-vertical</v-icon>
+					</v-btn>
+				</v-subheader>
+				<v-card
+					color="transparent"
+					flat
+					:to="
+						category
+							? `${boardId}/${item.id}?category=${category}`
+							: `${boardId}/${item.id}`
+					"
+				>
+					<v-card-title>
+						{{ item.title }}
+					</v-card-title>
 
 					<v-card-text>
 						<viewer v-if="item.summary" :initialValue="item.summary"></viewer>
@@ -68,11 +215,33 @@
 						<span class="body-2 ma-0">{{ item.readCount }}</span>
 					</v-sheet>
 				</v-card-actions>
-			</v-col>
-		</v-row>
+			</v-card>
+		</template> -->
+
+		<!-- <v-card-text class="mb-0">
+			<v-row justify="end">
+				<v-chip
+					small
+					label
+					outlined
+					color="info"
+					class="mr-2 mb-2"
+					v-for="tag in item.tags"
+					:key="tag"
+					v-text="tag"
+				></v-chip>
+			</v-row>
+		</v-card-text> -->
 
 		<v-list-item v-if="lastDoc && items.length < board.count">
-			<v-btn @click="more" v-intersect="onIntersect" text color="primary" block>
+			<v-btn
+				@click="more"
+				v-intersect="onIntersect"
+				text
+				color="primary"
+				block
+				:loading="loading"
+			>
 				더보기
 			</v-btn>
 		</v-list-item>
@@ -88,12 +257,14 @@
 <script>
 import { last } from 'lodash'
 import DisplayTime from '@/components/display-time'
+import getSummary from '@/util/getSummary'
 // import DisplayUser from '@/components/display-user'
 const LIMIT = 5
 
 export default {
 	components: { DisplayTime },
-	props: ['board', 'boardId'],
+
+	props: ['board', 'boardId', 'category'],
 	data() {
 		return {
 			items: [],
@@ -102,7 +273,9 @@ export default {
 			lastDoc: null,
 			order: 'createdAt',
 			sort: 'desc',
-			dialog: false
+			loading: false,
+			dialog: false,
+			getSummary
 		}
 	},
 	computed: {
@@ -112,6 +285,9 @@ export default {
 	},
 	watch: {
 		boardId() {
+			this.subscribe()
+		},
+		category() {
 			this.subscribe()
 		}
 	},
@@ -157,13 +333,25 @@ export default {
 		subscribe(arrow) {
 			if (this.unsubscribe) this.unsubscribe()
 			this.items = []
-			this.ref = this.$firebase
-				.firestore()
-				.collection('boards')
-				.doc(this.boardId)
-				.collection('articles')
-				.orderBy(this.order, this.sort)
-				.limit(LIMIT)
+			if (!this.category) {
+				this.ref = this.$firebase
+					.firestore()
+					.collection('boards')
+					.doc(this.boardId)
+					.collection('articles')
+					.orderBy(this.order, this.sort)
+					.limit(LIMIT)
+			} else {
+				this.ref = this.$firebase
+					.firestore()
+					.collection('boards')
+					.doc(this.boardId)
+					.collection('articles')
+					.where('category', '==', this.category)
+					.orderBy(this.order, this.sort)
+					.limit(LIMIT)
+			}
+
 			this.unsubscribe = this.ref.onSnapshot(sn => {
 				if (sn.empty) {
 					this.items = []
@@ -177,8 +365,14 @@ export default {
 		},
 		async more() {
 			if (!this.lastDoc) throw Error('더이상 데이터가 없습니다')
-			const sn = await this.ref.startAfter(this.lastDoc).get()
-			this.snapshotToItems(sn)
+			if (this.loading) return
+			this.loading = true
+			try {
+				const sn = await this.ref.startAfter(this.lastDoc).get()
+				this.snapshotToItems(sn)
+			} finally {
+				this.loading = false
+			}
 		},
 		onIntersect(entries, observer, isIntersecting) {
 			if (isIntersecting) this.more()
