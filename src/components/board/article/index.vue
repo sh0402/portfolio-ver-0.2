@@ -1,7 +1,7 @@
 <template>
-	<v-container fluid v-if="items.length">
+	<v-container fluid v-if="items.length" class="pa-0">
 		<template v-for="(item, i) in items">
-			<!-- <template v-if="$store.state.boardTypeList">
+			<template v-if="$store.state.boardTypeList">
 				<v-list-item
 					three-line
 					:key="item.id"
@@ -11,14 +11,19 @@
 							: `${boardId}/${item.id}`
 					"
 				>
+					<v-list-item-avatar>
+						<v-img :src="item.user.photoURL"></v-img>
+					</v-list-item-avatar>
+
 					<v-list-item-content>
 						<v-list-item-title>
+							{{ item.title }}
 							<v-btn
 								v-if="category != item.category"
-								color="info"
-								depressed
+								text
 								small
-								class="mr-4"
+								color="grey"
+								depressed
 								:to="`${$route.path}?category=${item.category}`"
 							>
 								{{ item.category }}
@@ -35,39 +40,44 @@
 							<display-time :time="item.createdAt"></display-time>
 							<display-user :user="item.user" :size="'small'"></display-user>
 						</v-list-item-subtitle>
-
-						<v-card-actions>
-							<v-avatar size="20" class="mr-2">
-								<v-img :src="item.user.photoURL"></v-img>
-							</v-avatar>
-
-							<span class="body-2">
-								{{ item.user.displayName }}
-							</span>
-
-							<v-spacer />
-
-							<v-sheet class="mr-2">
-								<v-btn icon small>
-									<v-icon small color="grey"> mdi-heart </v-icon>
-								</v-btn>
-								<span class="body-2 ma-0">{{ item.likeCount }}</span>
-							</v-sheet>
-
-							<v-sheet class="mr-2">
-								<v-btn icon small>
-									<v-icon small color="grey">mdi-eye</v-icon>
-								</v-btn>
-								<span class="body-2 ma-0">{{ item.readCount }}</span>
-							</v-sheet>
-						</v-card-actions>
 					</v-list-item-content>
+
+					<v-list-item-action>
+						<!-- <v-avatar size="20" class="mr-2">
+							<v-img :src="item.user.photoURL"></v-img>
+						</v-avatar> -->
+
+						<span class="body-2">
+							{{ item.user.displayName }}
+						</span>
+
+						<v-spacer />
+
+						<v-sheet class="mr-2">
+							<v-btn icon small>
+								<v-icon small color="grey"> mdi-heart </v-icon>
+							</v-btn>
+							<span class="body-2 ma-0">{{ item.likeCount }}</span>
+						</v-sheet>
+
+						<v-sheet class="mr-2">
+							<v-btn icon small>
+								<v-icon small color="grey">mdi-eye</v-icon>
+							</v-btn>
+							<span class="body-2 ma-0">{{ item.readCount }}</span>
+						</v-sheet>
+					</v-list-item-action>
 				</v-list-item>
 
 				<v-divider v-if="i < items.length - 1" :key="i" />
-			</template> -->
+			</template>
 
-			<v-card :key="item.id" :class="i < items.length - 1 ? 'mb-4' : ''">
+			<v-card
+				v-else
+				:key="item.id"
+				:class="i < items.length - 1 ? 'mb-4' : ''"
+				class="ma-4"
+			>
 				<v-subheader>
 					<v-btn
 						v-if="category != item.category"
@@ -97,7 +107,11 @@
 				<v-card
 					color="transparent"
 					flat
-					:to="category ? `/${item.id}?category=` : `/${item.id}`"
+					:to="
+						category
+							? `${boardId}/${item.id}?category=${category}`
+							: `${boardId}/${item.id}`
+					"
 				>
 					<v-card-title>
 						{{ item.title }}
@@ -257,14 +271,14 @@
 <script>
 import { last } from 'lodash'
 import DisplayTime from '@/components/display-time'
+import DisplayUser from '@/components/display-user'
 import getSummary from '@/util/getSummary'
-// import DisplayUser from '@/components/display-user'
 const LIMIT = 5
 
 export default {
-	components: { DisplayTime },
+	components: { DisplayTime, DisplayUser },
 
-	props: ['board', 'boardId', 'category'],
+	props: ['board', 'boardId', 'category', 'tag'],
 	data() {
 		return {
 			items: [],
@@ -380,9 +394,3 @@ export default {
 	}
 }
 </script>
-
-<style scoped>
-.text-content {
-	white-space: pre-wrap;
-}
-</style>
