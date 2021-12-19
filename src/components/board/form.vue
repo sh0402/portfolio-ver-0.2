@@ -1,5 +1,5 @@
 <template>
-	<v-container style="max-width: 1200px" fluid>
+	<v-container v-if="user && user.level === 0" style="max-width: 1200px" fluid>
 		<v-form>
 			<v-card :loading="loading">
 				<v-toolbar color="transparent" dense flat>
@@ -125,6 +125,12 @@
 			</v-card>
 		</v-form>
 	</v-container>
+
+	<v-container v-else fluid>
+		<v-alert type="warning" border="left" class="mb-0">
+			게시판이 없습니다
+		</v-alert>
+	</v-container>
 </template>
 
 <script>
@@ -199,8 +205,8 @@ export default {
 						photoURL: this.$store.state.user.photoURL,
 						displayName: this.$store.state.user.displayName
 					}
-					form.categories = ['일반']
-					form.tags = ['vue', 'firebase']
+					// form.categories = ['일반']
+					// form.tags = ['vue', 'firebase']
 					await this.ref.set(form)
 				} else {
 					await this.ref.update(form)

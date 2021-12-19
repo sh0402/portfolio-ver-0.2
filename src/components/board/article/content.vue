@@ -10,14 +10,21 @@
 					{{ article.category }}
 				</v-chip> -->
 
-				<v-btn color="info" small depressed class="mr-4" @click="back">
+				<v-btn color="info" small depressed class="mr-4" @click="goCategory">
 					{{ article.category }}
 					<v-icon small right v-if="!category">mdi-chevron-right </v-icon>
 				</v-btn>
 
-				<v-toolbar-title>
-					{{ article.category }}
-				</v-toolbar-title>
+				<template>
+					<v-icon color="red" left v-if="newCheck(article.updatedAt)">
+						mdi-fire
+					</v-icon>
+					<span v-text="article.title"></span>
+				</template>
+
+				<!-- <v-toolbar-title>
+					{{ article.title }}
+				</v-toolbar-title> -->
 			</v-toolbar>
 
 			<v-divider />
@@ -144,10 +151,12 @@
 		</v-card>
 	</v-container>
 </template>
+
 <script>
 import axios from 'axios'
 import DisplayTime from '@/components/display-time'
 import DisplayComment from '@/components/display-comment'
+import newCheck from '@/util/newCheck'
 
 export default {
 	components: { DisplayTime, DisplayComment },
@@ -159,7 +168,8 @@ export default {
 			unsubscribe: null,
 			article: null,
 			doc: null,
-			dialog: false
+			dialog: false,
+			newCheck
 		}
 	},
 	computed: {
@@ -288,6 +298,14 @@ export default {
 					query: { category: this.category }
 				})
 			else this.$router.push({ path: us.join('/') })
+		},
+		goCategory() {
+			const us = this.$route.path.split('/')
+			us.pop()
+			this.$router.push({
+				path: us.join('/'),
+				query: { category: this.$article.category }
+			})
 		}
 	}
 }

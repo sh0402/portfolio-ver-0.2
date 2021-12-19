@@ -11,9 +11,7 @@
 					small
 					plain
 					@click="drawer = !drawer"
-					:class="
-						$vuetify.breakpoint.smAndDown ? 'display: none' : 'display: block'
-					"
+					class="hidden-md-and-up"
 				>
 					<v-icon>mdi-menu</v-icon>
 				</v-btn>
@@ -48,7 +46,13 @@
 			</v-toolbar>
 		</v-app-bar>
 
-		<v-navigation-drawer app v-model="drawer" width="100%">
+		<v-navigation-drawer
+			app
+			fixed
+			disable-resize-watcher
+			v-model="drawer"
+			width="100%"
+		>
 			<site-menu
 				:items="site.menu"
 				:dropItems="site.dropMenu"

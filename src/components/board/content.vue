@@ -1,23 +1,28 @@
 <template>
 	<v-container style="max-width: 1200px" fluid>
 		<v-card v-if="board">
-			<v-toolbar color="transparent" dense flat>
+			<v-toolbar color="transparent" flat>
 				<v-sheet width="120" class="mr-2">
 					<v-select
 						:value="getCategory"
 						:items="board.categories"
 						@change="changeCategory"
-						background-color="info"
 						dense
+						outlined
 						single-line
-						solo
 						hide-details
 						flat
-						dark
 					/>
 				</v-sheet>
 				<!-- <v-chip color="primary" label class="mr-4">{{board.category}}</v-chip> -->
-				<v-toolbar-title v-text="board.title"></v-toolbar-title>
+				<!-- <v-toolbar-title v-text="board.title"></v-toolbar-title> -->
+
+				<template>
+					<v-icon color="red" left v-if="newCheck(board.updatedAt)">
+						mdi-fire
+					</v-icon>
+					<span v-text="board.title"></span>
+				</template>
 
 				<v-spacer />
 
@@ -52,7 +57,7 @@
 
 			<v-dialog v-model="dialog" width="320">
 				<v-card>
-					<v-toolbar color="transparent" dense flat>
+					<v-toolbar color="transparent" flat>
 						<v-toolbar-title>게시판 정보</v-toolbar-title>
 
 						<v-spacer />
@@ -190,7 +195,7 @@
 						<v-list-item-content>
 							<v-list-item-title> 설명 </v-list-item-title>
 							<v-list-item-subtitle
-								class="comment"
+								class="white-space"
 								v-text="board.description"
 							></v-list-item-subtitle>
 						</v-list-item-content>
@@ -216,6 +221,7 @@
 import BoardArticle from './article/index'
 import DisplayTime from '@/components/display-time'
 import DisplayUser from '@/components/display-user'
+import newCheck from '@/util/newCheck'
 
 export default {
 	components: { BoardArticle, DisplayTime, DisplayUser },
@@ -226,7 +232,8 @@ export default {
 			board: null,
 			loading: false,
 			dialog: false,
-			dialogBoardInfo: false
+			dialogBoardInfo: false,
+			newCheck
 		}
 	},
 	watch: {
@@ -282,8 +289,3 @@ export default {
 	}
 }
 </script>
-<style scoped>
-.comment {
-	white-space: pre-wrap;
-}
-</style>

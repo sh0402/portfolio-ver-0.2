@@ -17,7 +17,13 @@
 
 					<v-list-item-content>
 						<v-list-item-title>
-							{{ item.title }}
+							<template>
+								<v-icon color="error" left v-if="newCheck(item.updatedAt)">
+									mdi-fire
+								</v-icon>
+								<span v-text="item.title"></span>
+							</template>
+
 							<v-btn
 								v-if="category != item.category"
 								text
@@ -114,6 +120,9 @@
 					"
 				>
 					<v-card-title>
+						<v-icon color="red" class="mr-4" v-if="newCheck(item.updatedAt)">
+							mdi-fire
+						</v-icon>
 						{{ item.title }}
 					</v-card-title>
 					<v-card-text>
@@ -273,6 +282,8 @@ import { last } from 'lodash'
 import DisplayTime from '@/components/display-time'
 import DisplayUser from '@/components/display-user'
 import getSummary from '@/util/getSummary'
+import newCheck from '@/util/newCheck'
+
 const LIMIT = 5
 
 export default {
@@ -289,7 +300,8 @@ export default {
 			sort: 'desc',
 			loading: false,
 			dialog: false,
-			getSummary
+			getSummary,
+			newCheck
 		}
 	},
 	computed: {

@@ -22,31 +22,83 @@
 
 		<template v-for="(item, i) in items">
 			<v-list-item :key="item.id">
-				<v-list-item-action>
+				<!-- <v-list-item-action>
 					<display-user :user="item.user"></display-user>
+				</v-list-item-action> -->
+
+				<v-list-item-action class="align-self-start mr-6">
+					<v-avatar :size="$vuetify.breakpoint.sm ? 42 : 36">
+						<v-img :src="item.user.photoURL"></v-img>
+					</v-avatar>
 				</v-list-item-action>
 
 				<v-list-item-content>
-					<v-list-item-subtitle
-						class="black--text comment"
-						v-text="item.comment"
-					></v-list-item-subtitle>
-
-					<v-list-item-subtitle class="font-italic">
-						<display-time :time="item.createdAt"></display-time>
+					<v-list-item-subtitle class="mb-2">
+						<display-user :user="item.user" size="small"></display-user>
+						<span class="ml-2 grey--text">
+							<display-time :time="item.createdAt"></display-time>
+						</span>
 					</v-list-item-subtitle>
+
+					<v-list-item-subtitle
+						v-if="!item.edit"
+						class="black--text white-space"
+					>
+						<v-icon color="red" left v-if="newCheck(item.updatedAt)">
+							mdi-fire
+						</v-icon>
+						{{ item.comment }}
+					</v-list-item-subtitle>
+
+					<v-list-item-subtitle v-else>
+						<v-textarea
+							v-model="item.comment"
+							outlined
+							label="댓글수정"
+							placeholder="asd"
+							@click:append="update(item)"
+							@keypress.ctrl.enter="update(item)"
+							hide-details
+							auto-grow
+							rows="1"
+							clearable
+							dense
+						>
+						</v-textarea>
+					</v-list-item-subtitle>
+
+					<v-list-item-icon class="ma-0 pt-4 pb-2">
+						<v-icon small @click="like(item)" :color="liked(item) ? 'red' : ''">
+							mdi-heart
+						</v-icon>
+					</v-list-item-icon>
+
+					<!-- <v-list-item-action-text>
+						<v-btn icon @click="like(item)">
+							<v-icon small :color="liked(item) ? 'red' : ''">
+								mdi-heart
+							</v-icon>
+						</v-btn>
+						<span>{{ item.likeCount }}</span>
+
+						<v-btn>1</v-btn>
+					</v-list-item-action-text> -->
 				</v-list-item-content>
 
-				<v-list-item-action>
+				<v-list-item-icon class="align-self-start">
+					<v-icon> mdi-dots-vertical </v-icon>
+				</v-list-item-icon>
+
+				<!-- <v-list-item-action>
 					<v-btn icon @click="like(item)" text>
 						<v-icon small left :color="liked(item) ? 'red' : ''"
 							>mdi-heart</v-icon
 						>
 						<span>{{ item.likeCount }}</span>
 					</v-btn>
-				</v-list-item-action>
+				</v-list-item-action> -->
 
-				<v-list-item-action
+				<!-- <v-list-item-action
 					v-if="
 						(fireUser && fireUser.uid === item.uid) ||
 						(user && user.level === 0)
@@ -55,7 +107,7 @@
 					<v-btn icon @click="remove(item)">
 						<v-icon>mdi-delete</v-icon>
 					</v-btn>
-				</v-list-item-action>
+				</v-list-item-action> -->
 			</v-list-item>
 
 			<v-divider :key="i" v-if="i < items.length - 1"></v-divider>
@@ -145,6 +197,8 @@
 import { last } from 'lodash'
 import DisplayTime from '@/components/display-time'
 import DisplayUser from '@/components/display-user'
+import newCheck from '@/util/newCheck'
+
 const LIMIT = 5
 export default {
 	components: { DisplayTime, DisplayUser },
@@ -155,7 +209,8 @@ export default {
 			items: [],
 			unsubscribe: null,
 			lastDoc: null,
-			loading: false
+			loading: false,
+			newCheck
 		}
 	},
 	computed: {
@@ -296,8 +351,3 @@ export default {
 	}
 }
 </script>
-<style scoped>
-.comment {
-	white-space: pre-wrap;
-}
-</style>
