@@ -1,7 +1,23 @@
 <template>
-	<v-container style="max-width: 1200px" fluid>
-		<v-card v-if="items.length">
-			<v-toolbar flat dense>
+	<v-container style="max-width: 1200px" fluid v-if="!loaded">
+		<v-row>
+			<v-col cols="12" sm="6" v-for="i in 4" :key="i">
+				<v-skeleton-loader type="card"></v-skeleton-loader>
+			</v-col>
+		</v-row>
+	</v-container>
+
+	<v-container
+		style="max-width: 1200px"
+		fluid
+		v-else-if="loaded && !items.length"
+	>
+		<v-alert type="warning" border="left"> 게시판이 없습니다 </v-alert>
+	</v-container>
+
+	<v-container style="max-width: 1200px" fluid v-else>
+		<v-card>
+			<v-toolbar flat>
 				<v-toolbar-title>게시판 목록</v-toolbar-title>
 				<v-spacer />
 			</v-toolbar>
@@ -21,6 +37,9 @@
 									v-model="boardId"
 									label="게시판 아이디"
 									color="primary"
+									placeholder="주소에 사용 될 문자입니다"
+									outlined
+									hide-details
 								>
 								</v-text-field>
 							</v-card-text>
@@ -37,9 +56,9 @@
 					<v-col cols="12" sm="6" v-for="item in items" :key="item.id">
 						<v-card heigth="100%">
 							<v-subheader>
-								<v-icon color="red" left v-if="newCheck(item.updatedAt)"
-									>mdi-fire</v-icon
-								>
+								<v-icon color="red" left v-if="newCheck(item.updatedAt)">
+									mdi-fire
+								</v-icon>
 								{{ item.title }}
 								<v-spacer />
 
@@ -66,15 +85,44 @@
 							</v-card-text>
 
 							<v-list-item>
-								<v-list-item-title> 게시물수 </v-list-item-title>
-								<v-list-item-subtitle align="right" class="px-4">
-									{{ item.count }}
-								</v-list-item-subtitle>
+								<v-list-item-content>
+									<v-list-item-title> 작성자 </v-list-item-title>
+									<v-list-item-subtitle>
+										<display-user :user="item.user"></display-user>
+									</v-list-item-subtitle>
+								</v-list-item-content>
+							</v-list-item>
+
+							<v-list-item>
+								<v-list-item-content>
+									<v-list-item-title> 작성일 </v-list-item-title>
+									<v-list-item-subtitle class="body-2 grey--text">
+										<display-time :time="item.createdAt"></display-time>
+									</v-list-item-subtitle>
+								</v-list-item-content>
+							</v-list-item>
+
+							<v-list-item>
+								<v-list-item-content>
+									<v-list-item-title> 수정일 </v-list-item-title>
+									<v-list-item-subtitle class="body-2 grey--text">
+										<display-time :time="item.updatedAt"></display-time>
+									</v-list-item-subtitle>
+								</v-list-item-content>
+							</v-list-item>
+
+							<v-list-item>
+								<v-list-item-content>
+									<v-list-item-title> 게시물수 </v-list-item-title>
+									<v-list-item-subtitle class="body-2 grey--text">
+										{{ item.count }}
+									</v-list-item-subtitle>
+								</v-list-item-content>
 							</v-list-item>
 
 							<v-divider />
 
-							<v-list-item :to="`${$route.path}${item.id}`">
+							<v-list-item :to="`${$route.path}/${item.id}`">
 								<v-list-item-content> 전체 </v-list-item-content>
 								<v-list-item-action>
 									<v-btn icon>
@@ -88,7 +136,7 @@
 							<template v-for="(category, i) in item.categories">
 								<v-list-item
 									:key="category"
-									:to="`${$route.path}${item.id}?category=${category}`"
+									:to="`${$route.path}/${item.id}?category=${category}`"
 								>
 									<v-list-item-content> {{ category }} </v-list-item-content>
 									<v-list-item-action>
@@ -105,23 +153,34 @@
 
 					<v-col cols="12" sm="6" v-if="lastDoc">
 						<v-container fluid fill-height>
-							<v-btn>더보기</v-btn>
+							<v-btn
+								@click="more"
+								v-intersect="onIntersect"
+								text
+								color="primary"
+								block
+								:loading="loading"
+							>
+								<v-icon>mdi-plus-circle</v-icon>
+								더보기
+							</v-btn>
 						</v-container>
 					</v-col>
 				</v-row>
 			</v-card-text>
 		</v-card>
-
-		<v-skeleton-loader v-else type="card"></v-skeleton-loader>
 	</v-container>
 </template>
 
 <script>
 import { last } from 'lodash'
+import DisplayUser from '@/components/display-user'
+import DisplayTime from '@/components/display-time'
 import newCheck from '@/util/newCheck'
 const LIMIT = 5
 
 export default {
+	components: { DisplayTime, DisplayUser },
 	data() {
 		return {
 			unsubscribe: null,
@@ -132,7 +191,8 @@ export default {
 			sort: 'desc',
 			boardId: '',
 			loading: false,
-			newCheck
+			newCheck,
+			loaded: false
 		}
 	},
 	computed: {
@@ -179,13 +239,15 @@ export default {
 				.collection('boards')
 				.orderBy(this.order, this.sort)
 				.limit(LIMIT)
+			this.loaded = false
 			this.unsubscribe = this.ref.onSnapshot(sn => {
+				this.loaded = true
 				if (sn.empty) {
 					this.items = []
 					return
 				}
 				this.snapshotToItems(sn)
-			})
+			}, console.error)
 		},
 		async more() {
 			if (!this.lastDoc) throw Error('더이상 데이터가 없습니다')
@@ -202,7 +264,11 @@ export default {
 			if (isIntersecting) this.more()
 		},
 		async remove(item) {
-			await this.$firebase.firestore.collection('boards').doc(item.id).delete()
+			await this.$firebase
+				.firestore()
+				.collection('boards')
+				.doc(item.id)
+				.delete()
 			const i = this.items.findIndex(el => el.id === item.id)
 			this.items.splice(i, 1)
 		}

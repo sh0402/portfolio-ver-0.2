@@ -1,14 +1,18 @@
 <template>
-	<v-container style="max-width: 1200px" fluid>
+	<v-container style="max-width: 1200px" fluid v-if="!loaded">
+		<v-skeleton-loader type="article"></v-skeleton-loader>
+	</v-container>
+
+	<v-container style="max-width: 1200px" fluid v-else-if="loaded && !article">
+		<v-alert type="warning" border="left">게시물이 없습니다</v-alert>
+	</v-container>
+
+	<v-container style="max-width: 1200px" fluid v-else>
 		<v-card v-if="article">
 			<v-toolbar flat>
 				<v-btn icon>
 					<v-icon @click="back"> mdi-chevron-left </v-icon>
 				</v-btn>
-
-				<!-- <v-chip color="info" small label class="mr-4">
-					{{ article.category }}
-				</v-chip> -->
 
 				<v-btn color="info" small depressed class="mr-4" @click="goCategory">
 					{{ article.category }}
@@ -21,10 +25,6 @@
 					</v-icon>
 					<span v-text="article.title"></span>
 				</template>
-
-				<!-- <v-toolbar-title>
-					{{ article.title }}
-				</v-toolbar-title> -->
 			</v-toolbar>
 
 			<v-divider />
@@ -169,7 +169,8 @@ export default {
 			article: null,
 			doc: null,
 			dialog: false,
-			newCheck
+			newCheck,
+			loaded: false
 		}
 	},
 	computed: {
@@ -211,7 +212,9 @@ export default {
 			this.ref.update({
 				readCount: this.$firebase.firestore.FieldValue.increment(1)
 			})
+			this.loaded = false
 			this.unsubscribe = this.ref.onSnapshot(doc => {
+				this.loaded = true
 				if (!doc.exists) {
 					this.back()
 					return

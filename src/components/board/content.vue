@@ -1,6 +1,14 @@
 <template>
-	<v-container style="max-width: 1200px" fluid>
-		<v-card v-if="board">
+	<v-container style="max-width: 1200px" fluid v-if="!loaded">
+		<v-skeleton-loader type="card" v-for="i in 3" :key="i"></v-skeleton-loader>
+	</v-container>
+
+	<v-container style="max-width: 1200px" fluid v-else-if="loaded && !board">
+		<v-alert type="warning" border="left">데이터가 없습니다</v-alert>
+	</v-container>
+
+	<v-container style="max-width: 1200px" fluid v-else>
+		<v-card>
 			<v-toolbar color="transparent" flat>
 				<v-sheet width="120" class="mr-2">
 					<v-select
@@ -213,7 +221,6 @@
 				</v-card>
 			</v-dialog>
 		</v-card>
-		<v-skeleton-loader type="card" v-else></v-skeleton-loader>
 	</v-container>
 </template>
 
@@ -233,7 +240,8 @@ export default {
 			loading: false,
 			dialog: false,
 			dialogBoardInfo: false,
-			newCheck
+			newCheck,
+			loaded: false
 		}
 	},
 	watch: {
@@ -264,6 +272,7 @@ export default {
 				.collection('boards')
 				.doc(this.boardId)
 			this.unsubscribe = ref.onSnapshot(doc => {
+				this.loaded = true
 				if (!doc.exists) return this.write()
 				const item = doc.data()
 				item.createdAt = item.createdAt.toDate()

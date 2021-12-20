@@ -1,5 +1,24 @@
 <template>
-	<v-container fluid v-if="items.length" class="pa-0">
+	<v-container style="max-width: 1200px" fluid v-if="!loaded">
+		<v-skeleton-loader
+			type="article"
+			v-for="i in 3"
+			:key="i"
+		></v-skeleton-loader>
+	</v-container>
+
+	<v-container
+		style="max-width: 1200px"
+		fluid
+		v-else-if="loaded && !items.length"
+	>
+		<v-alert type="warning" border="left">
+			게시물이 없습니다
+			<v-icon>mdi-plus</v-icon> 버튼을 눌러서 게시물을 작성하세요
+		</v-alert>
+	</v-container>
+
+	<v-container fluid v-else class="pa-0">
 		<template v-for="(item, i) in items">
 			<template v-if="$store.state.boardTypeList">
 				<v-list-item
@@ -100,11 +119,12 @@
 
 					<v-spacer />
 
+					<!-- 옵션버튼으로 변경 -->
 					<v-btn
 						icon
 						small
 						v-if="fireUser && fireUser.uid === item.uid"
-						:to="`/${item.id}?action=write`"
+						:to="`${boardId}/${item.id}?action=write`"
 					>
 						<v-icon>mdi-dots-vertical</v-icon>
 					</v-btn>
@@ -125,14 +145,18 @@
 						</v-icon>
 						{{ item.title }}
 					</v-card-title>
-					<v-card-text>
-						<viewer v-if="item.summary" :initialValue="item.summary"></viewer>
+					<v-list-item-subtitle>
+						<viewer
+							ref="editor"
+							v-if="item.summary"
+							:initialValue="getSummary(item.summary, 100, '!')"
+						></viewer>
 						<v-container v-else>
 							<v-row justify="center" align="center">
 								<v-progress-circular indeterminate></v-progress-circular>
 							</v-row>
 						</v-container>
-					</v-card-text>
+					</v-list-item-subtitle>
 				</v-card>
 
 				<v-card-actions>
@@ -270,11 +294,11 @@
 		</v-list-item>
 	</v-container>
 
-	<v-container fluid v-else>
+	<!-- <v-container fluid v-else>
 		<v-alert type="warning" border="left" class="mb-0">
 			게시물이 없습니다
 		</v-alert>
-	</v-container>
+	</v-container> -->
 </template>
 
 <script>
@@ -301,7 +325,8 @@ export default {
 			loading: false,
 			dialog: false,
 			getSummary,
-			newCheck
+			newCheck,
+			loaded: false
 		}
 	},
 	computed: {
@@ -377,8 +402,9 @@ export default {
 					.orderBy(this.order, this.sort)
 					.limit(LIMIT)
 			}
-
+			this.loaded = false
 			this.unsubscribe = this.ref.onSnapshot(sn => {
+				this.loaded = true
 				if (sn.empty) {
 					this.items = []
 					return

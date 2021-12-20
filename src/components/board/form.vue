@@ -1,5 +1,19 @@
 <template>
-	<v-container v-if="user && user.level === 0" style="max-width: 1200px" fluid>
+	<v-container style="max-width: 1200px" fluid v-if="!loaded">
+		<v-skeleton-loader type="card" v-for="i in 3" :key="i"></v-skeleton-loader>
+	</v-container>
+
+	<v-container
+		style="max-width: 1200px"
+		fluid
+		v-else-if="(loaded && !user) || (user && user.level > 0)"
+	>
+		<v-alert type="warning" border="left">
+			게시판 생성은 관리자만 할 수 있습니다
+		</v-alert>
+	</v-container>
+
+	<v-container style="max-width: 1200px" fluid v-else>
 		<v-form>
 			<v-card :loading="loading">
 				<v-toolbar color="transparent" dense flat>
@@ -126,11 +140,11 @@
 		</v-form>
 	</v-container>
 
-	<v-container v-else fluid>
+	<!-- <v-container v-else fluid>
 		<v-alert type="warning" border="left" class="mb-0">
 			게시판이 없습니다
 		</v-alert>
-	</v-container>
+	</v-container> -->
 </template>
 
 <script>
@@ -149,7 +163,8 @@ export default {
 			loading: false,
 			ref: null,
 			category: '',
-			tag: ''
+			tag: '',
+			loaded: false
 		}
 	},
 	computed: {
@@ -171,7 +186,9 @@ export default {
 				.firestore()
 				.collection('boards')
 				.doc(this.boardId)
+			this.loaded = false
 			const doc = await this.ref.get()
+			this.loaded = true
 			this.exists = doc.exists
 			if (this.exists) {
 				const item = doc.data()

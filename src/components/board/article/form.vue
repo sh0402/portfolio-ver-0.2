@@ -1,5 +1,15 @@
 <template>
-	<v-container style="max-width: 1200px" fluid>
+	<v-container style="max-width: 1200px" fluid v-if="!loaded">
+		<v-skeleton-loader type="article"></v-skeleton-loader>
+	</v-container>
+
+	<v-container style="max-width: 1200px" fluid v-else-if="loaded && !board">
+		<v-alert type="warning" border="left">
+			게시판 정보를 불러오지 못했습니다
+		</v-alert>
+	</v-container>
+
+	<v-container style="max-width: 1200px" fluid v-else>
 		<v-form>
 			<v-card :loading="loading">
 				<v-toolbar color="transparent" dense flat>
@@ -11,13 +21,7 @@
 
 					<v-spacer />
 
-					<v-btn
-						text
-						color="success"
-						@click="save"
-						:disabled="!user"
-						class="pa-0"
-					>
+					<v-btn text color="success" @click="save" :disabled="!user">
 						Save
 					</v-btn>
 
@@ -68,7 +72,7 @@
 								ref="editor"
 								initialEditType="wysiwyg"
 								height="400px"
-								:options="{}"
+								:options="options"
 							></editor>
 
 							<template v-else>
@@ -78,7 +82,7 @@
 									ref="editor"
 									initialEditType="wysiwyg"
 									height="400px"
-									:options="{}"
+									:options="options"
 								></editor>
 
 								<v-container v-else>
@@ -90,6 +94,15 @@
 						</v-col>
 					</v-row>
 				</v-card-text>
+
+				<v-divider />
+
+				<v-card-actions>
+					<v-spacer />
+					<v-btn text color="success" @click="save" :disabled="!user">
+						Save
+					</v-btn>
+				</v-card-actions>
 			</v-card>
 		</v-form>
 	</v-container>
@@ -107,13 +120,21 @@ export default {
 				category: '',
 				tags: [],
 				title: '',
-				content: ''
+				content: '',
+				images: []
 			},
 			exists: false,
 			loading: false,
 			ref: null,
 			article: null,
-			board: null
+			board: null,
+			loaded: false,
+			options: {
+				language: 'ko',
+				hooks: {
+					addImageBlobHook: this.addImageBlobHook
+				}
+			}
 		}
 	},
 	computed: {
@@ -139,9 +160,11 @@ export default {
 				.firestore()
 				.collection('boards')
 				.doc(this.boardId)
+			this.loaded = false
 			const docBoard = await this.ref.get()
+			this.loaded = true
 			this.board = docBoard.data()
-			if (this.articleId === 'new') return
+			// if (this.articleId === 'new') return
 			const doc = await this.ref
 				.collection('articles')
 				.doc(this.articleId)
@@ -153,6 +176,8 @@ export default {
 			this.form.title = item.title
 			this.form.category = item.category
 			this.form.tags = item.tags
+			this.form.images = item.images
+			if (!item.images) this.form.images = []
 			const { data } = await axios.get(item.url)
 			this.form.content = data
 		},
@@ -164,17 +189,16 @@ export default {
 			if (!md) throw Error('내용은 필수 항목입니다')
 			this.loading = true
 			try {
-				const createdAt = new Date()
 				const doc = {
 					title: this.form.title,
 					category: this.form.category,
 					tags: this.form.tags,
-					updatedAt: createdAt,
-					summary: getSummary(md, 300)
+					images: this.form.images,
+					updatedAt: new Date(),
+					summary: getSummary(md, 300, 'data:image')
 				}
-				if (this.articleId === 'new') {
-					const id = createdAt.getTime().toString()
-					const fn = id + '-' + this.fireUser.uid + '.md'
+				if (!this.exists) {
+					const fn = this.articleId + '-' + this.fireUser.uid + '.md'
 					const sn = await this.$firebase
 						.storage()
 						.ref()
@@ -183,7 +207,7 @@ export default {
 						.child(fn)
 						.putString(md)
 					doc.url = await sn.ref.getDownloadURL()
-					doc.createdAt = createdAt
+					doc.createdAt = new Date()
 					doc.commentCount = 0
 					doc.readCount = 0
 					doc.uid = this.$store.state.fireUser.uid
@@ -194,7 +218,7 @@ export default {
 					}
 					doc.likeCount = 0
 					doc.likeUids = []
-					await this.ref.collection('articles').doc(id).set(doc)
+					await this.ref.collection('articles').doc(this.articleId).set(doc)
 					this.$router.push('/board/' + this.boardId)
 				} else {
 					const fn = this.articleId + '-' + this.article.uid + '.md'
@@ -211,6 +235,44 @@ export default {
 			} finally {
 				this.loading = false
 			}
+		},
+		async imageUpload(file) {
+			if (!this.fireUser) throw Error('로그인이 필요합니다')
+			const id =
+				new Date().getTime() + '-' + this.fireUser.uid + '-' + file.name
+			const sn = await this.$firebase
+				.store()
+				.ref()
+				.child('images')
+				.child('boards')
+				.child(this.boardId)
+				.child(this.articleId)
+				.child(id)
+				.put(file)
+			const url = await sn.ref.getDownloadURL()
+			const image = {
+				origin: {
+					name: file.name,
+					size: file.size,
+					id: id,
+					url: url
+				},
+				thumbnail: {
+					name: '',
+					size: 0,
+					id: '',
+					url: ''
+				}
+			}
+			this.form.images.push(image)
+			return url
+		},
+		addImageBlobHook(blob, callback) {
+			this.imageUpload(blob)
+				.then(url => {
+					callback(url, 'img')
+				})
+				.catch(console.error)
 		}
 	}
 }
