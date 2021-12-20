@@ -16,6 +16,7 @@
     "@toast-ui/editor": "^2.5.4",
     "@toast-ui/vue-editor": "^2.5.4",
     "axios": "^0.24.0",
+    "browser-image-resizer": "^2.2.1",
     "core-js": "^3.6.5",
     "firebase": "^9.5.0",
     "moment": "^2.29.1",

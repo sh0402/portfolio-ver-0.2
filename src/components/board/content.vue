@@ -286,7 +286,7 @@ export default {
 		},
 		async articleWrite() {
 			this.$router.push({
-				path: this.$route.path + '/new',
+				path: this.$route.path + '/' + new Date().getTime(),
 				query: { action: 'write' }
 			})
 		},

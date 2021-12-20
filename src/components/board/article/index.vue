@@ -18,7 +18,7 @@
 		</v-alert>
 	</v-container>
 
-	<v-container fluid v-else class="pa-0">
+	<v-container fluid v-else class="pa-0 pb-2">
 		<template v-for="(item, i) in items">
 			<template v-if="$store.state.boardTypeList">
 				<v-list-item
@@ -145,9 +145,9 @@
 						</v-icon>
 						{{ item.title }}
 					</v-card-title>
-					<v-list-item-subtitle>
+
+					<v-card-text>
 						<viewer
-							ref="editor"
 							v-if="item.summary"
 							:initialValue="getSummary(item.summary, 100, '!')"
 						></viewer>
@@ -156,7 +156,7 @@
 								<v-progress-circular indeterminate></v-progress-circular>
 							</v-row>
 						</v-container>
-					</v-list-item-subtitle>
+					</v-card-text>
 				</v-card>
 
 				<v-card-actions>

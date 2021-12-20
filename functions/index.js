@@ -142,10 +142,11 @@ exports.onDeleteBoardArticle = functions
 		}
 
 		// remove storage
+		const doc = snap.data()
 		const ps = []
 		ps.push('boards')
 		ps.push(context.params.bid)
-		ps.push(context.params.aid + '-' + snap.data().uid + '.md')
+		ps.push(context.params.aid + '-' + doc.uid + '.md')
 
 		await admin
 			.storage()
@@ -153,6 +154,18 @@ exports.onDeleteBoardArticle = functions
 			.file(ps.join('/'))
 			.delete()
 			.catch(e => console.error('storage remove err: ' + e.message))
+
+		const images = []
+		images.push('images')
+		images.push('boards')
+		images.push(context.params.bid)
+		images.push(context.params.bid)
+		return admin
+			.storage()
+			.bucket()
+			.deleteFiles({
+				prefix: images.join('/')
+			})
 	})
 
 exports.onCreateBoardComment = functions
