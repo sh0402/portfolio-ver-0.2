@@ -70,12 +70,19 @@
 			<v-divider />
 
 			<v-card-text>
-				<viewer v-if="content" :initialValue="content"></viewer>
+				<viewer
+					ref="viewer"
+					v-if="content"
+					:initialValue="content"
+					@load="onEditorLoad"
+				></viewer>
 				<v-container v-else>
 					<v-row justify="center" align="center">
 						<v-progress-circular indeterminate></v-progress-circular>
 					</v-row>
 				</v-container>
+
+				<v-divider />
 			</v-card-text>
 
 			<v-card-actions class="pa-4">
@@ -157,10 +164,11 @@ import axios from 'axios'
 import DisplayTime from '@/components/display-time'
 import DisplayComment from '@/components/display-comment'
 import newCheck from '@/util/newCheck'
+import addYoutubeIframe from '@/util/addYoutubeIframe'
 
 export default {
 	components: { DisplayTime, DisplayComment },
-	props: ['boardId', 'articleId', 'category', 'tag'],
+	props: ['boardId', 'action', 'articleId', 'category', 'tag'],
 	data() {
 		return {
 			content: '',
@@ -170,7 +178,8 @@ export default {
 			doc: null,
 			dialog: false,
 			newCheck,
-			loaded: false
+			loaded: false,
+			html: ''
 		}
 	},
 	computed: {
@@ -190,6 +199,9 @@ export default {
 			this.subscribe()
 		},
 		articleId() {
+			this.subscribe()
+		},
+		action() {
 			this.subscribe()
 		}
 	},
@@ -230,7 +242,12 @@ export default {
 		async fetch(url) {
 			this.content = ''
 			const r = await axios.get(url)
-			this.content = typeof r.data === 'string' ? r.data : r.data.toString()
+			const html = typeof r.data === 'string' ? r.data : r.data.toString()
+			this.content = html
+		},
+		onEditorLoad(v) {
+			const el = v.preview.el
+			this.html = addYoutubeIframe(el, this.$vuetify.breakpoint)
 		},
 		async articleWrite() {
 			this.$router.push({ path: this.$route.path, query: { action: 'write' } })

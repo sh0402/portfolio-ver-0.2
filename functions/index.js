@@ -86,10 +86,33 @@ exports.onDeleteBoard = functions
 		await batch.commit()
 	})
 
+const removeOldTempFiles = async () => {
+	const moment = require('moment')
+	const sn = await db
+		.collection('tempFiles')
+		.where('createdAt', '<', moment().subtract(1, 'minutes').toDate())
+		.orderBy('createdAt')
+		.limit(5)
+		.get()
+	if (sn.empty) return
+	const batch = db.batch()
+	for (const doc of sn.docs) {
+		const file = doc.data()
+		await admin
+			.storage()
+			.bucket()
+			.file(file.name)
+			.delete()
+			.catch(e => console.error('tempFile remove err: ' + e.message))
+		batch.delete(doc.ref)
+	}
+	await batch.commit()
+}
+
 exports.onCreateBoardArticle = functions
 	.region(region)
 	.firestore.document('boards/{bid}/articles/{aid}')
-	.onCreate((snap, context) => {
+	.onCreate(async (snap, context) => {
 		const set = {
 			count: admin.firestore.FieldValue.increment(1)
 		}
@@ -98,21 +121,102 @@ exports.onCreateBoardArticle = functions
 			set.categories = admin.firestore.FieldValue.arrayUnion(doc.category)
 		if (doc.tags.length)
 			set.tags = admin.firestore.FieldValue.arrayUnion(...doc.tags)
-		return db.collection('boards').doc(context.params.bid).update(set)
+		try {
+			await db.collection('boards').doc(context.params.bid).update(set)
+		} catch (e) {
+			console.error('board info update error: ' + e.message)
+		}
+
+		if (doc.images.length) {
+			const ids = []
+			const thumbIds = []
+			doc.images.forEach(image => {
+				ids.push(image.id)
+				thumbIds.push(image.thumbId)
+			})
+			try {
+				const batch = db.batch()
+				const sn = await db.collection('tempFiles').where('id', 'in', ids).get()
+				sn.docs.forEach(doc => batch.delete(doc.ref))
+
+				const snt = await db
+					.collection('tempFiles')
+					.where('id', 'in', thumbIds)
+					.get()
+				snt.docs.forEach(doc => batch.delete(doc.ref))
+				await batch.commit()
+			} catch (e) {
+				console.error('tempFiles remove error: ' + e.message)
+			}
+		}
+
+		await removeOldTempFiles()
 	})
 
 exports.onUpdateBoardArticle = functions
 	.region(region)
 	.firestore.document('boards/{bid}/articles/{aid}')
-	.onUpdate((change, context) => {
+	.onUpdate(async (change, context) => {
+		const isEqual = require('lodash').isEqual
 		const set = {}
+		const beforeDoc = change.before.data()
 		const doc = change.after.data()
-		if (doc.category)
+		if (doc.category && beforeDoc.category !== doc.category)
 			set.categories = admin.firestore.FieldValue.arrayUnion(doc.category)
-		if (doc.tags.length)
+		if (doc.tags.length && isEqual(beforeDoc.tags, doc.tags))
 			set.tags = admin.firestore.FieldValue.arrayUnion(...doc.tags)
-		if (!Object.keys(set).length) return false
-		return db.collection('boards').doc(context.params.bid).update(set)
+		if (!Object.keys(set).length)
+			await db.collection('boards').doc(context.params.bid).update(set)
+
+		const deleteImages = beforeDoc.images.filter(before => {
+			return !doc.images.some(after => before.id === after.id)
+		})
+
+		const imgs = []
+		imgs.push('images')
+		imgs.push('boards')
+		imgs.push(context.params.bid)
+		imgs.push(context.params.aid)
+		const p = imgs.join('/') + '/'
+		for (const image of deleteImages) {
+			await admin
+				.storage()
+				.bucket()
+				.file(p + image.id)
+				.delete()
+				.catch(e =>
+					console.error('storage deleteImages remove err ' + e.message)
+				)
+			await admin
+				.storage()
+				.bucket()
+				.file(p + image.thumbId)
+				.delete()
+				.catch(e =>
+					console.error('storage deleteImages remove err ' + e.message)
+				)
+		}
+
+		const ids = []
+		const thumbIds = []
+		doc.images.forEach(image => {
+			ids.push(image.id)
+			thumbIds.push(image.thumbId)
+		})
+		try {
+			const batch = db.batch()
+			const sn = await db.collection('tempFiles').where('id', 'in', ids).get()
+			sn.docs.forEach(doc => batch.delete(doc.ref))
+
+			const snt = await db
+				.collection('tempFiles')
+				.where('id', 'in', thumbIds)
+				.get()
+			snt.docs.forEach(doc => batch.delete(doc.ref))
+			await batch.commit()
+		} catch (e) {
+			console.error('tempFiles remove error: ' + e.message)
+		}
 	})
 
 exports.onDeleteBoardArticle = functions
@@ -155,16 +259,16 @@ exports.onDeleteBoardArticle = functions
 			.delete()
 			.catch(e => console.error('storage remove err: ' + e.message))
 
-		const images = []
-		images.push('images')
-		images.push('boards')
-		images.push(context.params.bid)
-		images.push(context.params.bid)
+		const imgs = []
+		imgs.push('images')
+		imgs.push('boards')
+		imgs.push(context.params.bid)
+		imgs.push(context.params.aid)
 		return admin
 			.storage()
 			.bucket()
 			.deleteFiles({
-				prefix: images.join('/')
+				prefix: imgs.join('/')
 			})
 	})
 
@@ -190,4 +294,24 @@ exports.onDeleteBoardComment = functions
 			.collection('articles')
 			.doc(context.params.aid)
 			.update({ commentCount: admin.firestore.FieldValue.increment(-1) })
+	})
+
+exports.saveTempFiles = functions
+	.region(region)
+	.storage.object()
+	.onFinalize(async object => {
+		const last = require('lodash').last
+		const name = object.name
+		if (last(name.split('.')) === 'md') return
+		const createdAt = new Date()
+		const id = createdAt.getTime().toString()
+		const set = {
+			name,
+			contentType: object.contentType,
+			size: object.size,
+			crc32c: object.crc32c,
+			createdAt,
+			id: last(name.split('/'))
+		}
+		await db.collection('tempFiles').doc(id).set(set)
 	})

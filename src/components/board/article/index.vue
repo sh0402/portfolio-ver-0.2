@@ -149,7 +149,7 @@
 					<v-card-text>
 						<viewer
 							v-if="item.summary"
-							:initialValue="getSummary(item.summary, 100, '!')"
+							:initialValue="getSummary(item.summary, 300, '!')"
 						></viewer>
 						<v-container v-else>
 							<v-row justify="center" align="center">
