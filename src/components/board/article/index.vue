@@ -35,50 +35,47 @@
 					</v-list-item-avatar>
 
 					<v-list-item-content>
-						<v-list-item-title>
-							<template>
-								<v-icon color="error" left v-if="newCheck(item.updatedAt)">
-									mdi-fire
-								</v-icon>
-								<span v-text="item.title"></span>
-							</template>
+						<v-list-item-title class="mb-2">
+							<display-title :item="item"></display-title>
+						</v-list-item-title>
 
+						<v-list-item-subtitle class="grey--text caption mb-4">
+							<display-time :time="item.createdAt"></display-time>
+						</v-list-item-subtitle>
+
+						<v-list-item-subtitle>
 							<v-btn
-								v-if="category != item.category"
-								text
+								v-if="!$vuetify.breakpoint.xs && category != item.category"
+								color="primary"
 								small
-								color="grey"
 								depressed
+								outlined
 								:to="`${$route.path}?category=${item.category}`"
 							>
 								{{ item.category }}
+								<v-icon small>mdi-chevron-right</v-icon>
 							</v-btn>
-						</v-list-item-title>
-
-						<v-list-item-subtitle>
+						</v-list-item-subtitle>
+						<!-- <v-list-item-subtitle class="my-4">
 							{{ getSummary(item.summary, 100, '!') }}
-						</v-list-item-subtitle>
-
-						<v-list-item-subtitle
-							class="d-flex justify-space-between align-center"
-						>
-							<display-time :time="item.createdAt"></display-time>
-							<display-user :user="item.user" :size="'small'"></display-user>
-						</v-list-item-subtitle>
+						</v-list-item-subtitle> -->
 					</v-list-item-content>
 
 					<v-list-item-action>
-						<!-- <v-avatar size="20" class="mr-2">
-							<v-img :src="item.user.photoURL"></v-img>
-						</v-avatar> -->
+						<display-user :user="item.user" :size="'small'"></display-user>
+					</v-list-item-action>
 
-						<span class="body-2">
-							{{ item.user.displayName }}
-						</span>
+					<v-list-item-action>
+						<v-btn
+							icon
+							small
+							v-if="fireUser && fireUser.uid === item.uid"
+							:to="`${boardId}/${item.id}?action=write`"
+						>
+							<v-icon>mdi-dots-vertical</v-icon>
+						</v-btn>
 
-						<v-spacer />
-
-						<v-sheet class="mr-2">
+						<!-- <v-sheet class="mr-2">
 							<v-btn icon small>
 								<v-icon small color="grey"> mdi-heart </v-icon>
 							</v-btn>
@@ -90,7 +87,7 @@
 								<v-icon small color="grey">mdi-eye</v-icon>
 							</v-btn>
 							<span class="body-2 ma-0">{{ item.readCount }}</span>
-						</v-sheet>
+						</v-sheet> -->
 					</v-list-item-action>
 				</v-list-item>
 
@@ -305,17 +302,30 @@
 import { last } from 'lodash'
 import DisplayTime from '@/components/display-time'
 import DisplayUser from '@/components/display-user'
+import DisplayTitle from '@/components/display-title'
+//import DisplayCount from '@/components/display-count'
 import getSummary from '@/util/getSummary'
 import newCheck from '@/util/newCheck'
+// import addYoutubeIframe from '@/util/addYoutubeIframe'
 
 const LIMIT = 5
 
 export default {
-	components: { DisplayTime, DisplayUser },
+	components: {
+		DisplayTime,
+		DisplayUser,
+		DisplayTitle
+		//DisplayCount
+	},
 
 	props: ['board', 'boardId', 'category', 'tag'],
 	data() {
 		return {
+			tuiOptions: {
+				linkAttribute: {
+					target: '_blank'
+				}
+			},
 			items: [],
 			unsubscribe: null,
 			ref: null,

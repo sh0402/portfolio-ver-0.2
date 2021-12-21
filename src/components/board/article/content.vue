@@ -14,17 +14,24 @@
 					<v-icon @click="back"> mdi-chevron-left </v-icon>
 				</v-btn>
 
-				<v-btn color="info" small depressed class="mr-4" @click="goCategory">
+				<v-btn
+					color="primary"
+					small
+					depressed
+					outlined
+					class="mr-4"
+					@click="goCategory"
+				>
 					{{ article.category }}
 					<v-icon small right v-if="!category">mdi-chevron-right </v-icon>
 				</v-btn>
 
-				<template>
+				<!-- <template>
 					<v-icon color="red" left v-if="newCheck(article.updatedAt)">
 						mdi-fire
 					</v-icon>
 					<span v-text="article.title"></span>
-				</template>
+				</template> -->
 			</v-toolbar>
 
 			<v-divider />
@@ -36,9 +43,10 @@
 
 				<v-list-item two-line class="pa-0">
 					<v-list-item-content>
-						<v-list-item-title>
-							{{ article.title }}
+						<v-list-item-title class="text--primary body-1">
+							<display-title :item="article"></display-title>
 						</v-list-item-title>
+
 						<v-list-item-subtitle>
 							{{ article.user.displayName }}
 						</v-list-item-subtitle>
@@ -163,11 +171,12 @@
 import axios from 'axios'
 import DisplayTime from '@/components/display-time'
 import DisplayComment from '@/components/display-comment'
+import DisplayTitle from '@/components/display-title'
 import newCheck from '@/util/newCheck'
 import addYoutubeIframe from '@/util/addYoutubeIframe'
 
 export default {
-	components: { DisplayTime, DisplayComment },
+	components: { DisplayTime, DisplayComment, DisplayTitle },
 	props: ['boardId', 'action', 'articleId', 'category', 'tag'],
 	data() {
 		return {
