@@ -22,11 +22,9 @@
 						flat
 					/>
 				</v-sheet>
-				<!-- <v-chip color="primary" label class="mr-4">{{board.category}}</v-chip> -->
-				<!-- <v-toolbar-title v-text="board.title"></v-toolbar-title> -->
 
 				<template>
-					<v-icon color="red" left v-if="newCheck(board.updatedAt)">
+					<v-icon color="error" left v-if="newCheck(board.updatedAt)">
 						mdi-fire
 					</v-icon>
 					<span v-text="board.title"></span>
@@ -70,29 +68,6 @@
 
 						<v-spacer />
 
-						<!-- <v-menu offset-y left bottom min-width="150">
-							<template v-slot:activator="{ on, attrs }">
-								<v-btn icon v-bind="attrs" v-on="on">
-									<v-icon>mdi-dots-vertical</v-icon>
-								</v-btn>
-							</template>
-
-							<v-list>
-								<v-list-item class="px-1">
-									<v-btn
-										text
-										block
-										@click="write"
-										:disabled="user && user.level > 0"
-									>
-										Edit
-									</v-btn>
-								</v-list-item>
-								<v-list-item class="px-1">
-									<v-btn text block @click="dialog = false"> Close </v-btn>
-								</v-list-item>
-							</v-list>
-						</v-menu> -->
 						<template>
 							<v-btn icon small @click="dialogBoardInfo = true">
 								<v-icon>mdi-dots-vertical</v-icon>
@@ -172,6 +147,7 @@
 									color="info"
 									label
 									small
+									outlined
 									v-for="item in board.categories"
 									:key="item"
 									class="mt-2 mr-2"

@@ -1,13 +1,16 @@
 <template>
 	<v-card flat>
 		<v-card-title>
+			<v-avatar size="40" class="mr-4">
+				<v-img :src="article.user.photoURL"></v-img>
+			</v-avatar>
+
 			<v-textarea
 				v-model="comment"
-				outlined
 				label="댓글 작성"
 				placeholder="Ctrl + Enter로 작성 가능"
-				@click:append="save"
 				@keypress.ctrl.enter="save"
+				outlined
 				hide-details
 				auto-grow
 				rows="1"
@@ -15,65 +18,100 @@
 				dense
 			/>
 
-			<v-btn text small class="pa-0 ml-4" color="success" @click="save">
-				send
-			</v-btn>
+			<v-btn text small color="success" @click="save"> send </v-btn>
 		</v-card-title>
 
 		<template v-for="(item, i) in items">
-			<v-list-item :key="item.id">
-				<v-list-item-action class="align-self-start mr-6">
-					<v-avatar :size="$vuetify.breakpoint.sm ? 42 : 36">
-						<v-img :src="item.user.photoURL"></v-img>
-					</v-avatar>
-				</v-list-item-action>
+			<v-list :key="item.id">
+				<v-list-item>
+					<v-list-item-action class="align-self-start mr-4">
+						<v-avatar size="40">
+							<v-img :src="item.user.photoURL"></v-img>
+						</v-avatar>
+					</v-list-item-action>
 
-				<v-list-item-content>
-					<v-list-item-subtitle class="mb-2">
-						<display-user :user="item.user" size="small"></display-user>
-						<span class="ml-2 grey--text">
-							<display-time :time="item.createdAt"></display-time>
-						</span>
-					</v-list-item-subtitle>
+					<v-list-item-content>
+						<v-list-item-subtitle>
+							<span class="mr-2">
+								<display-user :user="item.user" size="small"></display-user>
+							</span>
 
-					<v-list-item-subtitle
-						v-if="!item.edit"
-						class="black--text white-space"
-					>
-						<v-icon color="red" left v-if="newCheck(item.updatedAt)">
-							mdi-fire
-						</v-icon>
-						{{ item.comment }}
-					</v-list-item-subtitle>
+							<span class="ml-2 grey--text">
+								<display-time :time="item.createdAt"></display-time>
+							</span>
+						</v-list-item-subtitle>
 
-					<v-list-item-subtitle v-else>
-						<v-textarea
-							v-model="item.comment"
-							outlined
-							label="댓글수정"
-							placeholder="asd"
-							@click:append="update(item)"
-							@keypress.ctrl.enter="update(item)"
-							hide-details
-							auto-grow
-							rows="1"
-							clearable
-							dense
+						<v-list-item-title
+							v-if="!item.edit"
+							class="black--text white-space mt-4"
 						>
-						</v-textarea>
-					</v-list-item-subtitle>
+							{{ item.comment }}
+							<span v-if="newCheck(item.updatedAt)" class="error--text caption">
+								new
+							</span>
+						</v-list-item-title>
 
-					<v-list-item-icon class="ma-0 pt-4 pb-2">
-						<v-icon small @click="like(item)" :color="liked(item) ? 'red' : ''">
-							mdi-heart
-						</v-icon>
-					</v-list-item-icon>
-				</v-list-item-content>
+						<v-list-item-subtitle v-else>
+							<v-textarea
+								v-model="item.comment"
+								outlined
+								label="댓글수정"
+								placeholder="asd"
+								@click:append="update(item)"
+								@keypress.ctrl.enter="update(item)"
+								hide-details
+								auto-grow
+								rows="1"
+								clearable
+								dense
+								class="mt-4 pr-4"
+							>
+							</v-textarea>
+						</v-list-item-subtitle>
 
-				<v-list-item-icon class="align-self-start">
-					<v-icon> mdi-dots-vertical </v-icon>
-				</v-list-item-icon>
-			</v-list-item>
+						<v-spacer />
+					</v-list-item-content>
+
+					<v-list-item-action class="align-self-start">
+						<v-menu offset-y left>
+							<template v-slot:activator="{ on }">
+								<v-btn icon small v-on="on">
+									<v-icon> mdi-dots-vertical </v-icon>
+								</v-btn>
+							</template>
+
+							<v-list class="pa-0">
+								<v-btn
+									block
+									text
+									tile
+									color="red"
+									@click="remove(item)"
+									class="px-6"
+								>
+									Delete
+								</v-btn>
+
+								<v-btn
+									block
+									text
+									tile
+									@click="item.edit = !item.edit"
+									:color="item.edit ? 'warning' : ''"
+									v-if="fireUser && fireUser.uid === item.uid"
+									class="px-6"
+								>
+									Edit
+								</v-btn>
+							</v-list>
+						</v-menu>
+					</v-list-item-action>
+				</v-list-item>
+
+				<v-list-item>
+					<display-time :time="item.createdAt"></display-time>
+				</v-list-item>
+			</v-list>
 
 			<v-divider :key="i" v-if="i < items.length - 1"></v-divider>
 		</template>
@@ -91,63 +129,6 @@
 			</v-btn>
 		</v-list-item>
 	</v-card>
-	<!-- <v-card flat>
-		<v-card-title>
-			<v-avatar size="40" class="mr-4">
-				<v-img :src="article.user.photoURL"></v-img>
-			</v-avatar>
-			<v-textarea
-				v-model="comment"
-				rows="1"
-				height="30"
-				outlined
-				label="댓글 달기..."
-				placeholder="Ctrl+Enter로 작성 가능"
-				hide-details
-				auto-grow
-				clearable
-				@keypress.ctrl.enter="save"
-				dense
-			>
-			</v-textarea>
-			<v-btn text @click="save" class="ml-2 pa-0">send</v-btn>
-		</v-card-title>
-		<template v-for="(item, i) in items">
-			<v-list-item :key="item.id">
-				<v-list-item-action>
-					<display-user :user="item.user"></display-user>
-				</v-list-item-action>
-				<v-list-item-content>
-					<v-list-item-subtitle
-						v-text="item.comment"
-						class="comment"
-					></v-list-item-subtitle>
-					<v-list-item-subtitle class="grey--text caption">
-						<display-time :time="item.createdAt"></display-time>
-					</v-list-item-subtitle>
-				</v-list-item-content>
-				<v-list-item-action>
-					<v-btn text @click="like(item)">
-						<v-icon left :color="liked(item) ? 'success' : ''"
-							>mdi-thumb-up</v-icon
-						>
-						<span>{{ item.likeCount }}</span>
-					</v-btn>
-				</v-list-item-action>
-				<v-list-item-action>
-					<v-btn icon @click="remove(item)">
-						<v-icon>mdi-close</v-icon>
-					</v-btn>
-				</v-list-item-action>
-			</v-list-item>
-			<v-divider :key="i" v-if="i < items.length - 1" />
-		</template>
-		<v-list-item v-if="lastDoc && items.length < article.commentCount">
-			<v-btn v-intersect="onIntersect" text color="primary" block @click="more">
-				more
-			</v-btn>
-		</v-list-item>
-	</v-card> -->
 </template>
 
 <script>
@@ -198,6 +179,7 @@ export default {
 					item.id = doc.id
 					item.createdAt = item.createdAt.toDate()
 					item.updatedAt = item.updatedAt.toDate()
+					item.edit = false
 					this.items.push(item)
 				} else {
 					findItem.comment = item.comment

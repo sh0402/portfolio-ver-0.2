@@ -8,8 +8,8 @@
 	</v-container>
 
 	<v-container style="max-width: 1200px" fluid v-else>
-		<v-card v-if="article">
-			<v-toolbar flat>
+		<v-card>
+			<v-toolbar flat color="transparent">
 				<v-btn icon>
 					<v-icon @click="back"> mdi-chevron-left </v-icon>
 				</v-btn>
@@ -151,13 +151,13 @@
 			<display-comment :article="article" :docRef="ref"></display-comment>
 		</v-card>
 
-		<v-card v-else>
+		<!-- <v-card v-else>
 			<v-container>
 				<v-row justify="center" align="center">
 					<v-progress-circular indeterminate></v-progress-circular>
 				</v-row>
 			</v-container>
-		</v-card>
+		</v-card> -->
 	</v-container>
 </template>
 

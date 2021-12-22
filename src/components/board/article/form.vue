@@ -35,7 +35,7 @@
 				<v-card-text>
 					<v-row>
 						<v-col cols="12" sm="3" v-if="board">
-							<v-combobox
+							<v-select
 								v-model="form.important"
 								:items="[
 									{ value: 0, text: '일반' },
@@ -140,7 +140,7 @@ export default {
 				title: '',
 				content: '',
 				images: [],
-				important: ''
+				important: 0
 			},
 			exists: false,
 			loading: false,
@@ -181,20 +181,6 @@ export default {
 	},
 	destroyed() {},
 	methods: {
-		// youtubePlugin() {
-		// 	this.$refs.editor.codeBlockManager.setReplacer('youtube', youtubeId => {
-		// 		console.log('here')
-		// 		// Indentify multiple code blocks
-		// 		const wrapperId = `yt${Math.random().toString(36).substr(2, 10)}`
-		// 		// Avoid sanitizing iframe tag
-		// 		setTimeout(this.renderYoutube.bind(null, wrapperId, youtubeId), 0)
-		// 		return `<div id="${wrapperId}"></div>`
-		// 	})
-		// },
-		// renderYoutube(wrapperId, youtubeId) {
-		// 	const el = document.querySelector(`#${wrapperId}`)
-		// 	el.innerHTML = `<iframe width="420" height="315" src="https://www.youtube.com/embed/${youtubeId}"></iframe>`
-		// },
 		async fetch() {
 			this.ref = this.$firebase
 				.firestore()

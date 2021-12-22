@@ -26,7 +26,7 @@
 					:key="item.id"
 					:to="
 						category
-							? `${boardId}/${item.id}?category`
+							? `${boardId}/${item.id}?category=${category}`
 							: `${boardId}/${item.id}`
 					"
 				>
@@ -51,6 +51,7 @@
 								depressed
 								outlined
 								:to="`${$route.path}?category=${item.category}`"
+								height="32"
 							>
 								{{ item.category }}
 								<v-icon small>mdi-chevron-right</v-icon>
@@ -75,7 +76,7 @@
 							<v-icon>mdi-dots-vertical</v-icon>
 						</v-btn>
 
-						<!-- <v-sheet class="mr-2">
+						<v-sheet class="mr-2">
 							<v-btn icon small>
 								<v-icon small color="grey"> mdi-heart </v-icon>
 							</v-btn>
@@ -87,116 +88,130 @@
 								<v-icon small color="grey">mdi-eye</v-icon>
 							</v-btn>
 							<span class="body-2 ma-0">{{ item.readCount }}</span>
-						</v-sheet> -->
+						</v-sheet>
 					</v-list-item-action>
 				</v-list-item>
 
 				<v-divider v-if="i < items.length - 1" :key="i" />
 			</template>
 
-			<v-card
-				v-else
-				:key="item.id"
-				:class="i < items.length - 1 ? 'mb-4' : ''"
-				class="ma-4"
-				outlined
-				:to="
-					category
-						? `${boardId}/${item.id}?category=${category}`
-						: `${boardId}/${item.id}`
-				"
-			>
-				<v-card-actions class="pb-0">
-					<!-- <v-avatar size="44">
-						<v-img :src="item.user.photoURL"></v-img>
-					</v-avatar> -->
+			<template v-else>
+				<v-card
+					:key="item.id"
+					:class="i < items.length - 1 ? 'mb-4' : ''"
+					class="ma-4 pa-4"
+					outlined
+					:to="
+						category
+							? `${boardId}/${item.id}?category=${category}`
+							: `${boardId}/${item.id}`
+					"
+				>
+					<v-card-actions>
+						<v-list-item-avatar size="48" class="align-self-start">
+							<v-img :src="item.user.photoURL"></v-img>
+						</v-list-item-avatar>
 
-					<v-list-item>
-						<v-list-item-subtitle>
+						<v-list-item-content>
+							<v-list-item-title>
+								<display-title :item="item"></display-title>
+							</v-list-item-title>
+
+							<v-list-item-subtitle class="grey--text caption">
+								<display-time :time="item.createdAt"></display-time>
+							</v-list-item-subtitle>
+						</v-list-item-content>
+
+						<v-list-item-action class="align-self-start">
 							<v-btn
-								v-if="category != item.category"
-								color="info"
-								text
-								depressed
-								max-height="24"
-								class="pa-0 justify-start"
-								:to="`${$route.path}?category=${item.category}`"
+								icon
+								small
+								v-if="fireUser && fireUser.uid === item.uid"
+								:to="`${boardId}/${item.id}?action=write`"
 							>
-								{{ item.category }}
-								<v-icon small>mdi-chevron-right</v-icon>
+								<v-icon>mdi-dots-vertical</v-icon>
+							</v-btn>
+						</v-list-item-action>
+					</v-card-actions>
+
+					<template v-if="!item.important">
+						<v-card-text>
+							<viewer
+								v-if="item.summary"
+								@load="onViewerLoad"
+								:options="tuiOptions"
+								:initialValue="item.summary"
+							></viewer>
+
+							<v-container v-else>
+								<v-row justify="center" align="center">
+									<v-progress-circular indeterminate></v-progress-circular>
+								</v-row>
+							</v-container>
+						</v-card-text>
+
+						<v-card-actions class="d-flex justify-center">
+							<v-btn text color="primary">
+								<v-icon left>mdi-dots-horizontal</v-icon>
+								자세히보기
 							</v-btn>
 
-							<v-spacer />
-						</v-list-item-subtitle>
+							<v-btn
+								v-if="fireUser && fireUser.uid === item.uid"
+								:to="`${boardId}/${item.id}?action=write`"
+								text
+								color="primary"
+							>
+								<v-icon left>mdi-pencil</v-icon>수정하기
+							</v-btn>
+						</v-card-actions>
+					</template>
 
-						<!-- 옵션버튼으로 변경 -->
-
-						<v-btn
-							icon
-							small
-							v-if="fireUser && fireUser.uid === item.uid"
-							:to="`/${item.id}?action=write`"
-						>
-							<v-icon>mdi-dots-vertical</v-icon>
-						</v-btn>
-					</v-list-item>
-				</v-card-actions>
-
-				<v-card-actions class="py-0">
-					<v-list-item>
-						<v-list-item-title>
-							<display-title :item="item"></display-title>
-						</v-list-item-title>
-
-						<v-spacer />
-
-						<v-list-item-subtitle class="d-flex justify-end">
-							<span class="grey--text caption">
-								<display-time
-									:time="item.createdAt"
-									class="caption"
-								></display-time>
-							</span>
-						</v-list-item-subtitle>
-					</v-list-item>
-				</v-card-actions>
-
-				<v-card-actions class="py-0">
-					<v-list-item>
-						<viewer
-							v-if="item.summary"
-							:initialValue="getSummary(item.summary, 300, '!')"
-						></viewer>
-						<v-container v-else>
-							<v-row justify="center" align="center">
-								<v-progress-circular indeterminate></v-progress-circular>
-							</v-row>
-						</v-container>
-					</v-list-item>
-				</v-card-actions>
-
-				<v-card-actions class="pt-0">
-					<v-list-item>
+					<v-card-actions>
 						<display-user :user="item.user" :size="`small`"></display-user>
 
-						<v-spacer />
+						<v-btn small icon class="ml-2">
+							<v-icon small color="grey"> mdi-heart </v-icon>
+						</v-btn>
+						<span class="body-2">{{ item.likeCount }}</span>
 
-						<v-sheet class="mr-2">
-							<v-btn icon small>
-								<v-icon small color="grey"> mdi-heart </v-icon>
-							</v-btn>
-							<span class="body-2 ma-0">{{ item.likeCount }}</span>
-						</v-sheet>
+						<v-btn small icon>
+							<v-icon small color="grey">mdi-eye</v-icon>
+						</v-btn>
+						<span class="body-2">{{ item.readCount }}</span>
+					</v-card-actions>
 
-						<v-sheet class="mr-2">
-							<v-btn icon small>
-								<v-icon small color="grey">mdi-eye</v-icon>
-							</v-btn>
-							<span class="body-2 ma-0">{{ item.readCount }}</span>
-						</v-sheet>
-					</v-list-item>
-				</v-card-actions>
-			</v-card>
+					<v-card-actions>
+						<v-btn
+							color="primary"
+							depressed
+							small
+							outlined
+							class="mr-4"
+							:to="`${$route.path}?category=${item.category}`"
+							height="32"
+						>
+							{{ item.category }}
+							<v-icon small>mdi-chevron-right</v-icon>
+						</v-btn>
+
+						<v-chip
+							label
+							outlined
+							color="info"
+							class="mr-2"
+							v-for="tag in item.tags"
+							:key="tag"
+							v-text="tag"
+						></v-chip>
+					</v-card-actions>
+				</v-card>
+
+				<!-- <v-divider
+					v-if="i < items.length - 1 && $vuetify.breakpoint.xs"
+					:key="i"
+				/> -->
+			</template>
 		</template>
 
 		<v-list-item v-if="lastDoc && items.length < board.count">
@@ -219,10 +234,9 @@ import { last } from 'lodash'
 import DisplayTime from '@/components/display-time'
 import DisplayUser from '@/components/display-user'
 import DisplayTitle from '@/components/display-title'
-//import DisplayCount from '@/components/display-count'
 import getSummary from '@/util/getSummary'
 import newCheck from '@/util/newCheck'
-// import addYoutubeIframe from '@/util/addYoutubeIframe'
+import addYoutubeIframe from '@/util/addYoutubeIframe'
 
 const LIMIT = 5
 
@@ -231,7 +245,6 @@ export default {
 		DisplayTime,
 		DisplayUser,
 		DisplayTitle
-		//DisplayCount
 	},
 
 	props: ['board', 'boardId', 'category', 'tag'],
@@ -300,9 +313,12 @@ export default {
 					findItem.categories = item.categories
 					findItem.tags = item.tags
 					findItem.updatedAt = item.updatedAt.toDate()
+					findItem.important = item.important
 				}
 			})
 			this.items.sort((before, after) => {
+				if (after.important > before.important) return 1
+				else if (after.important < before.important) return -1
 				return Number(after.id) - Number(before.id)
 			})
 		},
@@ -316,6 +332,7 @@ export default {
 					.collection('boards')
 					.doc(this.boardId)
 					.collection('articles')
+					.orderBy('important', 'desc')
 					.orderBy(this.order, this.sort)
 					.limit(LIMIT)
 			} else {
@@ -325,6 +342,7 @@ export default {
 					.doc(this.boardId)
 					.collection('articles')
 					.where('category', '==', this.category)
+					.orderBy('important', 'desc')
 					.orderBy(this.order, this.sort)
 					.limit(LIMIT)
 			}
@@ -354,6 +372,13 @@ export default {
 		},
 		onIntersect(entries, observer, isIntersecting) {
 			if (isIntersecting) this.more()
+		},
+		liked(item) {
+			if (!this.fireUser) return false
+			return item.likeUids.includes(this.fireUser.uid)
+		},
+		onViewerLoad(v) {
+			addYoutubeIframe(v.preview.el, this.$vuetify.breakpoint)
 		}
 	}
 }
