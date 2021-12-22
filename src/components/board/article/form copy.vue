@@ -21,9 +21,9 @@
 
 					<v-spacer />
 
-					<!-- <v-btn text color="success" @click="save" :disabled="!user">
+					<v-btn text color="success" @click="save" :disabled="!user">
 						Save
-					</v-btn> -->
+					</v-btn>
 
 					<v-btn icon @click="$router.push('/board/' + boardId)">
 						<v-icon>mdi-close</v-icon>
@@ -34,21 +34,7 @@
 
 				<v-card-text>
 					<v-row>
-						<v-col cols="12" sm="3" v-if="board">
-							<v-combobox
-								v-model="form.important"
-								:items="[
-									{ value: 0, text: '일반' },
-									{ value: 1, text: '공지' },
-									{ value: 2, text: '중요' }
-								]"
-								label="유형"
-								outlined
-								hide-details
-							/>
-						</v-col>
-
-						<v-col cols="12" sm="3" v-if="board">
+						<v-col cols="12" sm="4" v-if="board">
 							<v-combobox
 								v-model="form.category"
 								:items="board.categories"
@@ -58,7 +44,7 @@
 							/>
 						</v-col>
 
-						<v-col cols="12" sm="6" v-if="board">
+						<v-col cols="12" sm="8" v-if="board">
 							<v-combobox
 								v-model="form.tags"
 								:items="board.tags"
@@ -113,9 +99,6 @@
 
 				<v-card-actions>
 					<v-spacer />
-					<v-btn text color="grey" @click="$router.push('/board/' + boardId)">
-						Close
-					</v-btn>
 					<v-btn text color="success" @click="save" :disabled="!user">
 						Save
 					</v-btn>
@@ -139,8 +122,7 @@ export default {
 				tags: [],
 				title: '',
 				content: '',
-				images: [],
-				important: ''
+				images: []
 			},
 			exists: false,
 			loading: false,
@@ -181,20 +163,20 @@ export default {
 	},
 	destroyed() {},
 	methods: {
-		// youtubePlugin() {
-		// 	this.$refs.editor.codeBlockManager.setReplacer('youtube', youtubeId => {
-		// 		console.log('here')
-		// 		// Indentify multiple code blocks
-		// 		const wrapperId = `yt${Math.random().toString(36).substr(2, 10)}`
-		// 		// Avoid sanitizing iframe tag
-		// 		setTimeout(this.renderYoutube.bind(null, wrapperId, youtubeId), 0)
-		// 		return `<div id="${wrapperId}"></div>`
-		// 	})
-		// },
-		// renderYoutube(wrapperId, youtubeId) {
-		// 	const el = document.querySelector(`#${wrapperId}`)
-		// 	el.innerHTML = `<iframe width="420" height="315" src="https://www.youtube.com/embed/${youtubeId}"></iframe>`
-		// },
+		youtubePlugin() {
+			this.$refs.editor.codeBlockManager.setReplacer('youtube', youtubeId => {
+				console.log('here')
+				// Indentify multiple code blocks
+				const wrapperId = `yt${Math.random().toString(36).substr(2, 10)}`
+				// Avoid sanitizing iframe tag
+				setTimeout(this.renderYoutube.bind(null, wrapperId, youtubeId), 0)
+				return `<div id="${wrapperId}"></div>`
+			})
+		},
+		renderYoutube(wrapperId, youtubeId) {
+			const el = document.querySelector(`#${wrapperId}`)
+			el.innerHTML = `<iframe width="420" height="315" src="https://www.youtube.com/embed/${youtubeId}"></iframe>`
+		},
 		async fetch() {
 			this.ref = this.$firebase
 				.firestore()
@@ -218,9 +200,8 @@ export default {
 			this.form.tags = item.tags
 			this.form.images = item.images
 			if (!item.images) this.form.images = []
-			this.form.important = item.important
 			const { data } = await axios.get(item.url)
-			this.form.content = typeof data === 'string' ? data : data.toString()
+			this.form.content = data
 		},
 		async save() {
 			if (!this.fireUser) throw Error('로그인이 필요합니다')
@@ -234,10 +215,9 @@ export default {
 					title: this.form.title,
 					category: this.form.category,
 					tags: this.form.tags,
-					images: this.findImagesFromDoc(md, this.form.images), //this.form.images
+					images: this.findImagesFromDoc(md, this.form.images),
 					updatedAt: new Date(),
-					summary: getSummary(md, 300, 'data:image'),
-					important: this.form.important
+					summary: getSummary(md, 300, 'data:image')
 				}
 				if (!this.exists) {
 					const fn = this.articleId + '-' + this.fireUser.uid + '.md'

@@ -99,70 +99,51 @@
 				:key="item.id"
 				:class="i < items.length - 1 ? 'mb-4' : ''"
 				class="ma-4"
-				outlined
-				:to="
-					category
-						? `${boardId}/${item.id}?category=${category}`
-						: `${boardId}/${item.id}`
-				"
 			>
-				<v-card-actions class="pb-0">
-					<!-- <v-avatar size="44">
-						<v-img :src="item.user.photoURL"></v-img>
-					</v-avatar> -->
+				<v-subheader>
+					<v-btn
+						v-if="category != item.category"
+						color="info"
+						depressed
+						small
+						class="mr-4"
+						:to="`${$route.path}?category=${item.category}`"
+					>
+						{{ item.category }}
+					</v-btn>
 
-					<v-list-item>
-						<v-list-item-subtitle>
-							<v-btn
-								v-if="category != item.category"
-								color="info"
-								text
-								depressed
-								max-height="24"
-								class="pa-0 justify-start"
-								:to="`${$route.path}?category=${item.category}`"
-							>
-								{{ item.category }}
-								<v-icon small>mdi-chevron-right</v-icon>
-							</v-btn>
+					<display-time :time="item.createdAt"></display-time>
 
-							<v-spacer />
-						</v-list-item-subtitle>
+					<v-spacer />
 
-						<!-- 옵션버튼으로 변경 -->
+					<!-- 옵션버튼으로 변경 -->
+					<v-btn
+						icon
+						small
+						v-if="fireUser && fireUser.uid === item.uid"
+						:to="`${boardId}/${item.id}?action=write`"
+					>
+						<v-icon>mdi-dots-vertical</v-icon>
+					</v-btn>
+				</v-subheader>
 
-						<v-btn
-							icon
-							small
-							v-if="fireUser && fireUser.uid === item.uid"
-							:to="`/${item.id}?action=write`"
-						>
-							<v-icon>mdi-dots-vertical</v-icon>
-						</v-btn>
-					</v-list-item>
-				</v-card-actions>
+				<v-card
+					color="transparent"
+					flat
+					:to="
+						category
+							? `${boardId}/${item.id}?category=${category}`
+							: `${boardId}/${item.id}`
+					"
+				>
+					<v-card-title>
+						<v-icon color="red" class="mr-4" v-if="newCheck(item.updatedAt)">
+							mdi-fire
+						</v-icon>
+						{{ item.title }}
+					</v-card-title>
 
-				<v-card-actions class="py-0">
-					<v-list-item>
-						<v-list-item-title>
-							<display-title :item="item"></display-title>
-						</v-list-item-title>
-
-						<v-spacer />
-
-						<v-list-item-subtitle class="d-flex justify-end">
-							<span class="grey--text caption">
-								<display-time
-									:time="item.createdAt"
-									class="caption"
-								></display-time>
-							</span>
-						</v-list-item-subtitle>
-					</v-list-item>
-				</v-card-actions>
-
-				<v-card-actions class="py-0">
-					<v-list-item>
+					<v-card-text>
 						<viewer
 							v-if="item.summary"
 							:initialValue="getSummary(item.summary, 300, '!')"
@@ -172,32 +153,129 @@
 								<v-progress-circular indeterminate></v-progress-circular>
 							</v-row>
 						</v-container>
-					</v-list-item>
-				</v-card-actions>
+					</v-card-text>
+				</v-card>
 
-				<v-card-actions class="pt-0">
-					<v-list-item>
-						<display-user :user="item.user" :size="`small`"></display-user>
+				<v-card-actions>
+					<v-avatar size="20" class="mr-2">
+						<v-img :src="item.user.photoURL"></v-img>
+					</v-avatar>
 
-						<v-spacer />
+					<span class="body-2">
+						{{ item.user.displayName }}
+					</span>
 
-						<v-sheet class="mr-2">
-							<v-btn icon small>
-								<v-icon small color="grey"> mdi-heart </v-icon>
-							</v-btn>
-							<span class="body-2 ma-0">{{ item.likeCount }}</span>
-						</v-sheet>
+					<v-spacer />
 
-						<v-sheet class="mr-2">
-							<v-btn icon small>
-								<v-icon small color="grey">mdi-eye</v-icon>
-							</v-btn>
-							<span class="body-2 ma-0">{{ item.readCount }}</span>
-						</v-sheet>
-					</v-list-item>
+					<v-sheet class="mr-2">
+						<v-btn icon small>
+							<v-icon small color="grey"> mdi-heart </v-icon>
+						</v-btn>
+						<span class="body-2 ma-0">{{ item.likeCount }}</span>
+					</v-sheet>
+
+					<v-sheet class="mr-2">
+						<v-btn icon small>
+							<v-icon small color="grey">mdi-eye</v-icon>
+						</v-btn>
+						<span class="body-2 ma-0">{{ item.readCount }}</span>
+					</v-sheet>
 				</v-card-actions>
 			</v-card>
 		</template>
+
+		<!-- <template v-for="(item, i) in items">
+			<v-card :key="item.id" :class="i < items.length - 1 ? 'mb-4' : ''">
+				<v-subheader>
+					<v-btn
+						v-if="category != item.category"
+						color="info"
+						depressed
+						small
+						class="mr-4"
+						:to="`${$route.path}?category=${item.category}`"
+					>
+						{{ item.category }}
+					</v-btn>
+
+					<display-time :time="item.createdAt"></display-time>
+
+					<v-spacer />
+
+					<v-btn
+						icon
+						small
+						v-if="fireUser && fireUser.uid === item.uid"
+						:to="`${boardId}/${item.id}?action=write`"
+					>
+						<v-icon>mdi-dots-vertical</v-icon>
+					</v-btn>
+				</v-subheader>
+				<v-card
+					color="transparent"
+					flat
+					:to="
+						category
+							? `${boardId}/${item.id}?category=${category}`
+							: `${boardId}/${item.id}`
+					"
+				>
+					<v-card-title>
+						{{ item.title }}
+					</v-card-title>
+
+					<v-card-text>
+						<viewer v-if="item.summary" :initialValue="item.summary"></viewer>
+						<v-container v-else>
+							<v-row justify="center" align="center">
+								<v-progress-circular indeterminate></v-progress-circular>
+							</v-row>
+						</v-container>
+					</v-card-text>
+				</v-card>
+
+				<v-card-actions dense>
+					<v-avatar size="20" class="mr-2">
+						<v-img :src="item.user.photoURL"></v-img>
+					</v-avatar>
+
+					<span class="body-2">
+						{{ item.user.displayName }}
+					</span>
+
+					<v-spacer />
+
+					<v-sheet class="mr-2">
+						<v-btn icon small>
+							<v-icon small color="grey"> mdi-heart </v-icon>
+						</v-btn>
+						<span class="body-2 ma-0">{{ item.likeCount }}</span>
+					</v-sheet>
+
+					<v-sheet class="mr-2">
+						<v-btn icon small>
+							<v-icon small color="grey">mdi-eye</v-icon>
+						</v-btn>
+						<span class="body-2 ma-0">{{ item.readCount }}</span>
+					</v-sheet>
+				</v-card-actions>
+			</v-card>
+		</template> -->
+
+		<!-- <v-card-text class="mb-0">
+			<v-row justify="end">
+				<v-chip
+					small
+					label
+					outlined
+					color="info"
+					class="mr-2 mb-2"
+					v-for="tag in item.tags"
+					:key="tag"
+					v-text="tag"
+				></v-chip>
+			</v-row>
+		</v-card-text> -->
 
 		<v-list-item v-if="lastDoc && items.length < board.count">
 			<v-btn
@@ -212,6 +290,12 @@
 			</v-btn>
 		</v-list-item>
 	</v-container>
+
+	<!-- <v-container fluid v-else>
+		<v-alert type="warning" border="left" class="mb-0">
+			게시물이 없습니다
+		</v-alert>
+	</v-container> -->
 </template>
 
 <script>

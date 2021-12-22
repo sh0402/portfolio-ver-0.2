@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div class="d-flex align-center">
 		<template v-if="item.important && item.important > 0">
 			<template v-if="!$vuetify.breakpoint.xs">
 				<v-chip
@@ -29,12 +29,22 @@
 			</template>
 		</template>
 
-		<v-icon color="error" left v-if="newCheck(item.updatedAt)">mdi-fire</v-icon>
-
 		<v-icon color="accent" left v-if="item.images && item.images.length">
 			mdi-image
 		</v-icon>
-		<span v-text="item.title"></span>
+
+		<span class="mr-2" v-text="item.title"></span>
+
+		<v-btn
+			small
+			color="error"
+			max-height="24"
+			class="pa-0"
+			left
+			v-if="newCheck(item.updatedAt)"
+		>
+			new
+		</v-btn>
 	</div>
 </template>
 

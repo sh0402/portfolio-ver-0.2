@@ -25,6 +25,13 @@
 					{{ article.category }}
 					<v-icon small right v-if="!category">mdi-chevron-right </v-icon>
 				</v-btn>
+
+				<!-- <template>
+					<v-icon color="red" left v-if="newCheck(article.updatedAt)">
+						mdi-fire
+					</v-icon>
+					<span v-text="article.title"></span>
+				</template> -->
 			</v-toolbar>
 
 			<v-divider />
@@ -76,7 +83,6 @@
 					v-if="content"
 					:initialValue="content"
 					@load="onEditorLoad"
-					:options="tuiOptions"
 				></viewer>
 				<v-container v-else>
 					<v-row justify="center" align="center">
@@ -174,11 +180,6 @@ export default {
 	props: ['boardId', 'action', 'articleId', 'category', 'tag'],
 	data() {
 		return {
-			tuiOptions: {
-				linkAttribute: {
-					target: '_blank'
-				}
-			},
 			content: '',
 			ref: null,
 			unsubscribe: null,
@@ -186,7 +187,8 @@ export default {
 			doc: null,
 			dialog: false,
 			newCheck,
-			loaded: false
+			loaded: false,
+			html: ''
 		}
 	},
 	computed: {
@@ -249,7 +251,12 @@ export default {
 		async fetch(url) {
 			this.content = ''
 			const r = await axios.get(url)
-			this.content = typeof r.data === 'string' ? r.data : r.data.toString()
+			const html = typeof r.data === 'string' ? r.data : r.data.toString()
+			this.content = html
+		},
+		onEditorLoad(v) {
+			const el = v.preview.el
+			this.html = addYoutubeIframe(el, this.$vuetify.breakpoint)
 		},
 		async articleWrite() {
 			this.$router.push({ path: this.$route.path, query: { action: 'write' } })
@@ -328,10 +335,6 @@ export default {
 				path: us.join('/'),
 				query: { category: this.$article.category }
 			})
-		},
-		onEditorLoad(v) {
-			const el = v.preview.el
-			this.html = addYoutubeIframe(el, this.$vuetify.breakpoint)
 		}
 	}
 }
