@@ -1,6 +1,6 @@
 <template>
 	<div class="d-flex align-center">
-		<template v-if="item.important && item.important > 0">
+		<template v-if="item.important > 0">
 			<template>
 				<v-chip
 					:color="item.important === 1 ? 'success' : 'warning'"
@@ -38,7 +38,11 @@
 		<span
 			max-height="24"
 			class="error--text caption"
-			v-if="newCheck(item.updatedAt)"
+			v-if="
+				!item.important
+					? newCheck(item.updatedAt, 'hours', 1)
+					: newCheck(item.updatedAt, 'days', 1)
+			"
 		>
 			new
 		</span>

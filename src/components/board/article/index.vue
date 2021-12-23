@@ -30,7 +30,7 @@
 							: `${boardId}/${item.id}`
 					"
 				>
-					<v-list-item-avatar>
+					<v-list-item-avatar v-if="!item.important">
 						<v-img :src="item.user.photoURL"></v-img>
 					</v-list-item-avatar>
 
@@ -99,15 +99,10 @@
 				<v-card
 					:key="item.id"
 					:class="i < items.length - 1 ? 'mb-4' : ''"
-					class="ma-4 pa-4"
+					class="ma-4"
 					outlined
-					:to="
-						category
-							? `${boardId}/${item.id}?category=${category}`
-							: `${boardId}/${item.id}`
-					"
 				>
-					<v-card-actions>
+					<v-card-title>
 						<v-list-item-avatar size="48" class="align-self-start">
 							<v-img :src="item.user.photoURL"></v-img>
 						</v-list-item-avatar>
@@ -122,20 +117,40 @@
 							</v-list-item-subtitle>
 						</v-list-item-content>
 
-						<v-list-item-action class="align-self-start">
+						<v-list-item-action class="align-self-start"> </v-list-item-action>
+					</v-card-title>
+
+					<v-menu offset-y left>
+						<template v-slot:activator="{ on }">
 							<v-btn
 								icon
-								small
+								absolute
+								top
+								right
 								v-if="fireUser && fireUser.uid === item.uid"
-								:to="`${boardId}/${item.id}?action=write`"
+								v-on="on"
 							>
 								<v-icon>mdi-dots-vertical</v-icon>
 							</v-btn>
-						</v-list-item-action>
-					</v-card-actions>
+						</template>
 
-					<template v-if="!item.important">
-						<v-card-text>
+						<v-card width="150">
+							<v-btn block text color="error">Delete</v-btn>
+							<v-btn block text>Edit</v-btn>
+						</v-card>
+					</v-menu>
+
+					<v-card
+						tile
+						:to="
+							category
+								? `${boardId}/${item.id}?category=`
+								: `${boardId}/${item.id}`
+						"
+						flat
+						class="pa-2"
+					>
+						<v-card-text class="pa-0 px-2">
 							<viewer
 								v-if="item.summary"
 								@load="onViewerLoad"
@@ -165,9 +180,34 @@
 								<v-icon left>mdi-pencil</v-icon>수정하기
 							</v-btn>
 						</v-card-actions>
-					</template>
 
-					<v-card-actions>
+						<v-card-actions v-if="!item.important">
+							<v-btn
+								color="primary"
+								depressed
+								small
+								outlined
+								class="mr-4"
+								:to="`${$route.path}?category=${item.category}`"
+								height="32"
+							>
+								{{ item.category }}
+								<v-icon small>mdi-chevron-right</v-icon>
+							</v-btn>
+
+							<v-chip
+								label
+								outlined
+								color="info"
+								class="mr-2"
+								v-for="tag in item.tags"
+								:key="tag"
+								v-text="tag"
+							></v-chip>
+						</v-card-actions>
+					</v-card>
+
+					<v-card-actions v-if="!item.important" class="pa-4">
 						<display-user :user="item.user" :size="`small`"></display-user>
 
 						<v-btn small icon class="ml-2">
@@ -179,31 +219,6 @@
 							<v-icon small color="grey">mdi-eye</v-icon>
 						</v-btn>
 						<span class="body-2">{{ item.readCount }}</span>
-					</v-card-actions>
-
-					<v-card-actions>
-						<v-btn
-							color="primary"
-							depressed
-							small
-							outlined
-							class="mr-4"
-							:to="`${$route.path}?category=${item.category}`"
-							height="32"
-						>
-							{{ item.category }}
-							<v-icon small>mdi-chevron-right</v-icon>
-						</v-btn>
-
-						<v-chip
-							label
-							outlined
-							color="info"
-							class="mr-2"
-							v-for="tag in item.tags"
-							:key="tag"
-							v-text="tag"
-						></v-chip>
 					</v-card-actions>
 				</v-card>
 
@@ -262,7 +277,6 @@ export default {
 			order: 'createdAt',
 			sort: 'desc',
 			loading: false,
-			dialog: false,
 			getSummary,
 			newCheck,
 			loaded: false

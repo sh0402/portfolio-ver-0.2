@@ -40,7 +40,7 @@ export default (el, bp) => {
 			p.doc.nextSibling
 		)
 	})
-	console.log(el)
+	// console.log(el)
 
 	return el.innerHTML
 }

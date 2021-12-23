@@ -1,25 +1,27 @@
 <template>
 	<v-card flat>
-		<v-card-title>
-			<v-avatar size="40" class="mr-4">
-				<v-img :src="article.user.photoURL"></v-img>
-			</v-avatar>
+		<template v-if="items.length < 4">
+			<v-card-title>
+				<v-avatar size="40" class="mr-4">
+					<v-img :src="article.user.photoURL"></v-img>
+				</v-avatar>
 
-			<v-textarea
-				v-model="comment"
-				label="댓글 작성"
-				placeholder="Ctrl + Enter로 작성 가능"
-				@keypress.ctrl.enter="save"
-				outlined
-				hide-details
-				auto-grow
-				rows="1"
-				clearable
-				dense
-			/>
+				<v-textarea
+					v-model="comment"
+					label="댓글 작성"
+					placeholder="Ctrl + Enter로 작성 가능"
+					@keypress.ctrl.enter="save"
+					outlined
+					hide-details
+					auto-grow
+					rows="1"
+					clearable
+					dense
+				/>
 
-			<v-btn text small color="success" @click="save"> send </v-btn>
-		</v-card-title>
+				<v-btn text small color="success" @click="save"> send </v-btn>
+			</v-card-title>
+		</template>
 
 		<template v-for="(item, i) in items">
 			<v-list :key="item.id">
@@ -46,7 +48,10 @@
 							class="black--text white-space mt-4"
 						>
 							{{ item.comment }}
-							<span v-if="newCheck(item.updatedAt)" class="error--text caption">
+							<span
+								v-if="newCheck(item.updatedAt, 'minutes', 10)"
+								class="error--text caption"
+							>
 								new
 							</span>
 						</v-list-item-title>
@@ -68,6 +73,23 @@
 							>
 							</v-textarea>
 						</v-list-item-subtitle>
+
+						<v-list-item-title class="d-flex align-center mt-2 body-1">
+							<v-list-item-action-text class="mr-2">
+								<v-icon
+									small
+									@click="like(item)"
+									:color="liked(item) ? 'error' : ''"
+								>
+									mdi-heart
+								</v-icon>
+
+								{{ item.likeCount }}
+							</v-list-item-action-text>
+							<v-list-item-action-text>
+								<v-btn text small class="grey--text"> 댓글 </v-btn>
+							</v-list-item-action-text>
+						</v-list-item-title>
 
 						<v-spacer />
 					</v-list-item-content>
@@ -136,7 +158,9 @@ import { last } from 'lodash'
 import DisplayTime from '@/components/display-time'
 import DisplayUser from '@/components/display-user'
 import newCheck from '@/util/newCheck'
+
 const LIMIT = 5
+
 export default {
 	components: { DisplayTime, DisplayUser },
 	props: ['article', 'docRef'],
