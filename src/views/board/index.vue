@@ -8,7 +8,7 @@ import BoardIndex from '@/components/board/index'
 export default {
 	components: { BoardIndex },
 	computed: {
-		categoru() {
+		category() {
 			return this.$route.query.category
 		}
 	}
