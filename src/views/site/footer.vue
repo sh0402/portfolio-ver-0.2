@@ -2,35 +2,33 @@
 	<v-footer app color="primary" dark absolute :footer="footer">
 		<v-spacer></v-spacer>
 
-		<div>&copy; {{ new Date().getFullYear() + ' ' + footer }}</div>
+		<div>{{ footer }}</div>
 
-		<v-btn icon @click="openDialog">
-			<v-icon>mdi-square-edit-outline</v-icon>
+		<v-btn icon small v-if="$store.state.editable" @click="openDialog">
+			<v-icon>mdi-dots-vertical</v-icon>
 		</v-btn>
 
-		<v-dialog v-model="dialog" max-width="400" width="100%">
+		<v-dialog v-model="dialog" max-width="500" class="pa-2">
 			<v-card>
-				<v-card-title class="title">
-					제목 수정
-
-					<v-spacer />
-
-					<v-btn @click="save" color="success" text> save </v-btn>
-					<v-btn icon @click="dialog = false">
+				<v-card-title class="justify-space-between">
+					Footer Title
+					<v-btn icon small @click="dialog = false">
 						<v-icon>mdi-close</v-icon>
 					</v-btn>
 				</v-card-title>
 
 				<v-card-text>
-					<v-text-field
-						v-model="text"
-						outlined
-						label="제목"
-						@keypress.enter="save"
-						hide-details
-					>
-					</v-text-field>
+					<v-text-field v-model="text" label="제목"></v-text-field>
 				</v-card-text>
+
+				<v-card-title>
+					<v-spacer />
+
+					<v-btn small text @click="save" color="success"> save </v-btn>
+					<!-- <v-btn small text @click="dialog = false" color="error" class="pa-0">
+						close
+					</v-btn> -->
+				</v-card-title>
 			</v-card>
 		</v-dialog>
 	</v-footer>
@@ -48,6 +46,7 @@ export default {
 	methods: {
 		openDialog() {
 			this.dialog = true
+			this.text = this.footer
 		},
 		async save() {
 			try {

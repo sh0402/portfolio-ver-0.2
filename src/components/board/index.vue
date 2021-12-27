@@ -66,7 +66,7 @@
 									<v-btn
 										text
 										small
-										:to="`${$route.path}${item.id}?&action=write`"
+										:to="`${$route.path}/${item.id}?&action=write`"
 									>
 										수정
 									</v-btn>
@@ -122,7 +122,7 @@
 
 							<v-divider />
 
-							<v-list-item :to="`${$route.path}${item.id}`">
+							<v-list-item :to="`${$route.path}/${item.id}`">
 								<v-list-item-content> 전체 </v-list-item-content>
 								<v-list-item-action>
 									<v-btn icon>

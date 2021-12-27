@@ -1,41 +1,47 @@
 <template>
 	<v-card flat>
-		<template v-if="items.length > 4">
-			<v-card-title>
-				<v-textarea
-					v-model="comment"
-					outlined
-					label="댓글 작성"
-					placeholder="Ctrl + Enter로 작성 가능"
-					append-icon="mdi-comment-plus"
-					@click:append="save"
-					@keypress.ctrl.enter="save"
-					hide-details
-					auto-grow
-					rows="1"
-					clearable
-				/>
-			</v-card-title>
-			<v-divider />
-		</template>
+		<!-- <template v-if="items.length > 4">
+      <v-card-title>
+        <v-textarea
+          v-model="comment"
+          outlined
+          label="댓글 작성"
+          placeholder="Ctrl + Enter로 작성 가능"
+          append-icon="mdi-comment-plus"
+          @click:append="save"
+          @keypress.ctrl.enter="save"
+          hide-details
+          auto-grow
+          rows="1"
+          clearable />
+      </v-card-title>
+      <v-divider/>
+    </template> -->
 		<template v-for="(item, i) in items">
+			<v-divider :key="i" v-if="i > 0 && !replyDepth(item)"></v-divider>
+
 			<v-list-item :key="item.id">
-				<v-list-item-icon v-if="isReplay(item)">
-					<v-icon>mdi-subdirectory-arrow-right</v-icon>
-				</v-list-item-icon>
 				<v-list-item-content>
 					<v-list-item-subtitle
 						v-if="!item.edit"
 						class="black--text white-space"
 					>
+						<v-icon color="primary" v-for="i in replyDepth(item)" :key="i">
+							mdi-subdirectory-arrow-right
+						</v-icon>
+
 						<v-icon
 							color="error"
 							left
 							v-if="newCheck(item.updatedAt, 'minutes', 10)"
-							>mdi-fire</v-icon
 						>
+							mdi-fire
+						</v-icon>
+
 						{{ item.comment }}
+						<!-- <span>{{item.no}}</span> 디버깅용 -->
 					</v-list-item-subtitle>
+
 					<v-list-item-subtitle v-else>
 						<v-textarea
 							v-model="item.comment"
@@ -52,29 +58,53 @@
 							class="mt-2"
 						></v-textarea>
 					</v-list-item-subtitle>
+
 					<v-list-item-subtitle class="d-flex justify-end align-center">
-						<span class="font-italic mr-4"
-							><display-time :time="item.createdAt"></display-time
-						></span>
+						<span class="font-italic caption mr-4">
+							<display-time :time="item.createdAt"></display-time>
+						</span>
+
 						<display-user :user="item.user" size="small"></display-user>
 					</v-list-item-subtitle>
 					<v-list-item-title class="d-flex justify-end">
 						<v-btn
-							icon
-							@click="item.edit = !item.edit"
-							:color="item.edit ? 'warning' : ''"
 							v-if="fireUser && fireUser.uid === item.uid"
+							@click="item.edit = !item.edit"
+							:color="item.edit ? 'warning' : 'primary'"
+							text
 						>
-							<v-icon>mdi-pencil</v-icon>
+							<v-icon left>mdi-pencil</v-icon>
+							수정
 						</v-btn>
+
 						<v-btn
-							v-if="fireUser && !isReplay(item)"
-							icon
-							@click="item.replyEdit = !item.replyEdit"
-							:color="item.replyEdit ? 'warning' : ''"
+							v-if="fireUser && !replyDepth(item)"
+							@click="replyToggle(item)"
+							:color="item.replyEdit ? 'warning' : 'primary'"
+							text
 						>
-							<v-icon>mdi-comment-multiple</v-icon>
+							<v-icon left>mdi-comment-multiple</v-icon>
+							대댓글
 						</v-btn>
+
+						<v-btn
+							v-if="fireUser && replyDepth(item) === 1"
+							@click="replyToggle(item)"
+							:color="item.replyEdit ? 'warning' : 'primary'"
+							text
+						>
+							<v-icon left>mdi-comment-multiple</v-icon>
+							언급
+						</v-btn>
+
+						<v-btn @click="like(item)" text>
+							<v-icon left :color="liked(item) ? 'success' : ''">
+								mdi-thumb-up
+							</v-icon>
+
+							<span>{{ item.likeCount }}</span>
+						</v-btn>
+
 						<v-btn
 							color="error"
 							icon
@@ -86,13 +116,8 @@
 						>
 							<v-icon>mdi-delete</v-icon>
 						</v-btn>
-						<v-btn @click="like(item)" text>
-							<v-icon left :color="liked(item) ? 'success' : ''"
-								>mdi-thumb-up</v-icon
-							>
-							<span>{{ item.likeCount }}</span>
-						</v-btn>
 					</v-list-item-title>
+
 					<v-list-item-subtitle v-if="item.replyEdit">
 						<v-textarea
 							v-model="item.replyComment"
@@ -111,7 +136,7 @@
 					</v-list-item-subtitle>
 				</v-list-item-content>
 			</v-list-item>
-			<v-divider :key="i"></v-divider>
+			<!-- <v-divider :key="i"></v-divider> -->
 		</template>
 		<v-list-item v-if="lastDoc && items.length < article.commentCount">
 			<v-btn
@@ -125,22 +150,26 @@
 				<v-icon>mdi-dots-horizontal</v-icon>더보기
 			</v-btn>
 		</v-list-item>
-		<!-- <v-divider/> -->
-		<v-card-title>
-			<v-textarea
-				v-model="comment"
-				outlined
-				label="댓글 작성"
-				placeholder="Ctrl + Enter로 작성 가능"
-				append-icon="mdi-comment-plus"
-				@click:append="save"
-				@keypress.ctrl.enter="save"
-				hide-details
-				auto-grow
-				rows="1"
-				clearable
-			/>
-		</v-card-title>
+
+		<template v-else>
+			<v-divider />
+
+			<v-card-title>
+				<v-textarea
+					v-model="comment"
+					outlined
+					label="댓글 작성"
+					placeholder="Ctrl + Enter로 작성 가능"
+					append-icon="mdi-comment-plus"
+					@click:append="save"
+					@keypress.ctrl.enter="save"
+					hide-details
+					auto-grow
+					rows="1"
+					clearable
+				/>
+			</v-card-title>
+		</template>
 	</v-card>
 </template>
 <script>
@@ -149,7 +178,6 @@ import DisplayTime from '@/components/display-time'
 import DisplayUser from '@/components/display-user'
 import newCheck from '@/util/newCheck'
 const LIMIT = 5
-const REPLY_LIMIT = 1000
 export default {
 	components: { DisplayTime, DisplayUser },
 	props: ['article', 'docRef'],
@@ -246,6 +274,7 @@ export default {
 				throw Error('댓글 개수 허용치를 넘었습니다')
 			if (!this.comment) throw Error('내용을 작성해야 합니다')
 			if (this.comment.length > 300) throw Error('문자 허용치를 넘었습니다')
+			const rs = this.items.filter(el => el.no % 10000 === 0)
 			const doc = {
 				createdAt: new Date(),
 				updatedAt: new Date(),
@@ -258,7 +287,7 @@ export default {
 				},
 				likeCount: 0,
 				likeUids: [],
-				no: this.article.commentCount * REPLY_LIMIT
+				no: rs.length * 10000
 			}
 			const id = doc.createdAt.getTime().toString()
 			await this.docRef.collection('comments').doc(id).set(doc)
@@ -271,13 +300,26 @@ export default {
 			if (!item.replyComment) throw Error('내용을 작성해야 합니다')
 			if (item.replyComment.length > 300)
 				throw Error('문자 허용치를 넘었습니다')
-			const min = item.no
-			const max = item.no + REPLY_LIMIT
-			const rs = this.items.filter(el => {
-				return el.no > min && el.no < max
-			})
-			let no = min + rs.length + 1
-			if (rs.length) no = last(rs).no + 1
+			const depth = this.replyDepth(item)
+			if (depth > 1) throw Error('대대댓글은 허용하지 않습니다')
+			let no = 0
+
+			if (!depth) {
+				const max = item.no + 10000
+				const rs = this.items.filter(el => {
+					return el.no > item.no && el.no < max && el.no % 100 === 0
+				})
+				if (rs.length) no = last(rs).no + 100
+				else no = item.no + 100
+			} else {
+				const max = item.no + 100
+				const rs = this.items.filter(el => {
+					return el.no > item.no && el.no < max && el.no % 100 > 0
+				})
+				if (rs.length) no = last(rs).no + 1
+				else no = item.no + 1
+			}
+
 			const doc = {
 				createdAt: new Date(),
 				updatedAt: new Date(),
@@ -293,18 +335,32 @@ export default {
 				no: no
 			}
 			const id = doc.createdAt.getTime().toString()
-			await this.docRef.collection('comments').doc(id).set(doc)
-			item.replyComment = ''
+			try {
+				await this.docRef.collection('comments').doc(id).set(doc)
+			} finally {
+				item.replyEdit = false
+				item.replyComment = ''
+			}
 			const findItem = this.items.find(el => id === el.id)
 			if (findItem) return
 			doc.id = id
+			doc.edit = false
+			doc.replyEdit = false
+			doc.replyComment = ''
 			this.items.push(doc)
-			this.items.sort((before, after) => {
-				return before.no - after.no
-			})
+			this.items.sort((before, after) => before.no - after.no)
 		},
-		isReplay(item) {
-			return item.no % REPLY_LIMIT
+		replyDepth(item) {
+			const r0 = item.no % 10000
+			const r1 = item.no % 100
+			let depth = 0
+			if (r0) depth++
+			if (r1) depth++
+			return depth
+		},
+		replyToggle(item) {
+			item.replyComment = `[${item.user.displayName}] `
+			item.replyEdit = !item.replyEdit
 		},
 		liked(item) {
 			if (!this.fireUser) return false
@@ -341,6 +397,14 @@ export default {
 			comment.likeUids = item.likeUids
 		},
 		async remove(comment) {
+			// const r = await this.$swal.fire({
+			// 	title: '정말 삭제하시겠습니까?',
+			// 	text: '삭제 후 되돌릴 수 없습니다.',
+			// 	icon: 'error',
+			// 	confirmButtonText: 'Cool',
+			// 	showCancelButton: true
+			// })
+			// if (!r.value) return
 			await this.docRef.collection('comments').doc(comment.id).delete()
 			const i = this.items.findIndex(el => el.id === comment.id)
 			this.items.splice(i, 1)
@@ -348,14 +412,12 @@ export default {
 		async update(item) {
 			const doc = {
 				updatedAt: new Date(),
-				comment: item.replyComment
+				comment: item.comment
 			}
 			try {
 				await this.docRef.collection('comments').doc(item.id).update(doc)
 			} finally {
 				item.edit = false
-				item.replyEdit = false
-				item.replyComment = ''
 			}
 		}
 	}

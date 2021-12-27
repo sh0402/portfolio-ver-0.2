@@ -9,17 +9,19 @@
 				<v-list-item-subtitle> subtext </v-list-item-subtitle>
 			</v-list-item-content>
 
-			<v-btn
-				icon
-				@click="
-					$store.commit(
-						'setEdit',
-						($store.state.editable = !$store.state.editable)
-					)
-				"
-			>
-				<v-icon>mdi-cog</v-icon>
-			</v-btn>
+			<v-list-item-action v-if="user && user.level === 0">
+				<v-btn
+					icon
+					@click="
+						$store.commit(
+							'setEdit',
+							($store.state.editable = !$store.state.editable)
+						)
+					"
+				>
+					<v-icon>mdi-cog</v-icon>
+				</v-btn>
+			</v-list-item-action>
 			<v-btn icon @click="close">
 				<v-icon>mdi-close</v-icon>
 			</v-btn>
@@ -193,6 +195,14 @@ export default {
 				title: '',
 				to: ''
 			}
+		}
+	},
+	computed: {
+		user() {
+			return this.$store.state.user
+		},
+		fireUser() {
+			return this.$store.state.fireUser
 		}
 	},
 	methods: {

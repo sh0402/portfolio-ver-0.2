@@ -1,10 +1,11 @@
 <template>
 	<v-container style="max-width: 1200px" fluid v-if="!loaded">
-		<v-skeleton-loader type="card" v-for="i in 3" :key="i"></v-skeleton-loader>
+		<!-- <v-skeleton-loader type="card" v-for="i in 3" :key="i"></v-skeleton-loader> -->
+		<v-skeleton-loader type="card"></v-skeleton-loader>
 	</v-container>
 
 	<v-container style="max-width: 1200px" fluid v-else-if="loaded && !board">
-		<v-alert type="warning" border="left">데이터가 없습니다</v-alert>
+		<v-alert type="warning" border="left">게시판이 없습니다</v-alert>
 	</v-container>
 
 	<v-container style="max-width: 1200px" fluid v-else>
@@ -24,9 +25,13 @@
 				</v-sheet>
 
 				<template>
-					<v-icon color="error" left v-if="newCheck(board.updatedAt)">
-						mdi-fire
-					</v-icon>
+					<span
+						color="error"
+						class="caption"
+						v-if="newCheck(board.updatedAt, 'days', 1)"
+					>
+						New
+					</span>
 					<span v-text="board.title"></span>
 				</template>
 
@@ -36,7 +41,11 @@
 					<v-icon>mdi-information-outline</v-icon>
 				</v-btn>
 
-				<v-btn icon @click="$store.commit('toggleBoardType')">
+				<v-btn
+					icon
+					v-if="board.type === '일반'"
+					@click="$store.commit('toggleBoardType')"
+				>
 					<v-icon
 						v-text="
 							$store.state.boardTypeList
@@ -102,6 +111,24 @@
 					</v-toolbar>
 
 					<v-divider />
+
+					<v-list-item>
+						<v-list-item-content>
+							<v-list-item-title> 게시판 유형 </v-list-item-title>
+							<v-list-item-subtitle>
+								{{ board.type }}
+							</v-list-item-subtitle>
+						</v-list-item-content>
+					</v-list-item>
+
+					<v-list-item>
+						<v-list-item-content>
+							<v-list-item-title> 게시판 이름 </v-list-item-title>
+							<v-list-item-subtitle>
+								{{ board.title }}
+							</v-list-item-subtitle>
+						</v-list-item-content>
+					</v-list-item>
 
 					<v-list-item>
 						<v-list-item-content>

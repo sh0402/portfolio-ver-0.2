@@ -36,7 +36,55 @@
 					</v-btn>
 				</v-toolbar>
 
+				<v-divider />
+
 				<v-card-text>
+					<v-row>
+						<v-col cols="12" sm="6">
+							<v-text-field
+								v-model="form.category"
+								outlined
+								dense
+								label="게시판 종류"
+								hide-details
+							></v-text-field>
+						</v-col>
+
+						<v-col cols="12" sm="6">
+							<v-select
+								v-model="form.type"
+								:items="types"
+								outlined
+								dense
+								:disabled="exists"
+								label="게시판 유형"
+								hide-details
+							></v-select>
+						</v-col>
+
+						<v-col cols="12">
+							<v-text-field
+								v-model="form.title"
+								outlined
+								dense
+								label="제목"
+								hide-details
+							></v-text-field>
+						</v-col>
+
+						<v-col cols="12">
+							<v-text-field
+								v-model="form.description"
+								outlined
+								dense
+								label="설명"
+								hide-details
+							></v-text-field>
+						</v-col>
+					</v-row>
+				</v-card-text>
+
+				<!-- <v-card-text>
 					<v-text-field
 						v-model="form.category"
 						outlined
@@ -57,7 +105,7 @@
 						dense
 						label="설명"
 					></v-textarea>
-				</v-card-text>
+				</v-card-text> -->
 
 				<v-card-text>
 					<v-card outlined>
@@ -139,12 +187,6 @@
 			</v-card>
 		</v-form>
 	</v-container>
-
-	<!-- <v-container v-else fluid>
-		<v-alert type="warning" border="left" class="mb-0">
-			게시판이 없습니다
-		</v-alert>
-	</v-container> -->
 </template>
 
 <script>
@@ -157,14 +199,16 @@ export default {
 				title: '',
 				description: '',
 				categories: [],
-				tags: []
+				tags: [],
+				type: ''
 			},
 			exists: false,
 			loading: false,
 			ref: null,
 			category: '',
 			tag: '',
-			loaded: false
+			loaded: false,
+			types: ['일반', '갤러리', '페이지']
 		}
 	},
 	computed: {
@@ -197,18 +241,21 @@ export default {
 				this.form.description = item.description
 				this.form.categories = item.categories
 				this.form.tags = item.tags
+				this.form.type = item.type
 			}
 		},
 		async save() {
 			if (!this.$store.state.fireUser) throw Error('로그인이 필요합니다')
 			if (!this.form.category || !this.form.title)
 				throw Error('종류 제목은 필수 항목입니다')
+
 			const form = {
 				category: this.form.category,
 				title: this.form.title,
 				description: this.form.description,
 				categories: this.form.categories,
 				tags: this.form.tags,
+				type: this.form.type,
 				updatedAt: new Date()
 			}
 			this.loading = true
@@ -235,8 +282,11 @@ export default {
 		},
 		saveCategory() {
 			if (this.category.length > 20) throw Error('문자 개수를 초과했습니다')
+			if (this.category === '전체') throw Error('전체는 사용 불가능합니다')
+
 			const exists = this.form.categories.includes(this.category)
 			if (exists) throw Error('사용되고 있는 종류입니다')
+
 			this.form.categories.push(this.category)
 			this.category = ''
 		},

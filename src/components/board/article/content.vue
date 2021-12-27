@@ -244,6 +244,20 @@ export default {
 				item.updatedAt = item.updatedAt.toDate()
 				if (!this.article || this.article.url !== item.url) this.fetch(item.url)
 				this.article = item
+
+				document.title = item.title
+				document
+					.querySelector('head meta[name="description"]')
+					.setAttribute('content', item.summery)
+				document
+					.querySelector('head meta[property="og:title"]')
+					.setAttribute('content', item.title + ' : soot')
+				document
+					.querySelector('head meta[property="og:image"]')
+					.setAttribute(
+						'content',
+						item.images.length ? item.images[0].thumbUrl : '/logo.png'
+					)
 			}, console.error)
 		},
 		async fetch(url) {
@@ -255,6 +269,14 @@ export default {
 			this.$router.push({ path: this.$route.path, query: { action: 'write' } })
 		},
 		async remove() {
+			// const r = await this.$swal.fire({
+			// 	title: '정말 삭제하시겠습니까?',
+			// 	text: '삭제 후 되돌릴수 없습니다',
+			// 	icon: 'error',
+			// 	showCancelButton: true
+			// })
+			// console.log(r)
+			// if(!r.value) return
 			await this.ref.delete()
 		},
 		back() {

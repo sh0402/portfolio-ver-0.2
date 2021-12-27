@@ -18,226 +18,40 @@
 		</v-alert>
 	</v-container>
 
-	<v-container fluid v-else class="pa-0 pb-2">
-		<template v-for="(item, i) in items">
-			<template v-if="$store.state.boardTypeList">
-				<v-list-item
-					three-line
-					:key="item.id"
-					:to="
-						category
-							? `${boardId}/${item.id}?category=${category}`
-							: `${boardId}/${item.id}`
-					"
-				>
-					<v-list-item-avatar v-if="!item.important">
-						<v-img :src="item.user.photoURL"></v-img>
-					</v-list-item-avatar>
+	<v-container v-else style="max-width: 1200px" fluid>
+		<template v-if="board.type === '일반'">
+			<list-compact
+				v-if="$store.state.boardTypeList"
+				:items="items"
+				:boardId="boardId"
+				:category="category"
+			/>
 
-					<v-list-item-content>
-						<v-list-item-title class="mb-2">
-							<display-title :item="item"></display-title>
-						</v-list-item-title>
-
-						<v-list-item-subtitle class="grey--text caption mb-4">
-							<display-time :time="item.createdAt"></display-time>
-						</v-list-item-subtitle>
-
-						<v-list-item-subtitle>
-							<v-btn
-								v-if="!$vuetify.breakpoint.xs && category != item.category"
-								color="primary"
-								small
-								depressed
-								outlined
-								:to="`${$route.path}?category=${item.category}`"
-								height="32"
-							>
-								{{ item.category }}
-								<v-icon small>mdi-chevron-right</v-icon>
-							</v-btn>
-						</v-list-item-subtitle>
-						<!-- <v-list-item-subtitle class="my-4">
-							{{ getSummary(item.summary, 100, '!') }}
-						</v-list-item-subtitle> -->
-					</v-list-item-content>
-
-					<v-list-item-action>
-						<display-user :user="item.user" :size="'small'"></display-user>
-					</v-list-item-action>
-
-					<v-list-item-action>
-						<v-btn
-							icon
-							small
-							v-if="fireUser && fireUser.uid === item.uid"
-							:to="`${boardId}/${item.id}?action=write`"
-						>
-							<v-icon>mdi-dots-vertical</v-icon>
-						</v-btn>
-
-						<v-sheet class="mr-2">
-							<v-btn icon small>
-								<v-icon small color="grey"> mdi-heart </v-icon>
-							</v-btn>
-							<span class="body-2 ma-0">{{ item.likeCount }}</span>
-						</v-sheet>
-
-						<v-sheet class="mr-2">
-							<v-btn icon small>
-								<v-icon small color="grey">mdi-eye</v-icon>
-							</v-btn>
-							<span class="body-2 ma-0">{{ item.readCount }}</span>
-						</v-sheet>
-					</v-list-item-action>
-				</v-list-item>
-
-				<v-divider v-if="i < items.length - 1" :key="i" />
-			</template>
-
-			<template v-else>
-				<v-card
-					:key="item.id"
-					:class="i < items.length - 1 ? 'mb-4' : ''"
-					class="ma-4"
-					outlined
-				>
-					<v-card-title>
-						<v-list-item-avatar size="48" class="align-self-start">
-							<v-img :src="item.user.photoURL"></v-img>
-						</v-list-item-avatar>
-
-						<v-list-item-content>
-							<v-list-item-title>
-								<display-title :item="item"></display-title>
-							</v-list-item-title>
-
-							<v-list-item-subtitle class="grey--text caption">
-								<display-time :time="item.createdAt"></display-time>
-							</v-list-item-subtitle>
-						</v-list-item-content>
-
-						<v-list-item-action class="align-self-start"> </v-list-item-action>
-					</v-card-title>
-
-					<v-menu offset-y left>
-						<template v-slot:activator="{ on }">
-							<v-btn
-								icon
-								absolute
-								top
-								right
-								v-if="fireUser && fireUser.uid === item.uid"
-								v-on="on"
-							>
-								<v-icon>mdi-dots-vertical</v-icon>
-							</v-btn>
-						</template>
-
-						<v-card width="150">
-							<v-btn block text color="error">Delete</v-btn>
-							<v-btn block text>Edit</v-btn>
-						</v-card>
-					</v-menu>
-
-					<v-card
-						tile
-						:to="
-							category
-								? `${boardId}/${item.id}?category=`
-								: `${boardId}/${item.id}`
-						"
-						flat
-						class="pa-2"
-					>
-						<v-card-text class="pa-0 px-2">
-							<viewer
-								v-if="item.summary"
-								@load="onViewerLoad"
-								:options="tuiOptions"
-								:initialValue="item.summary"
-							></viewer>
-
-							<v-container v-else>
-								<v-row justify="center" align="center">
-									<v-progress-circular indeterminate></v-progress-circular>
-								</v-row>
-							</v-container>
-						</v-card-text>
-
-						<v-card-actions class="d-flex justify-center">
-							<v-btn text color="primary">
-								<v-icon left>mdi-dots-horizontal</v-icon>
-								자세히보기
-							</v-btn>
-
-							<v-btn
-								v-if="fireUser && fireUser.uid === item.uid"
-								:to="`${boardId}/${item.id}?action=write`"
-								text
-								color="primary"
-							>
-								<v-icon left>mdi-pencil</v-icon>수정하기
-							</v-btn>
-						</v-card-actions>
-
-						<v-card-actions v-if="!item.important">
-							<v-btn
-								color="primary"
-								depressed
-								small
-								outlined
-								class="mr-4"
-								:to="`${$route.path}?category=${item.category}`"
-								height="32"
-							>
-								{{ item.category }}
-								<v-icon small>mdi-chevron-right</v-icon>
-							</v-btn>
-
-							<v-chip
-								label
-								outlined
-								color="info"
-								class="mr-2"
-								v-for="tag in item.tags"
-								:key="tag"
-								v-text="tag"
-							></v-chip>
-						</v-card-actions>
-					</v-card>
-
-					<v-card-actions v-if="!item.important" class="pa-4">
-						<display-user :user="item.user" :size="`small`"></display-user>
-
-						<v-btn small icon class="ml-2">
-							<v-icon small color="grey"> mdi-heart </v-icon>
-						</v-btn>
-						<span class="body-2">{{ item.likeCount }}</span>
-
-						<v-btn small icon>
-							<v-icon small color="grey">mdi-eye</v-icon>
-						</v-btn>
-						<span class="body-2">{{ item.readCount }}</span>
-					</v-card-actions>
-				</v-card>
-
-				<!-- <v-divider
-					v-if="i < items.length - 1 && $vuetify.breakpoint.xs"
-					:key="i"
-				/> -->
-			</template>
+			<list-normal
+				v-else
+				:items="items"
+				:boardId="boardId"
+				:category="category"
+			/>
 		</template>
+
+		<list-gallery
+			v-else
+			:items="items"
+			:boardId="boardId"
+			:category="category"
+		/>
 
 		<v-list-item v-if="lastDoc && items.length < board.count">
 			<v-btn
+				text
 				@click="more"
 				v-intersect="onIntersect"
-				text
 				color="primary"
 				block
 				:loading="loading"
 			>
+				<v-icon>mdi-dots-horizontal</v-icon>
 				더보기
 			</v-btn>
 		</v-list-item>
@@ -246,30 +60,21 @@
 
 <script>
 import { last } from 'lodash'
-import DisplayTime from '@/components/display-time'
-import DisplayUser from '@/components/display-user'
-import DisplayTitle from '@/components/display-title'
-import getSummary from '@/util/getSummary'
-import newCheck from '@/util/newCheck'
-import addYoutubeIframe from '@/util/addYoutubeIframe'
+import ListCompact from './components/list-compact'
+import ListNormal from './components/list-normal'
+import ListGallery from './components/list-gallery'
 
 const LIMIT = 5
 
 export default {
 	components: {
-		DisplayTime,
-		DisplayUser,
-		DisplayTitle
+		ListCompact,
+		ListNormal,
+		ListGallery
 	},
-
 	props: ['board', 'boardId', 'category', 'tag'],
 	data() {
 		return {
-			tuiOptions: {
-				linkAttribute: {
-					target: '_blank'
-				}
-			},
 			items: [],
 			unsubscribe: null,
 			ref: null,
@@ -277,8 +82,6 @@ export default {
 			order: 'createdAt',
 			sort: 'desc',
 			loading: false,
-			getSummary,
-			newCheck,
 			loaded: false
 		}
 	},
@@ -370,9 +173,6 @@ export default {
 				this.snapshotToItems(sn)
 			})
 		},
-		read(item) {
-			this.$router.push({ path: this.$route.path + '/' + item.id })
-		},
 		async more() {
 			if (!this.lastDoc) throw Error('더이상 데이터가 없습니다')
 			if (this.loading) return
@@ -386,14 +186,31 @@ export default {
 		},
 		onIntersect(entries, observer, isIntersecting) {
 			if (isIntersecting) this.more()
-		},
-		liked(item) {
-			if (!this.fireUser) return false
-			return item.likeUids.includes(this.fireUser.uid)
-		},
-		onViewerLoad(v) {
-			addYoutubeIframe(v.preview.el, this.$vuetify.breakpoint)
 		}
+		// read(item) {
+		// 	this.$router.push({ path: this.$route.path + '/' + item.id })
+		// },
+		// async more() {
+		// 	if (!this.lastDoc) throw Error('더이상 데이터가 없습니다')
+		// 	if (this.loading) return
+		// 	this.loading = true
+		// 	try {
+		// 		const sn = await this.ref.startAfter(this.lastDoc).get()
+		// 		this.snapshotToItems(sn)
+		// 	} finally {
+		// 		this.loading = false
+		// 	}
+		// },
+		// onIntersect(entries, observer, isIntersecting) {
+		// 	if (isIntersecting) this.more()
+		// },
+		// liked(item) {
+		// 	if (!this.fireUser) return false
+		// 	return item.likeUids.includes(this.fireUser.uid)
+		// },
+		// onViewerLoad(v) {
+		// 	addYoutubeIframe(v.preview.el, this.$vuetify.breakpoint)
+		// }
 	}
 }
 </script>
