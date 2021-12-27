@@ -253,12 +253,12 @@ export default {
 		}
 	},
 	computed: {
-		user() {
-			return this.$store.state.user
-		},
 		getCategory() {
 			if (!this.category) return '전체'
 			return this.category
+		},
+		user() {
+			return this.$store.state.user
 		}
 	},
 	created() {
@@ -270,12 +270,13 @@ export default {
 	methods: {
 		subscribe() {
 			if (this.unsubscribe) this.unsubscribe()
+
 			const ref = this.$firebase
 				.firestore()
 				.collection('boards')
 				.doc(this.boardId)
+			this.loaded = true
 			this.unsubscribe = ref.onSnapshot(doc => {
-				this.loaded = true
 				if (!doc.exists) return this.write()
 				const item = doc.data()
 				item.createdAt = item.createdAt.toDate()

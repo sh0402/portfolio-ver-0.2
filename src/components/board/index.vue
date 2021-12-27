@@ -10,7 +10,7 @@
 	<v-container
 		style="max-width: 1200px"
 		fluid
-		v-else-if="loaded && !items.length"
+		v-else-if="loaded && !items.length && (!user || (user && user.level > 0))"
 	>
 		<v-alert type="warning" border="left"> 게시판이 없습니다 </v-alert>
 	</v-container>
@@ -174,8 +174,8 @@
 
 <script>
 import { last } from 'lodash'
-import DisplayUser from '@/components/display-user'
 import DisplayTime from '@/components/display-time'
+import DisplayUser from '@/components/display-user'
 import newCheck from '@/util/newCheck'
 const LIMIT = 5
 
@@ -264,6 +264,14 @@ export default {
 			if (isIntersecting) this.more()
 		},
 		async remove(item) {
+			const r = await this.$swal.fire({
+				title: '정말 삭제하시겠습니까?',
+				text: '삭제 후 되돌릴 수 없습니다.',
+				icon: 'error',
+				// confirmButtonText: 'Cool',
+				showCancelButton: true
+			})
+			if (!r.value) return
 			await this.$firebase
 				.firestore()
 				.collection('boards')

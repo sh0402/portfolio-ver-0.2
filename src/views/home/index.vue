@@ -32,7 +32,7 @@ export default {
 			this.loaded = true
 			if (sn.empty) return
 			this.empty = sn.empty
-			this.$router.push('/boards' + sn.docs[0].id)
+			this.$router.push('/board/' + sn.docs[0].id)
 		}
 	}
 }

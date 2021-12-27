@@ -1,77 +1,55 @@
 <template>
-	<v-container style="max-width: 1200px" fluid v-if="!loaded">
+	<v-container fluid v-if="!loaded">
 		<v-skeleton-loader
 			type="article"
 			v-for="i in 3"
 			:key="i"
 		></v-skeleton-loader>
 	</v-container>
-
-	<v-container
-		style="max-width: 1200px"
-		fluid
-		v-else-if="loaded && !items.length"
-	>
-		<v-alert type="warning" border="left">
-			게시물이 없습니다
-			<v-icon>mdi-plus</v-icon> 버튼을 눌러서 게시물을 작성하세요
+	<v-container fluid v-else-if="loaded && !items.length">
+		<v-alert type="warning" border="left" class="mb-0">
+			게시물이 없습니다 <v-icon>mdi-plus</v-icon> 버튼을 눌러서 게시물을
+			작성하세요~
 		</v-alert>
 	</v-container>
-
-	<v-container v-else style="max-width: 1200px" fluid>
-		<template v-if="board.type === '일반'">
+	<v-container fluid v-else class="pa-0">
+		<!-- <template v-if="board.type === '일반'">
 			<list-compact
 				v-if="$store.state.boardTypeList"
 				:items="items"
 				:boardId="boardId"
 				:category="category"
 			/>
-
 			<list-normal
 				v-else
 				:items="items"
 				:boardId="boardId"
 				:category="category"
 			/>
-		</template>
-
-		<list-gallery
-			v-else
-			:items="items"
-			:boardId="boardId"
-			:category="category"
-		/>
-
+		</template> -->
+		<list-gallery :items="items" :boardId="boardId" :category="category" />
 		<v-list-item v-if="lastDoc && items.length < board.count">
 			<v-btn
-				text
 				@click="more"
 				v-intersect="onIntersect"
+				text
 				color="primary"
 				block
 				:loading="loading"
 			>
-				<v-icon>mdi-dots-horizontal</v-icon>
-				더보기
+				<v-icon>mdi-dots-horizontal</v-icon>더보기
 			</v-btn>
 		</v-list-item>
 	</v-container>
 </template>
-
 <script>
 import { last } from 'lodash'
-import ListCompact from './components/list-compact'
-import ListNormal from './components/list-normal'
+// import ListCompact from './components/list-compact'
+// import ListNormal from './components/list-normal'
 import ListGallery from './components/list-gallery'
-
 const LIMIT = 5
-
 export default {
-	components: {
-		ListCompact,
-		ListNormal,
-		ListGallery
-	},
+	components: { ListGallery },
 	props: ['board', 'boardId', 'category', 'tag'],
 	data() {
 		return {
@@ -187,30 +165,6 @@ export default {
 		onIntersect(entries, observer, isIntersecting) {
 			if (isIntersecting) this.more()
 		}
-		// read(item) {
-		// 	this.$router.push({ path: this.$route.path + '/' + item.id })
-		// },
-		// async more() {
-		// 	if (!this.lastDoc) throw Error('더이상 데이터가 없습니다')
-		// 	if (this.loading) return
-		// 	this.loading = true
-		// 	try {
-		// 		const sn = await this.ref.startAfter(this.lastDoc).get()
-		// 		this.snapshotToItems(sn)
-		// 	} finally {
-		// 		this.loading = false
-		// 	}
-		// },
-		// onIntersect(entries, observer, isIntersecting) {
-		// 	if (isIntersecting) this.more()
-		// },
-		// liked(item) {
-		// 	if (!this.fireUser) return false
-		// 	return item.likeUids.includes(this.fireUser.uid)
-		// },
-		// onViewerLoad(v) {
-		// 	addYoutubeIframe(v.preview.el, this.$vuetify.breakpoint)
-		// }
 	}
 }
 </script>

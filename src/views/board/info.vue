@@ -10,6 +10,7 @@
 <script>
 import BoardContent from '@/components/board/content'
 import BoardForm from '@/components/board/form'
+
 export default {
 	components: { BoardContent, BoardForm },
 	computed: {
