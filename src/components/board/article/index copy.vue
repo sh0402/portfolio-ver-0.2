@@ -252,16 +252,13 @@ import DisplayTitle from '@/components/display-title'
 import getSummary from '@/util/getSummary'
 import newCheck from '@/util/newCheck'
 import addYoutubeIframe from '@/util/addYoutubeIframe'
-
 const LIMIT = 5
-
 export default {
 	components: {
 		DisplayTime,
 		DisplayUser,
 		DisplayTitle
 	},
-
 	props: ['board', 'boardId', 'category', 'tag'],
 	data() {
 		return {

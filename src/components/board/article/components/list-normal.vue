@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div class="mb-4 pb-1">
 		<template v-for="(item, i) in items">
 			<v-card
 				:key="item.id"
@@ -16,6 +16,17 @@
 							: `${boardId}/${item.id}`
 					"
 				>
+					<v-btn
+						icon
+						absolute
+						top
+						right
+						v-if="fireUser && fireUser.uid === item.uid"
+						@click="dialog = true"
+					>
+						<v-icon>mdi-dots-vertical</v-icon>
+					</v-btn>
+
 					<v-card-title>
 						<v-list-item-avatar size="48" class="align-self-start">
 							<v-img :src="item.user.photoURL"></v-img>
@@ -35,7 +46,7 @@
 					</v-card-title>
 
 					<template v-if="!item.important">
-						<v-card-text class="pa-0 px-2">
+						<v-card-text class="pa-0 px-4">
 							<viewer
 								v-if="item.summary"
 								@load="onViewerLoad"
@@ -89,7 +100,8 @@ export default {
 					target: '_blank'
 				}
 			},
-			getSummary
+			getSummary,
+			dialog: false
 		}
 	},
 	computed: {
@@ -107,6 +119,9 @@ export default {
 		},
 		onViewerLoad(v) {
 			addYoutubeIframe(v.preview.el, this.$vuetify.breakpoint)
+		},
+		test(event) {
+			event.stopPropagation()
 		}
 	}
 }

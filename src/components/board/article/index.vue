@@ -6,14 +6,16 @@
 			:key="i"
 		></v-skeleton-loader>
 	</v-container>
+
 	<v-container fluid v-else-if="loaded && !items.length">
 		<v-alert type="warning" border="left" class="mb-0">
 			게시물이 없습니다 <v-icon>mdi-plus</v-icon> 버튼을 눌러서 게시물을
 			작성하세요~
 		</v-alert>
 	</v-container>
+
 	<v-container fluid v-else class="pa-0">
-		<!-- <template v-if="board.type === '일반'">
+		<template v-if="board.type === '일반'">
 			<list-compact
 				v-if="$store.state.boardTypeList"
 				:items="items"
@@ -26,8 +28,15 @@
 				:boardId="boardId"
 				:category="category"
 			/>
-		</template> -->
-		<list-gallery :items="items" :boardId="boardId" :category="category" />
+		</template>
+
+		<list-gallery
+			v-else
+			:items="items"
+			:boardId="boardId"
+			:category="category"
+		/>
+
 		<v-list-item v-if="lastDoc && items.length < board.count">
 			<v-btn
 				@click="more"
@@ -44,12 +53,13 @@
 </template>
 <script>
 import { last } from 'lodash'
-// import ListCompact from './components/list-compact'
-// import ListNormal from './components/list-normal'
+import ListCompact from './components/list-compact'
+import ListNormal from './components/list-normal'
 import ListGallery from './components/list-gallery'
 const LIMIT = 5
+
 export default {
-	components: { ListGallery },
+	components: { ListCompact, ListNormal, ListGallery },
 	props: ['board', 'boardId', 'category', 'tag'],
 	data() {
 		return {

@@ -4,29 +4,43 @@
 			<template v-for="item in items">
 				<v-col cols="6" sm="3" md="2" :key="item.id">
 					<v-card color="" height="100%" :to="toPath(item)">
-						<v-img :aspect-ratio="1" class="align-end">
+						<v-img
+							:src="
+								isGif(item.images[0].id)
+									? item.images[0].url
+									: item.images[0].thumbUrl
+							"
+							:aspect-ratio="1"
+							class="align-end"
+						>
 							<v-card-actions class="mt-auto">
 								<v-spacer />
+
 								<v-btn
 									small
 									dark
 									color="primary"
 									@click.native.stop="like(item)"
-									><v-icon left :color="liked(item) ? 'success' : ''"
-										>mdi-heart</v-icon
-									>
+								>
+									<v-icon left :color="liked(item) ? 'success' : ''">
+										mdi-heart
+									</v-icon>
+
 									<span>{{ item.likeCount > 9 ? '9+' : item.likeCount }}</span>
 								</v-btn>
 							</v-card-actions>
 						</v-img>
+
 						<v-card-subtitle class="text-truncate align-center">
 							<v-icon
 								small
 								color="error"
 								left
 								v-if="newCheck(item.updatedAt, 'hours', 1)"
-								>mdi-fire</v-icon
 							>
+								mdi-fire
+							</v-icon>
+
 							<span>{{ item.title }}</span>
 						</v-card-subtitle>
 					</v-card>
@@ -35,10 +49,12 @@
 		</v-row>
 	</v-container>
 </template>
+
 <script>
 import addYoutubeIframe from '@/util/addYoutubeIframe'
 import isGif from '@/util/isGif'
 import newCheck from '@/util/newCheck'
+
 export default {
 	props: ['items', 'boardId', 'category'],
 	data() {
