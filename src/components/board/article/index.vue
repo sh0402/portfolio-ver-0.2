@@ -76,6 +76,10 @@ export default {
 	computed: {
 		fireUser() {
 			return this.$store.state.fireUser
+		},
+		getCategory() {
+			if (!this.category) return '전체'
+			return this.category
 		}
 	},
 	watch: {
@@ -102,6 +106,7 @@ export default {
 					item.id = doc.id
 					item.createdAt = item.createdAt.toDate()
 					item.updatedAt = item.updatedAt.toDate()
+					item.overlay = false
 					this.items.push(item)
 				} else {
 					if (findItem.summary !== item.summary) {
