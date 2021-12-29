@@ -2,18 +2,10 @@
 	<v-container fluid>
 		<v-row dense>
 			<template v-for="item in items">
-				<v-col cols="12" sm="6" md="3" :key="item.id" class="pa-2">
+				<v-col cols="6" md="3" :key="item.id" class="pa-2">
 					<v-card height="100%" @click="$router.push(toPath(item))">
 						<v-img :src="srcFromItem(item)" :aspect-ratio="1" class="align-end">
 							<v-card-actions>
-								<v-spacer />
-
-								<v-btn icon small @click.native.stop="like(item)">
-									<v-icon :color="liked(item) ? 'error' : 'grey'">
-										mdi-heart
-									</v-icon>
-								</v-btn>
-
 								<!-- <v-btn
 									x-small
 									fab
@@ -35,42 +27,63 @@
 								mdi-alert-circle
 							</v-icon>
 
-							<v-icon
-								small
-								color="error"
-								left
-								v-if="newCheck(item.updatedAt, 'hours', 1)"
-							>
-								mdi-fire
-							</v-icon>
+							<v-card-subitle class="pa-0 align-center">
+								{{ item.title }}
 
-							{{ item.title }}
+								<span
+									class="error--text pl-2"
+									v-if="newCheck(item.updatedAt, 'hours', 1)"
+								>
+									New
+								</span>
+							</v-card-subitle>
+
 							<v-card-actions class="pa-0">
 								<span class="caption grey--text">
 									<display-time :time="item.createdAt"></display-time>
 								</span>
+
+								<v-spacer></v-spacer>
+
+								<v-btn icon small @click.native.stop="like(item)">
+									<v-icon small :color="liked(item) ? 'error' : 'grey'">
+										mdi-heart
+									</v-icon>
+								</v-btn>
 							</v-card-actions>
 						</v-card-subtitle>
 
-						<v-card-actions>
-							<v-btn text small color="primary"> Learn More </v-btn>
+						<!-- <v-card-subtitle class="align-center">
+							<v-card-actions class="pa-0">
+								<span class="caption grey--text">
+									<display-time :time="item.createdAt"></display-time>
+								</span>
 
-							<!-- <v-list-item class="px-0">
-								<v-list-item-subtitle class="d-flex align-center">
-									<span class="caption">
-										<display-time :time="item.createdAt"></display-time>
-									</span>
+								<v-spacer />
+								<v-btn text small color="primary"> Learn More </v-btn>
 
-									<v-spacer />
+								<v-list-item class="px-0">
+									<v-list-item-subtitle class="d-flex align-center">
+										<span class="caption">
+											<display-time :time="item.createdAt"></display-time>
+										</span>
 
-									<display-count
-										:item="item"
-										:column="false"
-										size="small"
-									></display-count>
-								</v-list-item-subtitle>
-							</v-list-item> -->
-						</v-card-actions>
+										<v-spacer />
+
+										<display-count
+											:item="item"
+											:column="false"
+											size="small"
+										></display-count>
+									</v-list-item-subtitle>
+								</v-list-item>
+								<v-btn icon small @click.native.stop="like(item)">
+									<v-icon small :color="liked(item) ? 'error' : 'grey'">
+										mdi-heart
+									</v-icon>
+								</v-btn>
+							</v-card-actions>
+						</v-card-subtitle> -->
 
 						<v-overlay absolute :opacity="0.7" :value="item.overlay">
 							<v-card
