@@ -1,5 +1,5 @@
 <template>
-	<v-container fluid v-if="!loaded">
+	<v-container fluid style="max-width: 1200px" v-if="!loaded">
 		<v-skeleton-loader type="article"></v-skeleton-loader>
 	</v-container>
 
@@ -12,6 +12,7 @@
 
 <script>
 export default {
+	name: 'Home',
 	data() {
 		return {
 			empty: false,

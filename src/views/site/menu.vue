@@ -140,6 +140,13 @@
 						v-model="formItem.title"
 						label="Menu Name"
 						outlined
+					></v-text-field>
+
+					<v-text-field
+						v-model="formItem.to"
+						label="URL"
+						outlined
+						required
 						hide-details
 					></v-text-field>
 				</v-card-text>
@@ -189,7 +196,8 @@ export default {
 			selectedSubItemIndex: 0,
 			formItem: {
 				icon: 'mdi-emoticon',
-				title: ''
+				title: '',
+				to: ''
 			},
 			formSubItem: {
 				title: '',
@@ -229,9 +237,11 @@ export default {
 			if (index < 0) {
 				this.formItem.icon = 'mdi-emoticon'
 				this.formItem.title = ''
+				this.formItem.to = ''
 			} else {
 				this.formItem.icon = this.items[index].icon
 				this.formItem.title = this.items[index].title
+				this.formItem.to = this.items[index].to
 			}
 			this.dialogItem = true
 		},
@@ -243,6 +253,8 @@ export default {
 				this.items[this.selectedItemIndex].icon = this.formItem.icon
 				// eslint-disable-next-line vue/no-mutating-props
 				this.items[this.selectedItemIndex].title = this.formItem.title
+				// eslint-disable-next-line vue/no-mutating-props
+				this.items[this.selectedItemIndex].to = this.formItem.to
 			}
 			this.save()
 		},

@@ -8,23 +8,50 @@
 		<v-alert type="warning" border="left">게시판이 없습니다</v-alert>
 	</v-container>
 
-	<v-container style="max-width: 1200px" fluid v-else>
-		<v-card>
+	<v-container
+		style="max-width: 1200px"
+		fluid
+		v-else
+		:class="$vuetify.breakpoint.xs ? 'pa-0' : ''"
+	>
+		<v-card flat color="transparent">
+			<v-card-title
+				:class="
+					$vuetify.breakpoint.xs
+						? 'text-center justify-center text-h4 font-weight-bold'
+						: 'text-h1 font-weight-bold'
+				"
+			>
+				Lorem ipsum <br />
+				dolor sit amet
+			</v-card-title>
+			<v-card-subtitle
+				:class="
+					$vuetify.breakpoint.xs
+						? 'text-center justify-center font-weight-regular'
+						: 'text-h6 font-weight-regular'
+				"
+			>
+				Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+			</v-card-subtitle>
+		</v-card>
+
+		<v-card outlined :tile="$vuetify.breakpoint.xs">
 			<v-toolbar color="transparent" flat>
-				<v-sheet width="120" class="mr-2">
+				<v-sheet width="115" class="mr-2">
 					<v-select
 						:value="getCategory"
 						:items="board.categories"
 						@change="changeCategory"
-						dense
+						append-icon="mdi-chevron-down"
 						outlined
-						single-line
+						style="border-color: red"
+						dense
 						hide-details
-						flat
 					/>
 				</v-sheet>
 
-				<template>
+				<template v-if="!$vuetify.breakpoint.xs">
 					<span
 						color="error"
 						class="caption"
@@ -63,6 +90,19 @@
 			</v-toolbar>
 
 			<v-divider />
+
+			<v-toolbar flat v-if="$vuetify.breakpoint.xs">
+				<template>
+					<span
+						color="error"
+						class="caption"
+						v-if="newCheck(board.updatedAt, 'days', 1)"
+					>
+						New
+					</span>
+					<span v-text="board.title"></span>
+				</template>
+			</v-toolbar>
 
 			<board-article
 				:boardId="boardId"
@@ -302,3 +342,9 @@ export default {
 	}
 }
 </script>
+
+<style>
+.v-text-field--outlined fieldset {
+	color: rgba(0, 0, 0, 0.12) !important;
+}
+</style>

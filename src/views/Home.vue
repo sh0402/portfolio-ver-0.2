@@ -11,6 +11,7 @@
 									UI/UX & Web Design<br />
 									experiences.
 								</p>
+
 								<p class="text-xl-subtitle-1" size="32">
 									Hello, I'm Soohwan Kim, Designer of Web & Products. I
 									specialize in UI/UX design, responsive web design and product
@@ -38,6 +39,7 @@
 							<v-icon>mdi-dots-vertical</v-icon>
 						</v-btn>
 					</v-card-text>
+
 					<v-card-text class="d-flex flex-column align-center">
 						<v-img
 							width="200"
@@ -47,6 +49,7 @@
 						>
 						</v-img>
 					</v-card-text>
+
 					<v-card-text>
 						<h2 class="mb-4">Lorem ipsum dolor sit amet, consectetur</h2>
 						<v-chip-group column multiple>
@@ -62,6 +65,7 @@
 					</v-card-text>
 				</v-card>
 			</v-col>
+
 			<v-col cols="12" lg="8" md="7" sm="6">
 				<v-card class="rounded-lg">
 					<v-card-text class="d-flex align-center justify-space-between">

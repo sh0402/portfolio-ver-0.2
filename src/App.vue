@@ -1,18 +1,12 @@
 <template>
 	<v-app id="App">
-		<v-app-bar app color="white">
-			<v-toolbar max-width="1200" class="mx-auto" flat>
+		<v-app-bar app>
+			<v-toolbar color="transparent" max-width="1200" class="mx-auto" flat>
 				<!-- <v-app-bar-nav-icon
 					class="hidden-md-and-up"
 					@click="drawer = !drawer"
 				/> -->
-				<v-btn
-					icon
-					small
-					plain
-					@click="drawer = !drawer"
-					class="hidden-md-and-up"
-				>
+				<v-btn icon small @click="drawer = !drawer" class="hidden-md-and-up">
 					<v-icon>mdi-menu</v-icon>
 				</v-btn>
 
@@ -26,8 +20,6 @@
 					transition="scale-transition"
 					width="32"
 				/>
-
-				<v-btn text plain to="/" class="hidden-sm-and-down"> Home </v-btn>
 
 				<v-btn
 					v-for="item in site.menu"
@@ -55,7 +47,6 @@
 		>
 			<site-menu
 				:items="site.menu"
-				:dropItems="site.dropMenu"
 				:title="site.title"
 				v-on:drawer="closeMenu"
 			></site-menu>

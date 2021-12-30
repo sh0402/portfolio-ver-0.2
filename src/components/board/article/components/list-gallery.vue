@@ -2,124 +2,148 @@
 	<v-container fluid>
 		<v-row dense>
 			<template v-for="item in items">
-				<v-col cols="6" md="3" :key="item.id" class="pa-2">
-					<v-card height="100%" @click="$router.push(toPath(item))">
+				<v-col
+					cols="12"
+					xs="6"
+					sm="6"
+					md="4"
+					lg="3"
+					:key="item.id"
+					class="pa-2"
+				>
+					<v-card @click="$router.push(toPath(item))">
 						<v-img :src="srcFromItem(item)" :aspect-ratio="1" class="align-end">
 							<v-card-actions>
 								<!-- <v-btn
-									x-small
-									fab
-									dark
-									color="primary"
-									@click.stop="item.overlay = true"
-								>
-									<v-icon>mdi-information</v-icon>
-								</v-btn> -->
+										x-small
+										fab
+										dark
+										color="primary"
+										@click.stop="item.overlay = true"
+									>
+										<v-icon>mdi-information</v-icon>
+									</v-btn> -->
 							</v-card-actions>
 						</v-img>
+					</v-card>
 
-						<v-card-subtitle class="text-truncate align-center">
-							<v-icon small v-if="item.important === 1" color="success">
-								mdi-bell-ring
-							</v-icon>
-
-							<v-icon small v-else-if="item.important === 2" color="warning">
-								mdi-alert-circle
-							</v-icon>
-
-							<v-card-subitle class="pa-0 align-center">
-								{{ item.title }}
-
-								<span
-									class="error--text pl-2"
-									v-if="newCheck(item.updatedAt, 'hours', 1)"
-								>
-									New
-								</span>
-							</v-card-subitle>
-
-							<v-card-actions class="pa-0">
-								<span class="caption grey--text">
-									<display-time :time="item.createdAt"></display-time>
-								</span>
-
-								<v-spacer></v-spacer>
-
-								<v-btn icon small @click.native.stop="like(item)">
-									<v-icon small :color="liked(item) ? 'error' : 'grey'">
-										mdi-heart
+					<v-list>
+						<v-list-item class="align-center">
+							<v-list-item-content>
+								<v-list-item-title class="d-flex align-center">
+									<v-icon small v-if="item.important === 1" color="success">
+										mdi-bell-ring
 									</v-icon>
-								</v-btn>
-							</v-card-actions>
-						</v-card-subtitle>
+									<v-icon
+										small
+										v-else-if="item.important === 2"
+										color="warning"
+									>
+										mdi-alert-circle
+									</v-icon>
 
-						<!-- <v-card-subtitle class="align-center">
-							<v-card-actions class="pa-0">
-								<span class="caption grey--text">
-									<display-time :time="item.createdAt"></display-time>
-								</span>
+									<span>
+										{{ item.title }}
+									</span>
+									<span
+										class="error--text pl-2"
+										v-if="newCheck(item.updatedAt, 'hours', 1)"
+									>
+										New
+									</span>
 
-								<v-spacer />
-								<v-btn text small color="primary"> Learn More </v-btn>
+									<v-spacer />
 
-								<v-list-item class="px-0">
-									<v-list-item-subtitle class="d-flex align-center">
-										<span class="caption">
-											<display-time :time="item.createdAt"></display-time>
-										</span>
+									<v-menu offset-overflow bottom left>
+										<template v-slot:activator="{ on }">
+											<v-btn icon small v-on="on">
+												<v-icon small> mdi-dots-horizontal </v-icon>
+											</v-btn>
+										</template>
 
 										<v-spacer />
 
-										<display-count
-											:item="item"
-											:column="false"
-											size="small"
-										></display-count>
-									</v-list-item-subtitle>
-								</v-list-item>
+										<v-card width="150">
+											<v-btn block text tile>Edit</v-btn>
+											<v-btn block text tile color="error">Delete</v-btn>
+										</v-card>
+									</v-menu>
+								</v-list-item-title>
+
+								<v-list-item-title class="d-flex align-center">
+									<span class="caption grey--text">
+										<display-time :time="item.createdAt"></display-time>
+									</span>
+
+									<v-spacer />
+
+									<v-btn icon small @click.native.stop="like(item)">
+										<v-icon small :color="liked(item) ? 'error' : 'grey'">
+											mdi-heart
+										</v-icon>
+									</v-btn>
+									<span class="body-2 grey--text pr-1">
+										{{ item.likeCount }}
+									</span>
+
+									<v-btn icon small>
+										<v-icon small> mdi-eye </v-icon>
+									</v-btn>
+									<span class="body-2 grey--text pr-1">
+										{{ item.likeCount }}
+									</span>
+								</v-list-item-title>
+							</v-list-item-content>
+
+							<!-- <v-list-item-action>
 								<v-btn icon small @click.native.stop="like(item)">
 									<v-icon small :color="liked(item) ? 'error' : 'grey'">
 										mdi-heart
 									</v-icon>
 								</v-btn>
+							</v-list-item-action>
+
+							<v-list-item-action class="ma-0">
+								<v-menu offset-overflow bottom left>
+									<template v-slot:activator="{ on }">
+										<v-btn icon small v-on="on">
+											<v-icon small> mdi-dots-horizontal </v-icon>
+										</v-btn>
+									</template>
+
+									<v-card width="150">
+										<v-btn block text tile>Edit</v-btn>
+										<v-btn block text tile color="error">Delete</v-btn>
+									</v-card>
+								</v-menu>
+							</v-list-item-action> -->
+						</v-list-item>
+					</v-list>
+
+					<v-overlay absolute :opacity="0.7" :value="item.overlay">
+						<v-card color="transparent" flat @click.stop="item.overlay = false">
+							<v-card-title class="caption">
+								{{ item.title }}
+
+								<v-spacer />
+
+								<display-user :user="item.user" :size="`small`"></display-user>
+							</v-card-title>
+
+							<v-card-actions class="caption">
+								<v-spacer />
+								<display-count :item="item" :column="false"></display-count>
 							</v-card-actions>
-						</v-card-subtitle> -->
 
-						<v-overlay absolute :opacity="0.7" :value="item.overlay">
-							<v-card
-								color="transparent"
-								flat
-								@click.stop="item.overlay = false"
-							>
-								<v-card-title class="caption">
-									{{ item.title }}
-
-									<v-spacer />
-
-									<display-user
-										:user="item.user"
-										:size="`small`"
-									></display-user>
-								</v-card-title>
-
-								<v-card-actions class="caption">
-									<v-spacer />
-									<display-count :item="item" :column="false"></display-count>
-								</v-card-actions>
-
-								<v-card-actions class="caption">
-									<display-user
-										:user="item.user"
-										:size="`small`"
-									></display-user>
-									<v-spacer />
-									<span>
-										<display-time :time="item.createdAt"></display-time>
-									</span>
-								</v-card-actions>
-							</v-card>
-						</v-overlay>
-					</v-card>
+							<v-card-actions class="caption">
+								<display-user :user="item.user" :size="`small`"></display-user>
+								<v-spacer />
+								<span>
+									<display-time :time="item.createdAt"></display-time>
+								</span>
+							</v-card-actions>
+						</v-card>
+					</v-overlay>
 				</v-col>
 			</template>
 		</v-row>

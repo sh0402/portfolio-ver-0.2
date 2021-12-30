@@ -7,7 +7,11 @@
 		></v-skeleton-loader>
 	</v-container>
 
-	<v-container fluid v-else-if="loaded && !items.length">
+	<v-container
+		fluid
+		v-else-if="loaded && !items.length"
+		:class="$vuetify.breakpoint.xs ? 'pa-0' : ''"
+	>
 		<v-alert type="warning" border="left" class="mb-0">
 			게시물이 없습니다 <v-icon>mdi-plus</v-icon> 버튼을 눌러서 게시물을
 			작성하세요~
