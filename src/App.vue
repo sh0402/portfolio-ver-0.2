@@ -1,6 +1,6 @@
 <template>
 	<v-app id="App">
-		<v-app-bar app>
+		<v-app-bar app color="white">
 			<v-toolbar color="transparent" max-width="1200" class="mx-auto" flat>
 				<!-- <v-app-bar-nav-icon
 					class="hidden-md-and-up"
