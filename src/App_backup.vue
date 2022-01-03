@@ -1,15 +1,16 @@
 <template>
 	<v-app id="App">
 		<v-app-bar app color="white">
-			<v-toolbar max-width="1200" class="mx-auto" flat>
-				<v-app-bar-nav-icon
+			<v-toolbar color="transparent" max-width="1200" class="mx-auto" flat>
+				<!-- <v-app-bar-nav-icon
 					class="hidden-md-and-up"
 					@click="drawer = !drawer"
-				></v-app-bar-nav-icon>
+				/> -->
+				<v-btn icon small @click="drawer = !drawer" class="hidden-md-and-up">
+					<v-icon>mdi-menu</v-icon>
+				</v-btn>
 
-				<site-title :title="site.title"></site-title>
-
-				<v-spacer></v-spacer>
+				<site-title :title="site.title" class="hidden-md-and-up" />
 
 				<v-img
 					alt="Vuetify Logo"
@@ -31,75 +32,33 @@
 					{{ item.title }}
 				</v-btn>
 
-				<v-spacer></v-spacer>
+				<v-spacer />
 
-				<!-- <v-btn icon v-if="$store.state.user">
-					<v-menu offset-y>
-						<template v-slot:activator="{ on }">
-							<v-btn icon v-on="on">
-								<v-avatar size="32" color="grey lighten-4">
-									<img :src="$store.state.user.photoURL" alt="avatar" />
-								</v-avatar>
-							</v-btn>
-						</template>
-
-						<v-card width="320">
-							<v-container>
-								<v-row dense>
-									<v-col cols="12">
-										<v-card elevation="0" disabled>
-											<v-img
-												:src="$store.state.user.photoURL"
-												alt="avatar"
-												aspect-ratio="2"
-												max-height="150"
-											/>
-										</v-card>
-									</v-col>
-
-									<v-col cols="12" class="my-4">
-										<span class="font-weight-bold">
-											{{ $store.state.user.displayName }}
-										</span>
-
-										<br />
-
-										<span>
-											{{ $store.state.user.email }}
-										</span>
-									</v-col>
-
-									<v-col cols="12">
-										<v-divider class="mb-4"></v-divider>
-										<v-btn block color="warning" @click="signOut">
-											Log-out
-										</v-btn>
-									</v-col>
-								</v-row>
-							</v-container>
-						</v-card>
-					</v-menu>
-				</v-btn> -->
-
-				<v-btn text to="/sign"> Sign-in </v-btn>
+				<site-sign></site-sign>
 			</v-toolbar>
 		</v-app-bar>
 
-		<!-- SIDE MENU -->
-		<v-navigation-drawer app temporary v-model="drawer" width="100%">
+		<v-navigation-drawer
+			app
+			fixed
+			disable-resize-watcher
+			v-model="drawer"
+			width="100%"
+		>
 			<site-menu
 				:items="site.menu"
 				:title="site.title"
-				v-on:closeDrawer="closeDrawer"
+				v-on:drawer="closeMenu"
 			></site-menu>
 		</v-navigation-drawer>
 
-		<!-- ROUTER -->
 		<v-main>
-			<router-view />
+			<v-container style="max-width: 1200px" fluid>
+				<router-view />
+			</v-container>
 		</v-main>
 
-		<site-footer :footer="site.footer"></site-footer>
+		<site-footer :footer="site.footer" />
 	</v-app>
 </template>
 
@@ -107,94 +66,51 @@
 import SiteTitle from '@/views/site/title'
 import SiteFooter from '@/views/site/footer'
 import SiteMenu from '@/views/site/menu'
+import SiteSign from '@/views/site/sign'
 
 export default {
+	components: { SiteTitle, SiteFooter, SiteMenu, SiteSign },
 	name: 'App',
-	components: {
-		SiteTitle,
-		SiteFooter,
-		SiteMenu
-	},
 	data() {
 		return {
 			drawer: false,
 			site: {
-				// menu: [
-				// 	{
-				// 		title: 'Home',
-				// 		icon: 'mdi-home-circle',
-				// 		subItems: [
-				// 			{
-				// 				title: 'Home Menu 01',
-				// 				to: '/'
-				// 			},
-				// 			{
-				// 				title: 'Home Menu 02',
-				// 				to: '/'
-				// 			}
-				// 		]
-				// 	},
-				// 	{
-				// 		title: 'About',
-				// 		icon: 'mdi-dots-horizontal-circle',
-				// 		to: '/about',
-				// 		subItems: [
-				// 			{
-				// 				title: 'About Menu 01',
-				// 				to: '/'
-				// 			},
-				// 			{
-				// 				title: 'About Menu 02',
-				// 				to: '/'
-				// 			}
-				// 		]
-				// 	},
-				// 	{
-				// 		title: 'Projects',
-				// 		icon: 'mdi-alpha-p-circle',
-				// 		to: '/projects',
-				// 		subItems: [
-				// 			{
-				// 				title: 'Projects Menu 01',
-				// 				to: '/'
-				// 			}
-				// 		]
-				// 	},
-				// 	{
-				// 		title: 'Contact',
-				// 		icon: 'mdi-send-circle',
-				// 		to: '/contact',
-				// 		subItems: [
-				// 			{
-				// 				title: 'Contact Menu 01',
-				// 				to: '/'
-				// 			}
-				// 		]
-				// 	},
-				// 	{
-				// 		title: 'Admin',
-				// 		icon: 'mdi-account-circle',
-				// 		to: '/admin/users',
-				// 		subItems: [
-				// 			{
-				// 				title: 'Admin Menu 01',
-				// 				to: '/'
-				// 			}
-				// 		]
-				// 	},
-				// 	{
-				// 		title: 'Storage',
-				// 		icon: 'mdi-database',
-				// 		to: '/lectures/storage',
-				// 		subItems: [
-				// 			{
-				// 				title: 'Storage Menu 01',
-				// 				to: '/'
-				// 			}
-				// 		]
-				// 	}
-				// ],
-				title: `Soot's Portfolio`,
+				menu: [
+					{
+						title: 'Home',
+						icon: 'mdi-home-circle',
+						to: '/',
+						active: true
+					},
+					{
+						title: 'About',
+						icon: 'mdi-information',
+						to: '/about'
+					},
+					{
+						title: 'XXX',
+						icon: 'mdi-help-circle',
+						to: '/xxx'
+					}
+				],
+				dropMenu: [
+					{
+						title: '01',
+						icon: 'mdi-help-circle',
+						to: '/xxx'
+					},
+					{
+						title: '02',
+						icon: 'mdi-help-circle',
+						to: '/xxx'
+					},
+					{
+						title: '03',
+						icon: 'mdi-help-circle',
+						to: '/xxx'
+					}
+				],
+				title: 'Soot Portfolio',
 				footer: 'this Footer'
 			}
 		}
@@ -203,7 +119,7 @@ export default {
 		this.subscribe()
 	},
 	methods: {
-		closeDrawer() {
+		closeMenu() {
 			this.drawer = false
 		},
 		subscribe() {
@@ -225,37 +141,8 @@ export default {
 						console.log(e.message)
 					}
 				)
-		},
-		save() {
-			this.$firebase.database().ref().child('abcd').set({
-				title: 'abcd',
-				text: 'xxxx'
-			})
-			console.log('Save Success')
-		},
-		read() {
-			this.$firebase
-				.database()
-				.ref()
-				.child('abcd')
-				.on('value', sn => {
-					console.log(sn)
-					console.log(sn.val())
-				})
-			console.log('Read Success')
-		},
-		async readOne() {
-			const sn = await this.$firebase
-				.database()
-				.ref()
-				.child('abcd')
-				.once('value')
-
-			console.log(sn.val())
-			console.log('ReadOne Success')
 		}
-	},
-	mounted() {}
+	}
 }
 </script>
 

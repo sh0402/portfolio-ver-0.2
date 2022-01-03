@@ -1,6 +1,6 @@
 <template>
-	<v-container style="max-width: 1200px" fluid>
-		<v-sheet rounded="lg" height="auto" elevation="2" class="mb-6">
+	<div>
+		<v-sheet rounded="lg" height="auto" elevation="2" class="mb-4">
 			<v-row no-gutters class="align-center">
 				<v-col
 					cols="12"
@@ -13,7 +13,7 @@
 				>
 					<v-card flat rounded="lg">
 						<v-card-title
-							class="font-weight-black black--text align-start"
+							class="font-weight-black black--text mb-4 align-start"
 							:class="
 								$vuetify.breakpoint.xs || $vuetify.breakpoint.sm
 									? 'text-h5'
@@ -46,15 +46,16 @@
 										? 'body-2'
 										: 'body-1'
 								"
+								class="mb-0"
 							>
 								Thank you for visiting my portfolio site.
 							</p>
-
-							<v-btn color="primary">
-								Edit
-								<v-icon small>mdi-pencil</v-icon>
-							</v-btn>
 						</v-card-subtitle>
+
+						<v-btn text color="error">
+							Edit
+							<v-icon small>mdi-pencil</v-icon>
+						</v-btn>
 					</v-card>
 				</v-col>
 
@@ -125,10 +126,8 @@
 									<v-chip
 										label
 										close
-										outlined
 										v-for="tag in tag.skills"
 										:key="tag"
-										color="accent"
 										class="pa-2 align-center"
 									>
 										{{ tag }}
@@ -155,48 +154,16 @@
 							<v-icon>mdi-dots-vertical</v-icon>
 						</v-btn>
 					</v-card-text>
-
-					<v-card-title style="font-size: 2rem" class="font-weight-black">
-						Design that solves problems,<br />
-						one product at a time
-					</v-card-title>
-
-					<v-card-text class="d-flex align-center pa-0" elevation="1">
-						<v-card
-							id="carousel"
-							outlined
-							rounded="lg"
-							v-for="n in 3"
-							:key="n"
-							class="ma-4"
-							height="250"
-							width="250"
-						></v-card>
-
-						<div
-							style="position: absolute; width: 95%"
-							class="d-flex justify-space-between"
-						>
-							<v-btn fab small>
-								<v-icon>mdi-chevron-left</v-icon>
-							</v-btn>
-
-							<v-btn fab small>
-								<v-icon>mdi-chevron-right</v-icon>
-							</v-btn>
-						</div>
-					</v-card-text>
 				</v-card>
 			</v-col>
 		</v-row>
-	</v-container>
+	</div>
 </template>
 
 <script>
 export default {
 	data() {
 		return {
-			model: null,
 			tag: {
 				skills: ['Adobe Photoshop', 'Adobe Illustrator', 'Figma', 'VueJS']
 			},

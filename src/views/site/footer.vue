@@ -1,6 +1,6 @@
 <template>
-	<v-footer padless :footer="footer">
-		<v-card flat tile color="transparent" class="text-center py-4" width="100%">
+	<v-footer padless :footer="footer" class="justify-center">
+		<v-card flat tile color="transparent" class="py-4">
 			<v-card-subtitle>
 				Copyright © {{ new Date().getFullYear() }} All right reserved | make by
 				<strong>{{ footer }}</strong>
@@ -26,9 +26,6 @@
 						<v-spacer />
 
 						<v-btn small text @click="save" color="success"> save </v-btn>
-						<!-- <v-btn small text @click="dialog = false" color="error" class="pa-0">
-							close
-						</v-btn> -->
 					</v-card-title>
 				</v-card>
 			</v-dialog>
