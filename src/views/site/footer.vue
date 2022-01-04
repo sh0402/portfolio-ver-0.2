@@ -3,7 +3,7 @@
 		<v-card flat tile color="transparent" class="py-4">
 			<v-card-subtitle>
 				Copyright © {{ new Date().getFullYear() }} All right reserved | make by
-				<strong>{{ footer }}</strong>
+				<span class="primary--text font-weight-black">{{ footer }}</span>
 				<v-btn icon small v-if="$store.state.editable" @click="openDialog">
 					<v-icon>mdi-dots-vertical</v-icon>
 				</v-btn>
