@@ -95,7 +95,7 @@
 					"
 				>
 					<v-card-text class="d-flex align-center justify-space-between">
-						<span class="text-h6 font-weight-bold">About</span>
+						<span class="text-h6 font-weight-bold">Profile</span>
 						<v-menu offset-y left>
 							<template v-slot:activator="{ on }">
 								<v-btn icon small v-on="on">
@@ -137,8 +137,8 @@
 
 					<v-card-actions class="d-flex flex-column align-center">
 						<v-img
-							width="150"
-							height="150"
+							width="200"
+							height="200"
 							class="rounded-circle"
 							src="https://images.unsplash.com/photo-1561948955-570b270e7c36?ixid=MnwxMjA3fDB8MHxzZWFyY2h8N3x8Y2F0fGVufDB8fDB8fA%3D%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=60"
 						>
@@ -186,7 +186,7 @@
 					"
 				>
 					<v-card-text class="d-flex align-center justify-space-between">
-						<span class="text-h6 font-weight-bold">Works</span>
+						<span class="text-h6 font-weight-bold"> Projects </span>
 						<v-btn icon small>
 							<v-icon>mdi-dots-vertical</v-icon>
 						</v-btn>
@@ -197,31 +197,65 @@
 						one product at a time
 					</v-card-title>
 
-					<v-card-text class="d-flex align-center pa-0" elevation="1">
-						<v-card
-							id="carousel"
-							outlined
-							rounded="lg"
-							v-for="n in 3"
-							:key="n"
-							class="ma-4"
-							height="250"
-							width="250"
-						></v-card>
+					<template>
+						<div class="card-carousel">
+							<div class="card-carousel-wrapper ma-4">
+								<v-card
+									width="250"
+									outlined
+									rounded="lg"
+									v-for="n in 15"
+									:key="n"
+									class="card-product mx-2"
+								>
+									<v-img
+										aspect-ratio="1"
+										height="250"
+										width="250"
+										src="https://picsum.photos/200/300"
+									></v-img>
 
-						<div
-							style="position: absolute; width: 95%"
-							class="d-flex justify-space-between"
-						>
-							<v-btn fab small>
-								<v-icon>mdi-chevron-left</v-icon>
-							</v-btn>
+									<v-card-title class="text-subtitle-1 font-weight-bold pb-2">
+										project-title
+									</v-card-title>
 
-							<v-btn fab small>
-								<v-icon>mdi-chevron-right</v-icon>
-							</v-btn>
+									<v-card-text
+										class="text-caption d-flex flex-column py-0"
+										style="line-height: 1.4"
+									>
+										<span>Working Time : 4 Days</span>
+										<span>Size : 1,020 x 1,020 x 460 (mm)</span>
+									</v-card-text>
+
+									<v-card-text>
+										<v-chip small label v-for="n in 2" :key="n" class="mr-1">
+											Lorem ipsum
+										</v-chip>
+									</v-card-text>
+
+									<v-card-text class="pt-0 d-flex align-center">
+										<v-chip small outlined> 김수트 </v-chip>
+
+										<v-spacer />
+
+										<v-icon small> mdi-heart </v-icon>
+										<span> 0 </span>
+									</v-card-text>
+								</v-card>
+							</div>
+							<div
+								style="position: absolute; top: 60%; left: 0; width: 100%"
+								class="d-flex justify-space-between align-center pa-4"
+							>
+								<v-btn fab small>
+									<v-icon>mdi-chevron-left</v-icon>
+								</v-btn>
+								<v-btn fab small>
+									<v-icon>mdi-chevron-right</v-icon>
+								</v-btn>
+							</div>
 						</div>
-					</v-card-text>
+					</template>
 				</v-card>
 			</v-col>
 		</v-row>
@@ -239,14 +273,39 @@ export default {
 			model: null,
 			dialog: false,
 			tag: {
-				skills: ['#Photoshop', '#Illustrator', '#Figma', '#VueJS']
+				skills: [
+					'Photoshop',
+					'Illustrator',
+					'Figma',
+					'Sketch',
+					'VueJS',
+					'HTML5',
+					'CSS3',
+					'JavaScript',
+					'Bootstrap',
+					'Web publishing',
+					'Web Developer'
+				]
 			},
 			user: {
 				displayName: '김수트',
 				email: 'dgryoma0402@gmail.com'
 			}
 		}
-	},
-	methods: {}
+	}
 }
 </script>
+
+<style lang="scss">
+.card-carousel-wrapper {
+	display: flex;
+	overflow: hidden;
+
+	.v-card:first-child {
+		margin-left: 0 !important;
+	}
+	.v-card:last-child {
+		margin-right: 0 !important;
+	}
+}
+</style>
